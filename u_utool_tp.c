@@ -105,6 +105,37 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 	return &cal_reg_table_dp;
 }
 
+int utool_tp_cal_data_len(uint32_t *tp_data_len)
+{
+	struct utool_cal_reg_func_param tp_cal_reg_param = { tp_data_len, UTOOL_REG_CNT_DEFAULT, NULL, NULL, 0 };
+	struct utool_cal_reg_table_dp *cal_reg_table_dp = NULL;
+	int ret = UTOOL_OK;
+
+	if (tp_data_len == NULL) {
+		utool_err_msg("Param is invalid, tp data len is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	cal_reg_table_dp = utool_tp_get_cal_reg_table();
+	if (cal_reg_table_dp == NULL) {
+		utool_err_msg("Failed to get cal reg table.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	tp_cal_reg_param.utool_cal_reg_table = cal_reg_table_dp->reg_table;
+	tp_cal_reg_param.func_cnt = cal_reg_table_dp->func_cnt;
+
+	ret = utool_cal_func_reg_len(UTOOL_FUNC_ALL, &tp_cal_reg_param);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt, ret = %d.\n", ret);
+		return ret;
+	}
+
+	*tp_data_len += UTOOL_ABN_STATS_CNT * sizeof(uint32_t);
+
+	return UTOOL_OK;
+}
+
 static int utool_tp_parse_pkt_stats(struct fwctl_rpc_ub_out *tp_pkt_stats_out)
 {
 	struct utool_field_info_dp *pkt_stats_field_info = NULL;
@@ -511,9 +542,72 @@ static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	  utool_tp_parse_scc_debug, utool_null_create_pkt_in },
 };
 
+static int utool_tp_dump_abn_stats(struct fwctl_rpc_ub_out *tp_out)
+{
+	uint32_t data_len = sizeof(struct fwctl_rpc_ub_out) + UTOOL_ABN_STATS_CNT * sizeof(uint32_t);
+	uint32_t data_cnt = tp_out->data_size / sizeof(uint32_t);
+	struct fwctl_rpc_ub_out *abn_out = NULL;
+	uint32_t *data = tp_out->data;
+	uint32_t *abn_data = NULL;
+	int ret = UTOOL_OK;
+
+	abn_out = (struct fwctl_rpc_ub_out *)UTOOL_MALLOC(data_len);
+	if (abn_out == NULL) {
+		utool_err_msg("Failed to malloc abn stats out, size = %u.\n", data_len);
+		return UTOOL_ERR_MALLOC;
+	}
+
+	abn_data = abn_out->data;
+	data += data_cnt - UTOOL_ABN_STATS_CNT;
+
+	abn_out->data_size = UTOOL_ABN_STATS_LEN;
+	memcpy(abn_data, data, UTOOL_ABN_STATS_LEN);
+	abn_out->retval = 0;
+
+	ret = utool_tp_parse_abn_stats(abn_out);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse tp abn stats data.\n");
+	}
+
+	UTOOL_FREE(abn_out);
+	return ret;
+}
+
+int utool_tp_parse_rpc_pkt(struct fwctl_rpc_ub_out *tp_out)
+{
+	struct utool_cal_reg_table_dp *cal_reg_table_dp = NULL;
+	int ret = UTOOL_OK;
+
+	if (tp_out == NULL) {
+		utool_err_msg("Param is invalid, tp out is NULL.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	cal_reg_table_dp = utool_tp_get_cal_reg_table();
+	if (cal_reg_table_dp == NULL) {
+		utool_err_msg("Failed to get cal reg table.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_module_parse(tp_out, UTOOL_ARRAY_SIZE(g_utool_tp_mf_table), g_utool_tp_mf_table,
+				 cal_reg_table_dp->func_cnt, cal_reg_table_dp->reg_table);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse tp rpc pkt.\n");
+		return ret;
+	}
+
+	ret = utool_tp_dump_abn_stats(tp_out);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to dump tp abn stats data.\n");
+	}
+
+	return ret;
+}
+
 static void utool_tp_print_help(void)
 {
 	utool_err_msg("The ubctl tp command must be in the following formats:\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -p ${port}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats/route_result/rx_bank/"
 		      "scc_version/scc_log/scc_debug_en\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f abn_stats -p ${port}\n"
@@ -593,6 +687,40 @@ static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 	return UTOOL_ERR_FUNC_NOT_FOUND;
 }
 
+static int utool_tp_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
+			struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_TP, 0, NULL };
+	uint32_t pkt_in_len = 0;
+	void *pkt_in = NULL;
+	int ret = UTOOL_OK;
+
+	UTOOL_SET_USED(func_table);
+	UTOOL_SET_USED(func_cnt);
+
+	func_pkt_exec.execute = utool_tp_parse_rpc_pkt;
+
+	ret = utool_tp_cal_data_len(&func_pkt_exec.data_len);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt of all, ret = %d.\n", ret);
+		return ret;
+	}
+
+	pkt_in = utool_port_create_pkt_in(&pkt_in_len, param);
+	if (pkt_in == NULL) {
+		utool_err_msg("Failed to create pkt in.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+
+	ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, &func_pkt_exec);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
+	}
+
+	utool_destroy_pkt_in(&pkt_in);
+	return ret;
+}
+
 int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
 	static struct utool_func_dispatch utool_tp_flag_mfe_table[] = {
@@ -610,6 +738,7 @@ int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		  utool_tp_flag_mfp_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfp_table) },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_E, utool_tp_cmd_func,
 		  utool_tp_flag_mfe_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfe_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P, utool_tp_cmd, NULL, 0 },
 	};
 	uint32_t tp_cmd_cnt = UTOOL_ARRAY_SIZE(utool_tp_cmd_table);
 	uint32_t i = 0;
