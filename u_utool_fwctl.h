@@ -35,6 +35,12 @@ struct fwctl_pkt_in_port_time {
 	uint32_t time;
 };
 
+struct fwctl_pkt_in_port_info {
+	uint32_t port_id;
+	uint16_t query_type;
+	uint16_t module_type;
+};
+
 int utool_cmd_exec(struct utool_dev *dev, struct fwctl_rpc_ub_in *in, uint32_t inlen,
 		   struct fwctl_rpc_ub_out *out, uint32_t *outlen);
 
