@@ -18,6 +18,7 @@
 #define UTOOL_ERR_PARSE 6
 #define UTOOL_ERR_CMD_NOT_FOUND 7
 #define UTOOL_ERR_CAL_REG_CNT 8
-#define UTOOL_ERR_HELP 9
+#define UTOOL_ERR_FUNC_NOT_FOUND 9
+#define UTOOL_ERR_HELP 10
 
 #endif

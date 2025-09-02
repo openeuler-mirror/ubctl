@@ -18,10 +18,13 @@
 
 #include "./kernel_headers/ub_fwctl.h"
 
+#define UTOOL_VERSION 0
+
 #define UBCTL_ARG_MAX_LEN 20
 #define UTOOL_LINE_BUF_LEN 300
 #define UTOOL_DEV_NAME_LEN_MAX 512
 #define UTOOL_DEV_CHIP_DIE_ID_MAX (1U << 16)
+#define UTOOL_REG_CNT_DEFAULT 0U
 
 #define UTOOL_BIT(shift) (1U << (shift))
 
@@ -42,6 +45,9 @@ do {					\
 	}				\
 } while (0)
 
+#define UTOOL_EXTRACT_BITS(value, start, end) \
+	(((value) >> (start)) & ((1UL << ((end) - (start) + 1)) - 1))
+
 #define utool_err_msg(fmt, ...) \
 	fprintf(stderr, "ERROR : " fmt, ##__VA_ARGS__)
 
@@ -60,6 +66,41 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_DL,
 
 	UTOOL_MODULE_NAME_BUTT,
+};
+
+enum utool_reg_location {
+	UTOOL_REG_LOC0,
+	UTOOL_REG_LOC1,
+	UTOOL_REG_LOC2,
+	UTOOL_REG_LOC3,
+	UTOOL_REG_LOC4,
+	UTOOL_REG_LOC5,
+	UTOOL_REG_LOC6,
+	UTOOL_REG_LOC7,
+	UTOOL_REG_LOC8,
+	UTOOL_REG_LOC9,
+	UTOOL_REG_LOC10,
+	UTOOL_REG_LOC11,
+	UTOOL_REG_LOC12,
+	UTOOL_REG_LOC13,
+	UTOOL_REG_LOC14,
+	UTOOL_REG_LOC15,
+	UTOOL_REG_LOC16,
+	UTOOL_REG_LOC17,
+	UTOOL_REG_LOC18,
+	UTOOL_REG_LOC19,
+	UTOOL_REG_LOC20,
+	UTOOL_REG_LOC21,
+	UTOOL_REG_LOC22,
+	UTOOL_REG_LOC23,
+	UTOOL_REG_LOC24,
+	UTOOL_REG_LOC25,
+	UTOOL_REG_LOC26,
+	UTOOL_REG_LOC27,
+	UTOOL_REG_LOC28,
+	UTOOL_REG_LOC29,
+	UTOOL_REG_LOC30,
+	UTOOL_REG_LOC31 = 31,
 };
 
 struct utool_dev {
