@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "u_utool_dl.h"
+#include "u_utool_nl.h"
 #include "u_utool_error.h"
 #include "u_utool_common.h"
 #include "u_utool_dispatch.h"
@@ -21,6 +22,7 @@ static bool g_utool_cmd_die_id_init = false;
 
 static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_DL, UTOOL_MODULE_NAME_DL, utool_dl_cmd_dispatch },
+	{ UTOOL_MODULE_NL, UTOOL_MODULE_NAME_NL, utool_nl_cmd_dispatch },
 };
 
 const struct utool_cmd_param *utool_get_cmd_param(void)

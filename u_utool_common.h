@@ -64,9 +64,11 @@ do {					\
 
 #define UTOOL_FUNC_ALL "all"
 #define UTOOL_MODULE_DL "dl"
+#define UTOOL_MODULE_NL "nl"
 
 enum utool_module_name {
 	UTOOL_MODULE_NAME_DL,
+	UTOOL_MODULE_NAME_NL,
 
 	UTOOL_MODULE_NAME_BUTT,
 };
