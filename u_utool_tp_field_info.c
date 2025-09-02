@@ -1045,11 +1045,77 @@ struct utool_field_info g_utool_tp_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "twp_fst_flush_lp_cnt" },
 };
 
+struct utool_field_info g_utool_tp_abn_stats_field_info[] = {
+	// opcode 0xA004
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tqs_mm_sta" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tqs_mm_sta1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "scc_token_req_cnt" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "scc_token_rsp_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "extq_enq_db_cnt" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "extq_deq_db_cnt" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "ext_err_db_cnt_bk0" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "tpc_rdat_err_db_cnt_bk0" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "twp_fst_rst_loop_cnt_bk0" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "twp_bb_drop_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "twp_bb_cmp_cnt" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "twp_sta" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "twp_sta_1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "twp2tpp_hdr_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "twp2tpp_wr_cnt" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "twp_retry_num" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "twp_flush_done_num" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "tp_rty_cnt" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	// opcode 0xA005
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rhp_err_flg" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rrp_err_flg_0" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rrp_err_flg_1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rrp_alm" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rrp_sta0" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rrp_sta1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rwp_alm" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_rwp_sta" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "mb2rcp_cqe_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rcp2tqs_raq_cnt" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "tp2ta_cqe_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp2ta_ae_cnt" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC4, UTOOL_FIELD_INDEX_START, "mcu_cnt_ctrl" },
+	{ false, true, UTOOL_REG_LOC5, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "mcu_rsp_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "mcu_req_cnt" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "scc_dcqcn_cut_rate_cnt" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "scc_dcqcn_psn_retry_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "scc_ldcp_retry_cnt" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "scc_ldcp_small_mtu_cnt" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	// opcode 0xA01D
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ppp_tp_tx_out_bonding_port_cnt" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_1, "ppp_tp_tx_out_bonding_port_cnt" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
 static int utool_tp_check_field_info_len(void)
 {
 #define FIELD_INFO_MAX_LEN 2000
 
-	if (UTOOL_ARRAY_SIZE(g_utool_tp_pkt_stats_field_info) > FIELD_INFO_MAX_LEN) {
+	if (UTOOL_ARRAY_SIZE(g_utool_tp_pkt_stats_field_info) > FIELD_INFO_MAX_LEN ||
+	    UTOOL_ARRAY_SIZE(g_utool_tp_abn_stats_field_info) > FIELD_INFO_MAX_LEN) {
 		utool_err_msg("Field info length is too long, pls check!\n");
 		return UTOOL_ERR;
 	}
@@ -1062,6 +1128,8 @@ struct utool_field_info_dp *utool_tp_get_field_info_by_name(const char *field_na
 	static struct utool_field_info_dp field_info_dp[] = {
 		{ TP_PKT_STATS_FIELD_INFO, UTOOL_ARRAY_SIZE(g_utool_tp_pkt_stats_field_info),
 		  g_utool_tp_pkt_stats_field_info },
+		{ TP_ABN_STATS_FIELD_INFO, UTOOL_ARRAY_SIZE(g_utool_tp_abn_stats_field_info),
+		  g_utool_tp_abn_stats_field_info },
 	};
 	uint32_t i;
 

@@ -12,6 +12,18 @@
 #include "u_utool_tp.h"
 
 #define TP_PKT_STATS "pkt_stats"
+#define TP_ABN_STATS "abn_stats"
+
+#define UTOOL_TX_PKT_STATS_CNT 226U
+#define UTOOL_RX_PKT_STATS_CNT 176U
+#define UTOOL_TX_ABN_STATS_CNT 11U
+#define UTOOL_RX_ABN_STATS_CNT 14U
+#define UTOOL_BONDING_REG_CNT 6U
+
+#define UTOOL_ABN_STATS_CNT (UTOOL_TX_PKT_STATS_CNT + UTOOL_RX_PKT_STATS_CNT + \
+			     UTOOL_TX_ABN_STATS_CNT + UTOOL_RX_ABN_STATS_CNT + UTOOL_BONDING_REG_CNT)
+#define UTOOL_ABN_STATS_LEN ((UTOOL_ABN_STATS_CNT) * (sizeof(uint32_t)))
+#define UTOOL_PORT_CNT 1
 
 struct utool_cal_reg_table_dp {
 	uint32_t func_cnt;
@@ -21,23 +33,29 @@ struct utool_cal_reg_table_dp {
 static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 {
 #define INDEX0 0
+#define INDEX1 1
 
 	static struct utool_cal_reg_cnt_dp utool_tp_cal_reg_table[] = {
 		{ true, true, TP_PKT_STATS, 0, NULL },
+		{ false, false, TP_ABN_STATS, 0, NULL },
 	};
 	static struct utool_cal_reg_table_dp cal_reg_table_dp = {};
 
 	struct utool_field_info_dp *pkt_stats_field_info = NULL;
+	struct utool_field_info_dp *abn_stats_field_info = NULL;
 
 	pkt_stats_field_info = utool_tp_get_field_info_by_name(TP_PKT_STATS_FIELD_INFO);
+	abn_stats_field_info = utool_tp_get_field_info_by_name(TP_ABN_STATS_FIELD_INFO);
 
-	if ((pkt_stats_field_info == NULL)) {
+	if ((pkt_stats_field_info == NULL) || abn_stats_field_info == NULL) {
 		utool_err_msg("Failed to get field info.\n");
 		return NULL;
 	}
 
 	utool_tp_cal_reg_table[INDEX0].field_cnt = pkt_stats_field_info->field_cnt;
 	utool_tp_cal_reg_table[INDEX0].field_info = pkt_stats_field_info->field_info;
+	utool_tp_cal_reg_table[INDEX1].field_cnt = abn_stats_field_info->field_cnt;
+	utool_tp_cal_reg_table[INDEX1].field_info = abn_stats_field_info->field_info;
 
 	cal_reg_table_dp.func_cnt = UTOOL_ARRAY_SIZE(utool_tp_cal_reg_table);
 	cal_reg_table_dp.reg_table = utool_tp_cal_reg_table;
@@ -66,6 +84,77 @@ static int utool_tp_parse_pkt_stats(struct fwctl_rpc_ub_out *tp_pkt_stats_out)
 	return UTOOL_OK;
 }
 
+static int ubtool_tp_abn_copy_data(struct fwctl_rpc_ub_out *abn_stats_out, struct fwctl_rpc_ub_out *tp_abn_stats_out,
+				   uint32_t abn_cnt)
+{
+#define UTOOL_BONDING_PORT (UTOOL_TX_PKT_STATS_CNT + UTOOL_RX_PKT_STATS_CNT + \
+			    UTOOL_TX_ABN_STATS_CNT + UTOOL_RX_ABN_STATS_CNT)
+
+	uint32_t data_cnt = tp_abn_stats_out->data_size / sizeof(uint32_t);
+	uint32_t *abn_data = NULL, *data = NULL;
+	uint32_t abn_data_len = 0;
+	uint32_t data_size = 0;
+	uint32_t offset = 0;
+
+	data = tp_abn_stats_out->data;
+	abn_data = abn_stats_out->data;
+
+	if (data_cnt <= UTOOL_BONDING_PORT) {
+		utool_err_msg("Invalid out data cnt: %u.\n", data_cnt);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+	abn_data[0] = data[UTOOL_BONDING_PORT];
+
+	offset += UTOOL_TX_PKT_STATS_CNT;
+	abn_data_len = (abn_cnt - UTOOL_PORT_CNT) * sizeof(uint32_t);
+	data_size = UTOOL_TX_ABN_STATS_CNT * sizeof(uint32_t);
+	memcpy(abn_data + UTOOL_PORT_CNT, data + offset, data_size);
+	offset += UTOOL_TX_ABN_STATS_CNT + UTOOL_RX_PKT_STATS_CNT;
+	data_size = abn_data_len - data_size;
+	memcpy(abn_data + UTOOL_TX_ABN_STATS_CNT + UTOOL_PORT_CNT, data + offset, data_size);
+	abn_stats_out->data_size = data_size + UTOOL_TX_ABN_STATS_CNT * sizeof(uint32_t);
+	abn_stats_out->retval = 0;
+
+	return UTOOL_OK;
+}
+
+static int utool_tp_parse_abn_stats(struct fwctl_rpc_ub_out *tp_abn_stats_out)
+{
+	uint32_t abn_cnt = UTOOL_TX_ABN_STATS_CNT + UTOOL_RX_ABN_STATS_CNT + UTOOL_BONDING_REG_CNT + UTOOL_PORT_CNT;
+	uint32_t data_size = sizeof(struct fwctl_rpc_ub_out) + abn_cnt * sizeof(uint32_t);
+	struct utool_field_info_dp *abn_stats_field_info = NULL;
+	struct fwctl_rpc_ub_out *abn_stats_out = NULL;
+	int ret = UTOOL_OK;
+
+	abn_stats_field_info = utool_tp_get_field_info_by_name(TP_ABN_STATS_FIELD_INFO);
+	if (abn_stats_field_info == NULL) {
+		utool_err_msg("Failed to get abn stats field info.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	abn_stats_out = (struct fwctl_rpc_ub_out *)UTOOL_MALLOC(data_size);
+	if (abn_stats_out == NULL) {
+		utool_err_msg("Failed to malloc abn stats out, size = %u.\n", data_size);
+		return UTOOL_ERR_MALLOC;
+	}
+
+	ret = ubtool_tp_abn_copy_data(abn_stats_out, tp_abn_stats_out, abn_cnt);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to copy abn data.\n");
+		UTOOL_FREE(abn_stats_out);
+		return ret;
+	}
+
+	ret = utool_pkt_parse(abn_stats_out, abn_stats_field_info->field_cnt, abn_stats_field_info->field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_TP, TP_ABN_STATS));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse tp abn stats data.\n");
+	}
+
+	UTOOL_FREE(abn_stats_out);
+	return ret;
+}
+
 static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	{ true, TP_PKT_STATS, UTOOL_CMD_QUERY_TP_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_tp_parse_pkt_stats, utool_null_create_pkt_in },
@@ -74,7 +163,8 @@ static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 static void utool_tp_print_help(void)
 {
 	utool_err_msg("The ubctl tp command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f abn_stats -p ${port}\n");
 }
 
 static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -136,9 +226,15 @@ static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 
 int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
+	static struct utool_func_dispatch utool_tp_flag_mfp_table[] = {
+		{ false, TP_ABN_STATS, UTOOL_CMD_QUERY_TP_ABN_STATS, UTOOL_ABN_STATS_LEN,
+		  utool_tp_parse_abn_stats, utool_port_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_tp_cmd_table[] = {
 		{ UTOOL_FLAG_M | UTOOL_FLAG_F, utool_tp_cmd_func,
 		  g_utool_tp_mf_table, UTOOL_ARRAY_SIZE(g_utool_tp_mf_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_P, utool_tp_cmd_func,
+		  utool_tp_flag_mfp_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfp_table) },
 	};
 	uint32_t tp_cmd_cnt = UTOOL_ARRAY_SIZE(utool_tp_cmd_table);
 	uint32_t i = 0;
