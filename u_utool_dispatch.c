@@ -17,6 +17,8 @@
 #include "u_utool_ba.h"
 #include "u_utool_qos.h"
 #include "u_utool_port_info.h"
+#include "u_utool_ubommu.h"
+#include "u_utool_ecc_2b.h"
 #include "u_utool_error.h"
 #include "u_utool_common.h"
 #include "u_utool_dispatch.h"
@@ -33,6 +35,8 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_BA, UTOOL_MODULE_NAME_BA, utool_ba_cmd_dispatch },
 	{ UTOOL_MODULE_QOS, UTOOL_MODULE_NAME_QOS, utool_qos_cmd_dispatch },
 	{ UTOOL_MODULE_PORT_INFO, UTOOL_MODULE_NAME_PORT_INFO, utool_port_info_cmd_dispatch },
+	{ UTOOL_MODULE_UBOMMU, UTOOL_MODULE_NAME_UBOMMU, utool_ubommu_cmd_dispatch },
+	{ UTOOL_MODULE_ECC_2B, UTOOL_MODULE_NAME_ECC_2B, utool_ecc_2b_cmd_dispatch },
 };
 
 const struct utool_cmd_param *utool_get_cmd_param(void)
