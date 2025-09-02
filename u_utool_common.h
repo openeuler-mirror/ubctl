@@ -124,6 +124,7 @@ struct utool_cmd_param {
 	uint32_t die_id;
 	uint32_t module_id;
 	uint32_t value;
+	uint32_t index;
 	char func[UBCTL_ARG_MAX_LEN];
 	char module[UBCTL_ARG_MAX_LEN];
 };

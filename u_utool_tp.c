@@ -6,6 +6,13 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
+#include <time.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "u_utool_pkt.h"
 #include "u_utool_error.h"
 #include "u_utool_tp_field_info.h"
@@ -14,6 +21,9 @@
 #define TP_PKT_STATS "pkt_stats"
 #define TP_ABN_STATS "abn_stats"
 #define TP_ROUTE_RESULT "route_result"
+#define TP_SCC_VERSION "scc_version"
+#define TP_SCC_LOG "scc_log"
+#define TP_SCC_DEBUG "scc_debug_en"
 
 #define UTOOL_TX_PKT_STATS_CNT 226U
 #define UTOOL_RX_PKT_STATS_CNT 176U
@@ -21,10 +31,25 @@
 #define UTOOL_RX_ABN_STATS_CNT 14U
 #define UTOOL_BONDING_REG_CNT 6U
 
+#define UTOOL_SCC_LOG_DIR_PATH "/var/log/ubtool/operation_logs/"
+#define UTOOL_SCC_LOG_FILE_PATH_MAX_LEN 256U
+#define UTOOL_SCC_LOG_NAME_MAX_LEN 128U
+#define UTOOL_SZ_1M 0x100000
+#define UTOOL_SCC_LOG_CNT UTOOL_SZ_1M
+#define UTOOL_SCC_CNT 24U
+#define UTOOL_SCC_LOG_FILE_AUTHORITY 0440
+#define UTOOL_SCC_LOG_PATH_AUTHORITY 0550
+#define UTOOL_START_YEAR 1900
+
 #define UTOOL_ABN_STATS_CNT (UTOOL_TX_PKT_STATS_CNT + UTOOL_RX_PKT_STATS_CNT + \
 			     UTOOL_TX_ABN_STATS_CNT + UTOOL_RX_ABN_STATS_CNT + UTOOL_BONDING_REG_CNT)
 #define UTOOL_ABN_STATS_LEN ((UTOOL_ABN_STATS_CNT) * (sizeof(uint32_t)))
 #define UTOOL_PORT_CNT 1
+
+struct utool_type_trans {
+	char type_base;
+	uint32_t type_size;
+};
 
 struct utool_cal_reg_table_dp {
 	uint32_t func_cnt;
@@ -43,6 +68,9 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 		{ false, false, TP_ABN_STATS, 0, NULL },
 		{ true, true, TP_ROUTE_RESULT, 0, NULL },
 		{ true, true, TP_RX_BANK, 0, NULL },
+		{ false, false, TP_SCC_VERSION, 0, NULL },
+		{ false, false, TP_SCC_LOG, 0, NULL },
+		{ false, false, TP_SCC_DEBUG, 0, NULL },
 	};
 	static struct utool_cal_reg_table_dp cal_reg_table_dp = {};
 
@@ -240,6 +268,234 @@ static int utool_tp_parse_rx_bank(struct fwctl_rpc_ub_out *tp_pkt_out)
 	return ret;
 }
 
+static int utool_get_rand_str(char *str, int length)
+{
+#define TYPE_NUMBER 0
+#define TYPE_UPPERCASE 1
+#define TYPE_LOWERCASE 2
+#define RANDOM_CHAR_TYPE_NUM 3U
+#define RANDOM_NUM 2
+#define TYPE_NUMBER_LEN 10
+#define TYPE_UPPERCASE_LEN 26
+#define TYPE_LOWERCASE_LEN 26
+#define URANDOM_PATH "/dev/urandom"
+
+	struct utool_type_trans type_arr[RANDOM_CHAR_TYPE_NUM] = {
+		[TYPE_NUMBER] = {'0', TYPE_NUMBER_LEN},
+		[TYPE_UPPERCASE] = {'A', TYPE_UPPERCASE_LEN},
+		[TYPE_LOWERCASE] = {'a', TYPE_LOWERCASE_LEN},
+	};
+	uint32_t utool_rands[RANDOM_NUM] = {};
+	uint32_t type;
+	int fd, i, j;
+	int size;
+
+	fd = open(URANDOM_PATH, O_RDONLY);
+	if (fd < 0) {
+		utool_err_msg("Failed to open urand, errno is %d.\n", errno);
+		return UTOOL_ERR_OPEN_FILE;
+	}
+
+	for (i = 0; i < (length - 1); i++) {
+		for (j = 0; j < RANDOM_NUM; j++) {
+			size = read(fd, &utool_rands[j], sizeof(uint32_t));
+			if (size < 0) {
+				utool_err_msg("Failed to read random, errno is %d.\n", errno);
+				close(fd);
+				return UTOOL_ERR_READ_FILE;
+			}
+		}
+
+		type = utool_rands[0] % RANDOM_CHAR_TYPE_NUM;
+		str[i] = type_arr[type].type_base + utool_rands[1] % type_arr[type].type_size;
+	}
+
+	close(fd);
+
+	return UTOOL_OK;
+}
+
+static int utool_generate_file_name(char *file_name, uint32_t file_name_len, const char *prefix)
+{
+#define RANDOM_STR_LENGTH 7
+
+	char str_rand[RANDOM_STR_LENGTH] = {};
+	time_t time_seconds = time(0);
+	struct tm timeinfo = {};
+	int ret = UTOOL_OK;
+
+	ret = utool_get_rand_str(str_rand, RANDOM_STR_LENGTH);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to get random string.\n");
+		return ret;
+	}
+
+	if (localtime_r(&time_seconds, &timeinfo) == NULL) {
+		utool_err_msg("Failed to get local time, errno = %d.\n", errno);
+		return UTOOL_ERR;
+	}
+
+	ret = snprintf(file_name, file_name_len, "%s_%d_%d_%d_%d_%d_%d_%s.log", prefix,
+		       timeinfo.tm_year + UTOOL_START_YEAR, timeinfo.tm_mon + 1, timeinfo.tm_mday,
+		       timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, str_rand);
+	if (ret <= 0 || ret >= (int)file_name_len) {
+		utool_err_msg("Failed to generate file name, errno = %d, ret = %d.\n", errno, ret);
+		return UTOOL_ERR;
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_tp_parse_scc_version(struct fwctl_rpc_ub_out *tp_scc_version_out)
+{
+	uint32_t *scc_version = NULL;
+
+	scc_version = tp_scc_version_out->data;
+	utool_reg_msg("scc_version: 0x%x\n", *scc_version);
+
+	return UTOOL_OK;
+}
+
+static int utool_is_dir_exists(const char *file_path)
+{
+	struct stat st = {};
+	int ret = UTOOL_ERR;
+
+	if (stat(file_path, &st) == 0) {
+		ret = (S_ISDIR(st.st_mode) != 0) ? UTOOL_OK : UTOOL_ERR;
+	}
+
+	return ret;
+}
+
+static int utool_mkdir(const char *path, mode_t mode)
+{
+	if (utool_is_dir_exists(path) == UTOOL_OK) {
+		return UTOOL_OK;
+	}
+
+	if (mkdir(path, mode) < 0) {
+		return UTOOL_ERR;
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_mkdir_p(const char *path, mode_t mode)
+{
+	char file_path[UTOOL_SCC_LOG_FILE_PATH_MAX_LEN];
+	char *p = NULL;
+	uint32_t len;
+	int ret = 0;
+
+	ret = snprintf(file_path, sizeof(file_path), "%s", path);
+	if (ret <= 0 || ret >= (int)sizeof(file_path)) {
+		utool_err_msg("Failed to get tmp file path, errno = %d, ret = %d.\n", errno, ret);
+		return UTOOL_ERR;
+	}
+
+	len = strlen(file_path);
+	if (file_path[len - 1] == '/') {
+		file_path[len - 1] = '\0';
+	}
+
+	for (p = file_path + 1; *p != '\0'; p++) {
+		if (*p == '/') {
+			*p = '\0';
+			if (utool_mkdir(file_path, mode) != UTOOL_OK) {
+				return UTOOL_ERR;
+			}
+			*p = '/';
+		}
+	}
+
+	if (utool_mkdir(file_path, mode) != UTOOL_OK) {
+		return UTOOL_ERR;
+	}
+	return UTOOL_OK;
+}
+
+static int utool_tp_parse_scc_log(struct fwctl_rpc_ub_out *tp_scc_log_out)
+{
+#define TP_SCC_STR "scc"
+
+	static char file_path[UTOOL_SCC_LOG_FILE_PATH_MAX_LEN] = {};
+	static char file_name[UTOOL_SCC_LOG_NAME_MAX_LEN] = {};
+	char *data = (char *)(tp_scc_log_out->data);
+	int ret = UTOOL_OK;
+	FILE *fp = NULL;
+
+	if (file_path[0] == 0 && file_name[0] == 0) {
+		if (utool_is_dir_exists(UTOOL_SCC_LOG_DIR_PATH) != UTOOL_OK) {
+			ret = utool_mkdir_p(UTOOL_SCC_LOG_DIR_PATH, UTOOL_SCC_LOG_PATH_AUTHORITY);
+			if (ret != 0) {
+				utool_err_msg("Failed to mkdir file path, ret = %d.\n", ret);
+				return UTOOL_ERR;
+			}
+		}
+
+		ret = utool_generate_file_name(file_name, UTOOL_SCC_LOG_NAME_MAX_LEN, TP_SCC_STR);
+		if (ret != UTOOL_OK) {
+			utool_err_msg("Failed to generate file name.\n");
+			return ret;
+		}
+
+		ret = snprintf(file_path, sizeof(file_path), UTOOL_SCC_LOG_DIR_PATH"%s", file_name);
+		if (ret <= 0 || ret >= (int)sizeof(file_path)) {
+			utool_err_msg("Failed to create log file, errno = %d, ret = %d.\n", errno, ret);
+			return UTOOL_ERR;
+		}
+	}
+
+	fp = fopen(file_path, "a+");
+	if (fp == NULL) {
+		utool_err_msg("Failed to open file, errno = %d.\n", errno);
+		return UTOOL_ERR_OPEN_FILE;
+	}
+
+	if (fwrite(data, sizeof(char), tp_scc_log_out->data_size, fp) <= 0) {
+		utool_err_msg("Failed to write file, errno = %d.\n", errno);
+		(void)chmod(file_path, UTOOL_SCC_LOG_FILE_AUTHORITY);
+		(void)fclose(fp);
+		return UTOOL_ERR_WRITE_FILE;
+	}
+
+	(void)chmod(file_path, UTOOL_SCC_LOG_FILE_AUTHORITY);
+	(void)fclose(fp);
+
+	return UTOOL_OK;
+}
+
+static int utool_tp_parse_scc_debug(struct fwctl_rpc_ub_out *tp_scc_debug_out)
+{
+	uint32_t *scc_debug = tp_scc_debug_out->data;
+
+	utool_reg_msg("scc_debug_en: 0x%x\n", *scc_debug);
+
+	return UTOOL_OK;
+}
+
+static int utool_scc_loop_call(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len,
+			       struct utool_cmd_param *param, struct utool_pkt_exec *pkt_exec)
+{
+#define UTOOL_SCC_NUM 2
+
+	struct fwctl_pkt_in_index *ptr_pkt_in = (struct fwctl_pkt_in_index *)pkt_in;
+	int ret = UTOOL_OK;
+	uint32_t i;
+
+	for (i = 0; i < UTOOL_SCC_NUM; i++) {
+		ptr_pkt_in->index = i;
+		ret = utool_pkt_operation(dev, ptr_pkt_in, pkt_in_len, pkt_exec);
+		if (ret != UTOOL_OK) {
+			utool_err_msg("Failed to execute %s cmd, ret = %d.\n", param->func, ret);
+		return ret;
+		}
+	}
+
+	return ret;
+}
+
 static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	{ true, TP_PKT_STATS, UTOOL_CMD_QUERY_TP_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_tp_parse_pkt_stats, utool_null_create_pkt_in },
@@ -247,27 +503,78 @@ static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	  utool_tp_parse_route_result, utool_null_create_pkt_in },
 	{ true, TP_RX_BANK, UTOOL_CMD_QUERY_TP_RX_BANK, UTOOL_REG_CNT_DEFAULT,
 	  utool_tp_parse_rx_bank, utool_null_create_pkt_in },
+	{ false, TP_SCC_VERSION, UTOOL_CMD_QUERY_SCC_VERSION, UTOOL_SCC_CNT,
+	  utool_tp_parse_scc_version, utool_index_create_pkt_in },
+	{ false, TP_SCC_LOG, UTOOL_CMD_QUERY_SCC_LOG, UTOOL_SCC_LOG_CNT,
+	  utool_tp_parse_scc_log, utool_index_create_pkt_in },
+	{ false, TP_SCC_DEBUG, UTOOL_CMD_QUERY_SCC_DEBUG_EN, UTOOL_SCC_CNT,
+	  utool_tp_parse_scc_debug, utool_null_create_pkt_in },
 };
 
 static void utool_tp_print_help(void)
 {
 	utool_err_msg("The ubctl tp command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats/route_result/rx_bank\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f abn_stats -p ${port}\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats/route_result/rx_bank/"
+		      "scc_version/scc_log/scc_debug_en\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f abn_stats -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f scc_debug_en -e ${value}\n");
+}
+
+static int utool_handle_matched_func(struct utool_dev *dev, struct utool_cmd_param *param,
+				     struct utool_func_dispatch *func_entry,
+				     struct utool_cal_reg_func_param *tp_cal_reg_param)
+{
+	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_BUTT, 0, NULL };
+	uint32_t pkt_in_len = 0;
+	void *pkt_in = NULL;
+	int ret;
+
+	func_pkt_exec.rpc_cmd = func_entry->rpc_cmd;
+	func_pkt_exec.execute = func_entry->execute;
+
+	tp_cal_reg_param->data_len = &func_pkt_exec.data_len;
+	tp_cal_reg_param->user_def_data_len = func_entry->data_len;
+
+	ret = utool_cal_func_reg_len(param->func, tp_cal_reg_param);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to cal tp func %s reg cnt.\n", param->func);
+		return ret;
+	}
+
+	if (func_entry->create_pkt_in == NULL) {
+		utool_err_msg("Failed to create tp func pkt in. Callback is NULL.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	pkt_in = func_entry->create_pkt_in(&pkt_in_len, param);
+	if (pkt_in == NULL) {
+		utool_err_msg("Failed to create pkt in.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+
+	if (strcmp(func_entry->func, TP_SCC_LOG) == 0) {
+		ret = utool_scc_loop_call(dev, pkt_in, pkt_in_len, param, &func_pkt_exec);
+		if (ret == UTOOL_OK) {
+			utool_info_msg("Succeed to query scc log.\n");
+		}
+	} else {
+		ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, &func_pkt_exec);
+		if (ret != UTOOL_OK) {
+			utool_err_msg("Failed to execute command, ret = %d.\n", ret);
+		}
+	}
+
+	utool_destroy_pkt_in(&pkt_in);
+	return ret;
 }
 
 static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
 			     struct utool_func_dispatch *func_table, uint32_t func_cnt)
 {
-	struct utool_cal_reg_func_param tp_cal_reg_param = {NULL, 0, NULL, NULL, 0};
-	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_BUTT, 0, NULL };
-	struct utool_cal_reg_table_dp *cal_reg_table_dp = NULL;
-	uint32_t pkt_in_len = 0;
-	void *pkt_in = NULL;
-	int ret = UTOOL_OK;
+	struct utool_cal_reg_table_dp *cal_reg_table_dp = utool_tp_get_cal_reg_table();
+	struct utool_cal_reg_func_param tp_cal_reg_param = {};
 	uint32_t i;
 
-	cal_reg_table_dp = utool_tp_get_cal_reg_table();
 	if (cal_reg_table_dp == NULL) {
 		utool_err_msg("Failed to get cal reg table.\n");
 		return UTOOL_ERR_INVALID_PARAM;
@@ -278,43 +585,20 @@ static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 
 	for (i = 0; i < func_cnt; i++) {
 		if (strcmp(param->func, func_table[i].func) == 0) {
-			func_pkt_exec.rpc_cmd = func_table[i].rpc_cmd;
-			func_pkt_exec.execute = func_table[i].execute;
-
-			tp_cal_reg_param.data_len = &func_pkt_exec.data_len;
-			tp_cal_reg_param.user_def_data_len = func_table[i].data_len;
-
-			ret = utool_cal_func_reg_len(param->func, &tp_cal_reg_param);
-			if (ret != UTOOL_OK) {
-				utool_err_msg("Failed to cal tp func %s reg cnt.\n", param->func);
-				return ret;
-			}
-			if (func_table[i].create_pkt_in == NULL) {
-				utool_err_msg("Failed to create tp func pkt in. Callback is NULL.\n");
-				return UTOOL_ERR_INVALID_PARAM;
-			}
-			pkt_in = func_table[i].create_pkt_in(&pkt_in_len, param);
-			if (pkt_in == NULL) {
-				utool_err_msg("Failed to create pkt in.\n");
-				return UTOOL_ERR_MALLOC;
-			}
-
-			ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, &func_pkt_exec);
-			if (ret != UTOOL_OK) {
-				utool_err_msg("Failed to execute command, ret = %d.\n", ret);
-			}
-
-			utool_destroy_pkt_in(&pkt_in);
-			return ret;
+			return utool_handle_matched_func(dev, param, &func_table[i], &tp_cal_reg_param);
 		}
 	}
-	utool_tp_print_help();
 
+	utool_tp_print_help();
 	return UTOOL_ERR_FUNC_NOT_FOUND;
 }
 
 int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
+	static struct utool_func_dispatch utool_tp_flag_mfe_table[] = {
+		{ false, TP_SCC_DEBUG, UTOOL_CMD_CONF_SCC_DEBUG_EN, UTOOL_SCC_CNT,
+		  utool_tp_parse_scc_debug, utool_enable_create_pkt_in },
+	};
 	static struct utool_func_dispatch utool_tp_flag_mfp_table[] = {
 		{ false, TP_ABN_STATS, UTOOL_CMD_QUERY_TP_ABN_STATS, UTOOL_ABN_STATS_LEN,
 		  utool_tp_parse_abn_stats, utool_port_create_pkt_in },
@@ -324,6 +608,8 @@ int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		  g_utool_tp_mf_table, UTOOL_ARRAY_SIZE(g_utool_tp_mf_table) },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_P, utool_tp_cmd_func,
 		  utool_tp_flag_mfp_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfp_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_E, utool_tp_cmd_func,
+		  utool_tp_flag_mfe_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfe_table) },
 	};
 	uint32_t tp_cmd_cnt = UTOOL_ARRAY_SIZE(utool_tp_cmd_table);
 	uint32_t i = 0;

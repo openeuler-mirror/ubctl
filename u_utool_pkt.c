@@ -483,6 +483,32 @@ void *utool_port_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_par
 	return pkt_in_port_enable;
 }
 
+void *utool_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_enable *pkt_in_enable;
+
+	pkt_in_enable = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_enable));
+	if (pkt_in_enable == NULL) {
+		return NULL;
+	}
+
+	pkt_in_enable->enable = param->value;
+	return pkt_in_enable;
+}
+
+void *utool_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_index *pkt_in_index;
+
+	pkt_in_index = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_index));
+	if (pkt_in_index == NULL) {
+		return NULL;
+	}
+
+	pkt_in_index->index = param->index;
+	return pkt_in_index;
+}
+
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
 {
 	struct fwctl_pkt_in_port *pkt_in_port;
