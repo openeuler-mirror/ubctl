@@ -77,6 +77,8 @@ do {					\
 #define UTOOL_MODULE_ECC_2B "ecc_2b"
 #define UTOOL_MODULE_UBOE "uboe"
 #define UTOOL_MODULE_UMMU "ummu"
+#define UTOOL_MODULE_MSGQ "msgq"
+#define UTOOL_MODULE_QUEUE "queue"
 
 enum utool_module_name {
 	UTOOL_MODULE_NAME_DL,
@@ -90,6 +92,8 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_ECC_2B,
 	UTOOL_MODULE_NAME_UBOE,
 	UTOOL_MODULE_NAME_UMMU,
+	UTOOL_MODULE_NAME_MSGQ,
+	UTOOL_MODULE_NAME_QUEUE,
 
 	UTOOL_MODULE_NAME_BUTT,
 };
