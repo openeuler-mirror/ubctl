@@ -31,7 +31,7 @@ static void utool_help(void)
 		       "  -m $module: module name, current module include: dl, nl.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
-		       "                nl: pkt_stats\n"
+		       "                nl: pkt_stats, abn_stats, ssu_stats\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
