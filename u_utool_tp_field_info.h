@@ -13,6 +13,7 @@
 
 #define TP_PKT_STATS_FIELD_INFO "utool_tp_pkt_stats_field_info"
 #define TP_ABN_STATS_FIELD_INFO "utool_tp_abn_stats_field_info"
+#define TP_TX_ROUTE_FIELD_INFO "utool_tp_tx_route_field_info"
 
 struct utool_field_info_dp {
 	char field_name[UTOOL_REG_NAME_MAX_LEN];

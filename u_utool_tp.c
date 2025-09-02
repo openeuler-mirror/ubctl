@@ -13,6 +13,7 @@
 
 #define TP_PKT_STATS "pkt_stats"
 #define TP_ABN_STATS "abn_stats"
+#define TP_ROUTE_RESULT "route_result"
 
 #define UTOOL_TX_PKT_STATS_CNT 226U
 #define UTOOL_RX_PKT_STATS_CNT 176U
@@ -34,18 +35,22 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 {
 #define INDEX0 0
 #define INDEX1 1
+#define INDEX2 2
 
 	static struct utool_cal_reg_cnt_dp utool_tp_cal_reg_table[] = {
 		{ true, true, TP_PKT_STATS, 0, NULL },
 		{ false, false, TP_ABN_STATS, 0, NULL },
+		{ true, true, TP_ROUTE_RESULT, 0, NULL },
 	};
 	static struct utool_cal_reg_table_dp cal_reg_table_dp = {};
 
 	struct utool_field_info_dp *pkt_stats_field_info = NULL;
 	struct utool_field_info_dp *abn_stats_field_info = NULL;
+	struct utool_field_info_dp *route_result_field_info = NULL;
 
 	pkt_stats_field_info = utool_tp_get_field_info_by_name(TP_PKT_STATS_FIELD_INFO);
 	abn_stats_field_info = utool_tp_get_field_info_by_name(TP_ABN_STATS_FIELD_INFO);
+	route_result_field_info = utool_tp_get_field_info_by_name(TP_TX_ROUTE_FIELD_INFO);
 
 	if ((pkt_stats_field_info == NULL) || abn_stats_field_info == NULL) {
 		utool_err_msg("Failed to get field info.\n");
@@ -56,6 +61,8 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 	utool_tp_cal_reg_table[INDEX0].field_info = pkt_stats_field_info->field_info;
 	utool_tp_cal_reg_table[INDEX1].field_cnt = abn_stats_field_info->field_cnt;
 	utool_tp_cal_reg_table[INDEX1].field_info = abn_stats_field_info->field_info;
+	utool_tp_cal_reg_table[INDEX2].field_cnt = route_result_field_info->field_cnt;
+	utool_tp_cal_reg_table[INDEX2].field_info = route_result_field_info->field_info;
 
 	cal_reg_table_dp.func_cnt = UTOOL_ARRAY_SIZE(utool_tp_cal_reg_table);
 	cal_reg_table_dp.reg_table = utool_tp_cal_reg_table;
@@ -155,15 +162,38 @@ static int utool_tp_parse_abn_stats(struct fwctl_rpc_ub_out *tp_abn_stats_out)
 	return ret;
 }
 
+static int utool_tp_parse_route_result(struct fwctl_rpc_ub_out *tp_route_result_out)
+{
+	struct utool_field_info_dp *route_result_field_info = NULL;
+	int ret = UTOOL_OK;
+
+	route_result_field_info = utool_tp_get_field_info_by_name(TP_TX_ROUTE_FIELD_INFO);
+	if (route_result_field_info == NULL) {
+		utool_err_msg("Failed to get route result field info.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_pkt_parse(tp_route_result_out, route_result_field_info->field_cnt, route_result_field_info->field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_TP, TP_ROUTE_RESULT));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse tp route result data.\n");
+		return ret;
+	}
+
+	return UTOOL_OK;
+}
+
 static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	{ true, TP_PKT_STATS, UTOOL_CMD_QUERY_TP_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_tp_parse_pkt_stats, utool_null_create_pkt_in },
+	{ true, TP_ROUTE_RESULT, UTOOL_CMD_QUERY_TP_TX_ROUTE, UTOOL_REG_CNT_DEFAULT,
+	  utool_tp_parse_route_result, utool_null_create_pkt_in },
 };
 
 static void utool_tp_print_help(void)
 {
 	utool_err_msg("The ubctl tp command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats/route_result\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f abn_stats -p ${port}\n");
 }
 
