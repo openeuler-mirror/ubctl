@@ -28,18 +28,20 @@ static void utool_help(void)
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
-		       "  -m $module: module name, current module include: dl, nl, ta, tp.\n\n"
+		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
 		       "                nl: pkt_stats, abn_stats, ssu_stats\n"
 		       "                ta: pkt_stats, abn_stats\n"
 		       "                tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank,\n"
 		       "                    route_result\n"
+		       "                ba: pkt_stats\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
 		       "example:\n\n"
-		       "   ubctl -m dl -p 0 -f bit_err -d 0 -c 0       query the number of bit errors by port\n\n");
+		       "   ubctl -m dl -p 0 -f bit_err -d 0 -c 0       query the number of bit errors by port\n\n"
+		       "   ubctl -m ba -p 0 -f pkt_stats -d 0 -c 0     query BA packet statistics\n\n");
 }
 
 static void utool_close(struct utool_dev *dev)
