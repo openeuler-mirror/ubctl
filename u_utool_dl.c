@@ -16,6 +16,9 @@
 #define DL_BIT_ERR "bit_err"
 #define DL_BIST "bist"
 #define DL_BIST_ERR "bist_err"
+#define DL_LINK_TRACE "link_trace"
+
+#define UTOOL_TRACE_4K 0x0001000
 
 static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -705,6 +708,7 @@ struct utool_cal_reg_cnt_dp g_utool_dl_cal_reg_table[] = {
 	{ true, true, DL_BIT_ERR, UTOOL_ARRAY_SIZE(g_utool_bit_err_field_info), g_utool_bit_err_field_info },
 	{ true, false, DL_BIST, UTOOL_ARRAY_SIZE(g_utool_dl_bist_field_info), g_utool_dl_bist_field_info },
 	{ true, false, DL_BIST_ERR, UTOOL_ARRAY_SIZE(g_utool_dl_bist_err_field_info), g_utool_dl_bist_err_field_info },
+	{ false, false, DL_LINK_TRACE, 0, NULL },
 };
 
 int utool_dl_cal_data_len(uint32_t *dl_data_len)
@@ -826,6 +830,63 @@ static int utool_dl_bist_err_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_bist_err_
 	return ret;
 }
 
+static int utool_dl_trace_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_trace_out)
+{
+#define UTOOL_DEFAULT_FSM "UNKNOWN_FSM_NAME"
+#define UTOOL_TRACE_LSM_NAME_BIT_START 24
+#define UTOOL_TRACE_LSM_NAME_BIT_END 31
+#define UTOOL_TRACE_TOTAL_CNT_INDEX 3
+#define UTOOL_TRACE_FIXED_LEN 4
+#define UTOOL_TRACE_SINGLE_TRACE_LEN 4
+#define UTOOL_TRACE_SINGLE_TRACE_INDEX_1 1
+#define UTOOL_TRACE_SINGLE_TRACE_INDEX_2 2
+#define UTOOL_TRACE_SINGLE_TRACE_INDEX_3 3
+#define UTOOL_TRACE_MAX_CACHE ((UTOOL_TRACE_4K) / (sizeof(uint32_t)))
+
+	static const char *dl_trace_lstm_state[] = {
+		"LINK_IDLE", "RX_EQ", "DETECT WAIT", "DETECT CONFIRM", "DISCOVERY ACTIVE", "DISCOVERY CONFIRM",
+		"CONFIG ACTIVE", "CONFIG CHECK", "CONFIG CONFIRM", "SENT NULL", "LINK ACTIVE", "RETRAIN ACTIVE",
+		"RETRAIN CONFIRM", UTOOL_DEFAULT_FSM, "CHANGE SPEED", "RETRAIN_WAIT_AMLOCK", "EQ COARSE ACTIVE",
+		"EQ PASSIVE","EQ ACTIVE", "LOOPBACK CONFIRM", "LOOPBACK ACTIVE", "LOOPBACK EXIT", "SEBT EEIB",
+		"CHANGE POWER", "SENT FLB", "TX LP0S ACTIVE", "RX LP0S ACTIVE", "RX LP0S WAIT SDF", "IDLE POWER",
+		"SUB DIACOVERY CROSSLINK", "EQ COARSE CONFIRM",
+	};
+
+	uint32_t *dl_trace_data = dl_trace_out->data;
+	const char *fsm_name = UTOOL_DEFAULT_FSM;
+	uint8_t lstm_state_idx = 0;
+	uint32_t total_count = 0;
+	uint32_t trace_start = 0;
+	uint32_t i;
+
+	total_count = dl_trace_data[UTOOL_TRACE_TOTAL_CNT_INDEX];
+	if ((UTOOL_TRACE_FIXED_LEN + total_count * UTOOL_TRACE_SINGLE_TRACE_LEN) > UTOOL_TRACE_MAX_CACHE) {
+		utool_err_msg("Trace data count is illegal.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	utool_reg_msg("-------------------------- dl-trace --------------------------\n");
+	utool_reg_msg("port_id: 0x%x\n", dl_trace_data[0]);
+	utool_reg_msg("trace total count: %u\n", total_count);
+	utool_reg_msg("----------------------bit127~96----bit95~64----bit63~32----bit31~0----fsm_name\n");
+	for (i = 0; i < total_count; i++) {
+		trace_start = UTOOL_TRACE_FIXED_LEN + i * UTOOL_TRACE_SINGLE_TRACE_LEN;
+		lstm_state_idx = (uint8_t)UTOOL_EXTRACT_BITS(dl_trace_data[trace_start], UTOOL_TRACE_LSM_NAME_BIT_START,
+							     UTOOL_TRACE_LSM_NAME_BIT_END);
+		if (lstm_state_idx < UTOOL_ARRAY_SIZE(dl_trace_lstm_state)) {
+			fsm_name = dl_trace_lstm_state[lstm_state_idx];
+		}
+		utool_reg_msg("fsm_trace_rd_data_%u: {0x%08x, 0x%08x, 0x%08x, 0x%08x, %s}\n", i,
+			      dl_trace_data[trace_start],
+			      dl_trace_data[trace_start + UTOOL_TRACE_SINGLE_TRACE_INDEX_1],
+			      dl_trace_data[trace_start + UTOOL_TRACE_SINGLE_TRACE_INDEX_2],
+			      dl_trace_data[trace_start + UTOOL_TRACE_SINGLE_TRACE_INDEX_3],
+			      fsm_name);
+	}
+
+	return UTOOL_OK;
+}
+
 static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	{ true, DL_PKT_STATS, UTOOL_CMD_QUERY_DL_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_dl_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
@@ -839,13 +900,15 @@ static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	  utool_dl_bist_parse_rpc_pkt, utool_port_create_pkt_in },
 	{ false, DL_BIST_ERR, UTOOL_CMD_QUERY_DL_BIST_ERR, UTOOL_REG_CNT_DEFAULT,
 	  utool_dl_bist_err_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, DL_LINK_TRACE, UTOOL_CMD_QUERY_DL_LINK_TRACE, UTOOL_TRACE_4K,
+	  utool_dl_trace_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
 static void utool_dl_print_help(void)
 {
 	utool_err_msg("The ubctl dl command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane/bit_err"
-		      "/bist/bist_err\n"
+		      "/bist/bist_err/link_trace\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port} -f bist -e ${value}\n");
 }

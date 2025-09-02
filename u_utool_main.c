@@ -30,7 +30,7 @@ static void utool_help(void)
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
-		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err.\n"
+		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
