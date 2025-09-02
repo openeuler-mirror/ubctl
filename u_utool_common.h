@@ -39,6 +39,7 @@
 #define UTOOL_FLAG_E UTOOL_BIT(3) /* -e */
 #define UTOOL_FLAG_I UTOOL_BIT(4) /* -i */
 #define UTOOL_FLAG_T UTOOL_BIT(5) /* -t */
+#define UTOOL_FLAG_U UTOOL_BIT(6) /* -u */
 
 #define UTOOL_MALLOC(length) malloc(length)
 #define UTOOL_FREE(x)			\
@@ -75,6 +76,7 @@ do {					\
 #define UTOOL_MODULE_UBOMMU "ubommu"
 #define UTOOL_MODULE_ECC_2B "ecc_2b"
 #define UTOOL_MODULE_UBOE "uboe"
+#define UTOOL_MODULE_UMMU "ummu"
 
 enum utool_module_name {
 	UTOOL_MODULE_NAME_DL,
@@ -87,6 +89,7 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_UBOMMU,
 	UTOOL_MODULE_NAME_ECC_2B,
 	UTOOL_MODULE_NAME_UBOE,
+	UTOOL_MODULE_NAME_UMMU,
 
 	UTOOL_MODULE_NAME_BUTT,
 };
@@ -141,6 +144,7 @@ struct utool_cmd_param {
 	uint32_t index;
 	uint32_t table_num;
 	uint32_t time;
+	uint32_t ummu_id;
 	char func[UBCTL_ARG_MAX_LEN];
 	char module[UBCTL_ARG_MAX_LEN];
 };

@@ -20,6 +20,7 @@
 #include "u_utool_ubommu.h"
 #include "u_utool_ecc_2b.h"
 #include "u_utool_uboe.h"
+#include "u_utool_ummu.h"
 #include "u_utool_error.h"
 #include "u_utool_common.h"
 #include "u_utool_dispatch.h"
@@ -39,6 +40,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_UBOMMU, UTOOL_MODULE_NAME_UBOMMU, utool_ubommu_cmd_dispatch },
 	{ UTOOL_MODULE_ECC_2B, UTOOL_MODULE_NAME_ECC_2B, utool_ecc_2b_cmd_dispatch },
 	{ UTOOL_MODULE_UBOE, UTOOL_MODULE_NAME_UBOE, utool_uboe_cmd_dispatch },
+	{ UTOOL_MODULE_UMMU, UTOOL_MODULE_NAME_UMMU, utool_ummu_cmd_dispatch },
 };
 
 const struct utool_cmd_param *utool_get_cmd_param(void)
@@ -191,6 +193,19 @@ static int utool_cmd_select_time(char *param)
 	return ret;
 }
 
+static int utool_cmd_select_ummu_id(char *param)
+{
+	int ret = UTOOL_OK;
+
+	g_utool_cmd_param.flags |= UTOOL_FLAG_U;
+	ret = utool_transform_str(param, &g_utool_cmd_param.ummu_id);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to convert the type of ummu id to uint32.\n");
+	}
+
+	return ret;
+}
+
 static struct utool_cmd_option_parse g_utool_option_func[] = {
 	{ 'd', utool_cmd_select_die_id },
 	{ 'c', utool_cmd_select_chip_id },
@@ -200,6 +215,7 @@ static struct utool_cmd_option_parse g_utool_option_func[] = {
 	{ 'e', utool_cmd_select_value },
 	{ 'i', utool_cmd_select_index },
 	{ 't', utool_cmd_select_time },
+	{ 'u', utool_cmd_select_ummu_id },
 };
 
 static int utool_check_param(void)
@@ -209,11 +225,15 @@ static int utool_check_param(void)
 		return UTOOL_ERR_CMD_NOT_FOUND;
 	}
 
+	if (g_utool_cmd_param.module_id == (uint32_t)UTOOL_MODULE_NAME_UMMU) {
+		return UTOOL_OK;
+	}
+
 	if (g_utool_cmd_chip_id_init && g_utool_cmd_die_id_init) {
 		return UTOOL_OK;
 	}
 
-	utool_err_msg("All modules must contain the '-c' and '-d' parameters.\n");
+	utool_err_msg("All modules except 'ummu' must contain the '-c' and '-d' parameters.\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }
@@ -249,11 +269,12 @@ int utool_parse_command(int argc, char **argv)
 		{ "value", required_argument, NULL, 'e' },
 		{ "index", required_argument, NULL, 'i' },
 		{ "time", required_argument, NULL, 't' },
+		{ "ummu_id", required_argument, NULL, 'u' },
 		{ 0, 0, 0, 0 }
 	};
 
 	while (1) {
-		c = getopt_long(argc, argv, "d:c:m:p:f:e:i:t:", long_options, NULL);
+		c = getopt_long(argc, argv, "d:c:m:p:f:e:i:t:u:", long_options, NULL);
 		if (c == -1) {
 			break;
 		}

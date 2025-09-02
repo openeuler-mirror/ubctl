@@ -602,6 +602,21 @@ void *utool_loopback_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param 
 	return pkt_in_loopback;
 }
 
+void *utool_ummu_value_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_ummuid_value *pkt_in_ummu_value;
+
+	pkt_in_ummu_value = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_ummuid_value));
+	if (pkt_in_ummu_value == NULL) {
+		return NULL;
+	}
+
+	pkt_in_ummu_value->ummu_id = param->ummu_id;
+	pkt_in_ummu_value->value = param->value;
+
+	return pkt_in_ummu_value;
+}
+
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
 {
 	struct fwctl_pkt_in_port *pkt_in_port;

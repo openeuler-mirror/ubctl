@@ -21,17 +21,18 @@
 enum utool_dev_step_flag {
 	UTOOL_DEV_STEP_SCAN = 0,
 	UTOOL_DEV_STEP_LS,
+	UTOOL_DEV_STEP_UMMU,
 };
 
 static void utool_help(void)
 {
 	utool_info_msg("Usage: ubctl <-c ${chip_id}> <-d ${ub_ctl_id}> <-m ${module}> [-f ${function}]\n"
-		       "       [-p ${port}] [-e ${value}] [-i ${index}] [-t ${time}] [-h] [ls]\n\n"
+		       "       [-p ${port}] [-e ${value}] [-u ${ummu_id}] [-i ${index}] [-t ${time}] [-h] [ls]\n\n"
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba, qos, port_info.\n\n"
-		       "              ubommu, ecc_2b, uboe.\n\n"
+		       "              ummu, ubommu, ecc_2b, uboe.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
 		       "                nl: pkt_stats, abn_stats, ssu_stats\n"
@@ -41,9 +42,13 @@ static void utool_help(void)
 		       "                ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,\n"
 		       "                    intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table,\n"
 		       "                    mar_cyc_en\n"
+		       "                ummu: ummu_sync_query, ummu_sync_config\n\n"
 		       "                uboe: rxmac2txmac, txmac2rxmac, txpcs2rxpcs, prbs, prbs_err_cnt\n\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
+		       "  -u $ummu_id: ummu id, it is used to search for the corresponding ummu register,\n"
+		       "               the value of ummu_id is the same as the number of io_die, the io_ide with\n"
+		       "               a smaller absolute address corresponds to a smaller ummu_id index.\n\n"
 		       "  -i $index: entry index, indicates the index of entry.\n\n"
 		       "  -t $time: time, used to query mar_perf statistics.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
@@ -432,8 +437,12 @@ int main(int argc, char *argv[])
 		return UTOOL_ERR;
 	}
 
-	ret = utool_open_dev_step(&dev, cmd_param->chip_id, cmd_param->die_id,
-				  UTOOL_DEV_STEP_SCAN);
+	if (cmd_param->module_id == UTOOL_MODULE_NAME_UMMU) {
+		ret = utool_open_dev_step(&dev, 0, 0, UTOOL_DEV_STEP_UMMU);
+	} else {
+		ret = utool_open_dev_step(&dev, cmd_param->chip_id, cmd_param->die_id,
+					  UTOOL_DEV_STEP_SCAN);
+	}
 
 	if (ret != UTOOL_OK) {
 		return ret;
