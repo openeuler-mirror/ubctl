@@ -134,12 +134,26 @@ static int utool_cmd_select_chip_id(char *param)
 	return ret;
 }
 
+static int utool_cmd_select_value(char *param)
+{
+	int ret = UTOOL_OK;
+
+	g_utool_cmd_param.flags |= UTOOL_FLAG_E;
+	ret = utool_transform_str(param, &g_utool_cmd_param.value);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to convert the type of value to uint32.\n");
+	}
+
+	return ret;
+}
+
 static struct utool_cmd_option_parse g_utool_option_func[] = {
 	{ 'd', utool_cmd_select_die_id },
 	{ 'c', utool_cmd_select_chip_id },
 	{ 'm', utool_cmd_select_module },
 	{ 'p', utool_cmd_select_port },
 	{ 'f', utool_cmd_select_func },
+	{ 'e', utool_cmd_select_value },
 };
 
 static int utool_check_param(void)
@@ -186,11 +200,12 @@ int utool_parse_command(int argc, char **argv)
 		{ "module", required_argument, NULL, 'm' },
 		{ "port", required_argument, NULL, 'p' },
 		{ "func", required_argument, NULL, 'f' },
+		{ "value", required_argument, NULL, 'e' },
 		{ 0, 0, 0, 0 }
 	};
 
 	while (1) {
-		c = getopt_long(argc, argv, "d:c:m:p:f:", long_options, NULL);
+		c = getopt_long(argc, argv, "d:c:m:p:f:e:", long_options, NULL);
 		if (c == -1) {
 			break;
 		}

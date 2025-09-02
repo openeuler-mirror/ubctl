@@ -24,15 +24,18 @@ enum utool_dev_step_flag {
 static void utool_help(void)
 {
 	utool_info_msg("Usage: ubctl <-c ${chip_id}> <-d ${ub_ctl_id}> <-m ${module}> [-f ${function}]\n"
-		       "       [-p ${port}] [-h]\n\n"
+		       "       [-p ${port}] [-e ${value}] [-h]\n\n"
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
-		       "                dl: pkt_stats, lane, link_status\n"
+		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err.\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
-		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n");
+		       "  -e $value: value, used to set the value of the register.\n\n"
+		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
+		       "example:\n\n"
+		       "   ubctl -m dl -p 0 -f bit_err -d 0 -c 0       query the number of bit errors by port\n\n");
 }
 
 static void utool_close(struct utool_dev *dev)

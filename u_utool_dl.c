@@ -13,6 +13,9 @@
 #define DL_PKT_STATS "pkt_stats"
 #define DL_LINK_STATUS "link_status"
 #define DL_LANE "lane"
+#define DL_BIT_ERR "bit_err"
+#define DL_BIST "bist"
+#define DL_BIST_ERR "bist_err"
 
 static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -650,11 +653,58 @@ static struct utool_field_info g_utool_lane_field_info[] = {
 	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 };
 
+static struct utool_field_info g_utool_bit_err_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "decoding_success_block_low" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "decoding_success_block_high" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "st_fec_decoding_fail_num_low" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_1, "st_fec_decoding_fail_num_high" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "st_fec_err_bit_num_low" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_1, "st_fec_err_bit_num_high" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_dl_bist_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	{ false, true, UTOOL_REG_LOC5, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC4, UTOOL_FIELD_INDEX_START, "cfg_rx_bist_en" },
+	{ false, true, UTOOL_REG_LOC1, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "cfg_tx_bist_en" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_dl_bist_err_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+
+	{ false, true, UTOOL_REG_LOC1, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "st_rx_bist_err" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_dl_cal_reg_table[] = {
 	{ true, true, DL_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_pkt_stats_field_info), g_utool_pkt_stats_field_info },
 	{ true, true, DL_LINK_STATUS, UTOOL_ARRAY_SIZE(g_utool_link_status_field_info),
 	  g_utool_link_status_field_info },
 	{ true, true, DL_LANE, UTOOL_ARRAY_SIZE(g_utool_lane_field_info), g_utool_lane_field_info },
+	{ true, true, DL_BIT_ERR, UTOOL_ARRAY_SIZE(g_utool_bit_err_field_info), g_utool_bit_err_field_info },
+	{ true, false, DL_BIST, UTOOL_ARRAY_SIZE(g_utool_dl_bist_field_info), g_utool_dl_bist_field_info },
+	{ true, false, DL_BIST_ERR, UTOOL_ARRAY_SIZE(g_utool_dl_bist_err_field_info), g_utool_dl_bist_err_field_info },
 };
 
 int utool_dl_cal_data_len(uint32_t *dl_data_len)
@@ -721,6 +771,61 @@ static int utool_dl_lane_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_lane_out)
 	return UTOOL_OK;
 }
 
+static int utool_dl_bit_err_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_bit_err_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(dl_bit_err_out, UTOOL_ARRAY_SIZE(g_utool_bit_err_field_info),
+			      g_utool_bit_err_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_DL, DL_BIT_ERR));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse dl bit err data.\n");
+		return ret;
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_dl_bist_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_bist_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(dl_bist_out, UTOOL_ARRAY_SIZE(g_utool_dl_bist_field_info),
+			      g_utool_dl_bist_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_DL, DL_BIST));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse dl bist data, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
+struct utool_dl_bist_data {
+	uint32_t port_id;
+	uint32_t conf_bist;
+};
+
+static int utool_dl_conf_bist_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_conf_bist_out)
+{
+	struct utool_dl_bist_data *dl_conf_bist_data = (struct utool_dl_bist_data *)(dl_conf_bist_out->data);
+
+	utool_reg_msg("port_id: 0x%x\n", dl_conf_bist_data->port_id);
+	utool_reg_msg("Config bist succeeded. value = %u\n", dl_conf_bist_data->conf_bist);
+
+	return UTOOL_OK;
+}
+
+static int utool_dl_bist_err_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_bist_err_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(dl_bist_err_out, UTOOL_ARRAY_SIZE(g_utool_dl_bist_err_field_info),
+			      g_utool_dl_bist_err_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_DL, DL_BIST_ERR));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse dl bist err data, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
 static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	{ true, DL_PKT_STATS, UTOOL_CMD_QUERY_DL_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_dl_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
@@ -728,12 +833,21 @@ static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	  utool_dl_link_status_parse_rpc_pkt, utool_port_create_pkt_in },
 	{ true, DL_LANE, UTOOL_CMD_QUERY_DL_LANE, UTOOL_REG_CNT_DEFAULT,
 	  utool_dl_lane_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ true, DL_BIT_ERR, UTOOL_CMD_QUERY_DL_BIT_ERR, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_bit_err_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, DL_BIST, UTOOL_CMD_QUERY_DL_BIST, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_bist_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, DL_BIST_ERR, UTOOL_CMD_QUERY_DL_BIST_ERR, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_bist_err_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
 static void utool_dl_print_help(void)
 {
 	utool_err_msg("The ubctl dl command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane/bit_err"
+		      "/bist/bist_err\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port} -f bist -e ${value}\n");
 }
 
 static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -754,6 +868,11 @@ static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 		}
 		func_pkt_exec.rpc_cmd = func_table[i].rpc_cmd;
 		func_pkt_exec.execute = func_table[i].execute;
+
+		if ((func_table[i].rpc_cmd == UTOOL_CMD_CONF_DL_BIST) && (param->value > 1)) {
+			utool_err_msg("DL config bist value is invalid, must be 0 or 1.\n");
+			return UTOOL_ERR_INVALID_PARAM;
+		}
 
 		dl_cal_reg_param.data_len = &func_pkt_exec.data_len;
 		dl_cal_reg_param.user_def_data_len = func_table[i].data_len;
@@ -833,8 +952,15 @@ static int utool_dl_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 
 int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
+	static struct utool_func_dispatch utool_dl_flag_mpfe_table[] = {
+		{ false, DL_BIST, UTOOL_CMD_CONF_DL_BIST, UTOOL_REG_CNT_DEFAULT,
+		  utool_dl_conf_bist_parse_rpc_pkt, utool_port_enable_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_dl_cmd_table[] = {
 		{
+			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
+			utool_dl_cmd_func, utool_dl_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_dl_flag_mpfe_table)
+		}, {
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
 			utool_dl_cmd_func, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table)
 		}, {
