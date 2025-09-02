@@ -74,6 +74,7 @@ do {					\
 #define UTOOL_MODULE_PORT_INFO "port_info"
 #define UTOOL_MODULE_UBOMMU "ubommu"
 #define UTOOL_MODULE_ECC_2B "ecc_2b"
+#define UTOOL_MODULE_UBOE "uboe"
 
 enum utool_module_name {
 	UTOOL_MODULE_NAME_DL,
@@ -85,6 +86,7 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_PORT_INFO,
 	UTOOL_MODULE_NAME_UBOMMU,
 	UTOOL_MODULE_NAME_ECC_2B,
+	UTOOL_MODULE_NAME_UBOE,
 
 	UTOOL_MODULE_NAME_BUTT,
 };

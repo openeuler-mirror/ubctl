@@ -7,6 +7,7 @@
  */
 
 #include <inttypes.h>
+#include <errno.h>
 
 #include "u_utool_error.h"
 #include "u_utool_pkt.h"
@@ -362,6 +363,40 @@ static void utool_fill_in_data(void *pkt_in, uint32_t pkt_in_len, struct fwctl_r
 	memcpy(rpc_in->data, pkt_in, pkt_in_len);
 }
 
+static void utool_deal_sys_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
+{
+	if (rpc_cmd == UTOOL_CMD_CONF_LOOPBACK || rpc_cmd == UTOOL_CMD_QUERY_LOOPBACK) {
+		switch (retval) {
+		case -EACCES:
+			utool_err_msg("Operation prohibited: Port is non-UBOE.\n");
+			return;
+		case -EBUSY:
+			utool_err_msg("Current port has been enabled for another loopback mode.\n");
+			return;
+		case -EMLINK:
+			utool_err_msg("Another port has already been enabled.\n");
+			return;
+		default:
+			utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
+			return;
+		}
+	}
+
+	if (rpc_cmd == UTOOL_CMD_CONF_PRBS_EN || rpc_cmd == UTOOL_CMD_QUERY_PRBS_EN) {
+		switch (retval) {
+		case -EACCES:
+			utool_err_msg("Operation prohibited: Port is non-UBOE.\n");
+			return;
+		case -EMLINK:
+			utool_err_msg("Another port has already been enabled.\n");
+			return;
+		default:
+			utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
+			return;
+		}
+	}
+}
+
 int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len, struct utool_pkt_exec *pkt_exec)
 {
 	struct fwctl_rpc_ub_out *pkt_out = NULL;
@@ -395,6 +430,7 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 
 		ret = utool_cmd_exec(dev, in, in_len, pkt_out, &pkt_out_len);
 		if (pkt_out->retval != 0) {
+			utool_deal_sys_ret(pkt_exec->rpc_cmd, pkt_out->retval);
 			ret = UTOOL_ERR_IOCTL;
 			break;
 		}
@@ -522,6 +558,48 @@ void *utool_port_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param
 	pkt_in_port_time->time = param->time;
 
 	return pkt_in_port_time;
+}
+
+void *utool_prbs_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+#define UBCTL_PRBS_ERR_CNT_VAL 1U
+
+	struct fwctl_pkt_in_prbs *pkt_in_prbs;
+	uint32_t data_size = sizeof(struct fwctl_pkt_in_prbs);
+
+	pkt_in_prbs = (struct fwctl_pkt_in_prbs *)utool_create_pkt_in(pkt_in_len, param, data_size);
+	if (pkt_in_prbs == NULL) {
+		return NULL;
+	}
+
+	pkt_in_prbs->port_id = param->port;
+	pkt_in_prbs->query_prbs_err_cnt = UBCTL_PRBS_ERR_CNT_VAL;
+
+	return pkt_in_prbs;
+}
+
+void *utool_loopback_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_loopback *pkt_in_loopback;
+
+	pkt_in_loopback = (struct fwctl_pkt_in_loopback *)utool_create_pkt_in(pkt_in_len, param,
+									      sizeof(struct fwctl_pkt_in_loopback));
+	if (pkt_in_loopback == NULL) {
+		return NULL;
+	}
+
+	if (strcmp(param->func, UBOE_LOOPBACK_PCS_INNER) == 0) {
+		pkt_in_loopback->loopback_mode = UTOOL_TXPCS2RXPCS;
+	} else if (strcmp(param->func, UBOE_LOOPBACK_MAC_INNER) == 0) {
+		pkt_in_loopback->loopback_mode = UTOOL_TXMAC2RXMAC;
+	} else {
+		pkt_in_loopback->loopback_mode = UTOOL_RXMAC2TXMAC;
+	}
+
+	pkt_in_loopback->port_id = param->port;
+	pkt_in_loopback->enable = param->value;
+
+	return pkt_in_loopback;
 }
 
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)

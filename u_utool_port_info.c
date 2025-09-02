@@ -10,6 +10,8 @@
 #include "u_utool_error.h"
 #include "u_utool_port_info.h"
 
+#define UTOOL_FEC_ERR_HIGH_SHIFT 32
+
 enum {
 	UTOOL_QUERY_TYPE_MODULE = 0,
 	UTOOL_QUERY_TYPE_DATA = 1,
@@ -607,7 +609,8 @@ static int utool_ub_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_inf
 	utool_print_two_type_info("cur_port_type", dlphy_info.cur_port_type, "master", "slave");
 	utool_print_dlphy_lstm(dlphy_info.mac_lstm);
 	utool_reg_msg("decoded_fail_block_num: 0x%x\n", dlphy_info.decoded_fail_block_num);
-	utool_reg_msg("fec_err: 0x%llx\n", ((uint64_t)dlphy_info.fec_err_high << 32) | dlphy_info.fec_err_low);
+	utool_reg_msg("fec_err: 0x%llx\n",
+		      ((uint64_t)dlphy_info.fec_err_high << UTOOL_FEC_ERR_HIGH_SHIFT) | dlphy_info.fec_err_low);
 	utool_reg_msg("retry_cnt: 0x%x\n", dlphy_info.retry_cnt);
 	utool_print_dl_link_fsm(dlphy_info.dl_link_fsm);
 
@@ -654,7 +657,8 @@ static int utool_eth_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_in
 	utool_print_two_type_info("phy_link", dlphy_info.phy_link, "link", "no link");
 	utool_reg_msg("mac lstm: 0x%x\n", dlphy_info.mac_lstm);
 	utool_reg_msg("decoded_fail_block_num: 0x%x\n", dlphy_info.decoded_fail_block_num);
-	utool_reg_msg("fec_err: 0x%llx\n", ((uint64_t)dlphy_info.fec_err_high << 32) | dlphy_info.fec_err_low);
+	utool_reg_msg("fec_err: 0x%llx\n",
+		      ((uint64_t)dlphy_info.fec_err_high << UTOOL_FEC_ERR_HIGH_SHIFT) | dlphy_info.fec_err_low);
 
 	return UTOOL_OK;
 }

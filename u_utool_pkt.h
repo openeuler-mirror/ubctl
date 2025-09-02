@@ -23,6 +23,12 @@
 #define TP_RX_BANK "rx_bank"
 #define UBCTL_TP_RX_BANK_NUM 3
 
+#define UBOE_LOOPBACK_MAC_OUTER "rxmac2txmac"
+#define UBOE_LOOPBACK_MAC_INNER "txmac2rxmac"
+#define UBOE_LOOPBACK_PCS_INNER "txpcs2rxpcs"
+#define UBOE_PRBS_EN "prbs"
+#define UBOE_PRBS_RESULT "prbs_err_cnt"
+
 struct utool_field_info {
 	bool is_high_before; /* true：high_before， false: low_before */
 	bool is_reserved;
@@ -69,6 +75,8 @@ void *utool_port_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_par
 void *utool_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_port_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
+void *utool_prbs_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
+void *utool_loopback_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param,
 				  struct utool_pkt_exec *pkt_exec);
