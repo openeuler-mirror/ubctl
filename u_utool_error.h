@@ -23,5 +23,6 @@
 #define UTOOL_ERR_WRITE_FILE 11
 #define UTOOL_ERR_READ_FILE 12
 #define UTOOL_ERR_HELP 13
+#define UTOOL_OK_LS 14
 
 #endif

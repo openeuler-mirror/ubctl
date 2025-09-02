@@ -16,15 +16,17 @@
 #include "u_utool_error.h"
 #include "u_utool_common.h"
 #include "u_utool_dispatch.h"
+#include "u_utool_io_die.h"
 
 enum utool_dev_step_flag {
 	UTOOL_DEV_STEP_SCAN = 0,
+	UTOOL_DEV_STEP_LS,
 };
 
 static void utool_help(void)
 {
 	utool_info_msg("Usage: ubctl <-c ${chip_id}> <-d ${ub_ctl_id}> <-m ${module}> [-f ${function}]\n"
-		       "       [-p ${port}] [-e ${value}] [-i ${index}] [-t ${time}] [-h]\n\n"
+		       "       [-p ${port}] [-e ${value}] [-i ${index}] [-t ${time}] [-h] [ls]\n\n"
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
@@ -43,6 +45,7 @@ static void utool_help(void)
 		       "  -i $index: entry index, indicates the index of entry.\n\n"
 		       "  -t $time: time, used to query mar_perf statistics.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
+		       "  ls: querying information about all chip.\n\n"
 		       "example:\n\n"
 		       "   ubctl -m dl -p 0 -f bit_err -d 0 -c 0       query the number of bit errors by port\n\n"
 		       "   ubctl -m ba -p 0 -f pkt_stats -d 0 -c 0     query BA packet statistics\n\n");
@@ -202,8 +205,31 @@ static int utool_check_dev_chip_ctl_id(char *file_path, uint32_t chip_id, uint32
 	return UTOOL_ERR;
 }
 
+static int utool_excute_io_die(struct utool_dev *dev)
+{
+	struct utool_cmd_param cmd_param = {};
+
+	if (utool_open(dev) != UTOOL_OK) {
+		return UTOOL_ERR;
+	}
+
+	if (utool_io_die_cmd(dev, &cmd_param) != UTOOL_OK) {
+		utool_close(dev);
+		utool_err_msg("Failed to query port info , errno = %d.\n", errno);
+		return UTOOL_ERR;
+	}
+	utool_close(dev);
+
+	return UTOOL_OK;
+}
+
 static int utool_proc_excption_dev(uint32_t chip_id, uint32_t die_id, enum utool_dev_step_flag step_flag)
 {
+	if (step_flag == UTOOL_DEV_STEP_LS) {
+		utool_reg_msg("\ntotal ubctl count: %u\n", utool_get_ubctl_id());
+		return UTOOL_OK_LS;
+	}
+
 	if (step_flag == UTOOL_DEV_STEP_SCAN) {
 		utool_err_msg("Ubctl device not found. chip_id = %u, die_id = %u\n", chip_id, die_id);
 	} else {
@@ -236,20 +262,46 @@ static int utool_format_dev_path(struct utool_dev *dev, char *driver_path, struc
 	return UTOOL_OK;
 }
 
-static int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id,
-			       enum utool_dev_step_flag step_flag)
+static int utool_process_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id,
+			      enum utool_dev_step_flag step_flag, char *ub_entity_name)
 {
 #define UTOOL_SYS_CAP_INFO_PATH "/sys/kernel/debug/ubase/%s/caps_info"
 
 	char sys_cap_path[UTOOL_DEV_NAME_LEN_MAX] = {};
+	int ret;
+
+	if (step_flag == UTOOL_DEV_STEP_LS) {
+		if (utool_excute_io_die(dev) != UTOOL_OK) {
+			utool_err_msg("Failed to query port bitmap.\n");
+		}
+		return UTOOL_ERR;
+	}
+
+	if (step_flag == UTOOL_DEV_STEP_SCAN) {
+		ret = snprintf(sys_cap_path, UTOOL_DEV_NAME_LEN_MAX, UTOOL_SYS_CAP_INFO_PATH, ub_entity_name);
+		if (ret <= 0 || ret >= UTOOL_DEV_NAME_LEN_MAX) {
+			utool_err_msg("Failed to format sys cap path, errno = %d, ret = %d.\n", errno, ret);
+			return ret;
+		}
+
+		if (utool_check_dev_chip_ctl_id(sys_cap_path, chip_id, die_id) != UTOOL_OK) {
+			return UTOOL_ERR;
+		}
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id,
+			       enum utool_dev_step_flag step_flag)
+{
 	char driver_path[UTOOL_DEV_NAME_LEN_MAX] = {};
 	char ub_entity_name[UTOOL_DEV_NAME_LEN_MAX] = {};
 	struct dirent *entry = NULL;
 	DIR *class_dir = NULL;
 	int ret = UTOOL_OK;
 
-	class_dir = opendir(UTOOL_FWCTL_PATH);
-	if (class_dir == NULL) {
+	if ((class_dir = opendir(UTOOL_FWCTL_PATH)) == NULL) {
 		utool_err_msg("Failed to open dir %s, errno = %d.\n", UTOOL_FWCTL_PATH, errno);
 		return UTOOL_ERR;
 	}
@@ -271,12 +323,8 @@ static int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t
 			continue;
 		}
 
-		ret = snprintf(sys_cap_path, UTOOL_DEV_NAME_LEN_MAX, UTOOL_SYS_CAP_INFO_PATH, ub_entity_name);
-		if (ret <= 0 || ret >= UTOOL_DEV_NAME_LEN_MAX) {
-			utool_err_msg("Failed to format sys cap path, errno = %d, ret = %d.\n", errno, ret);
-			continue;
-		}
-		if (utool_check_dev_chip_ctl_id(sys_cap_path, chip_id, die_id) != UTOOL_OK) {
+		ret = utool_process_step(dev, chip_id, die_id, step_flag, ub_entity_name);
+		if (ret != UTOOL_OK) {
 			continue;
 		}
 
@@ -288,7 +336,6 @@ static int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t
 		return UTOOL_OK;
 	}
 	(void)closedir(class_dir);
-
 	return utool_proc_excption_dev(chip_id, die_id, step_flag);
 }
 
@@ -340,6 +387,10 @@ static int utool_main_parse_sub(int argc, char **argv, struct utool_dev *dev)
 		ret = utool_check_arg(argc, argv);
 		if (ret != UTOOL_OK) {
 			break;
+		}
+
+		if (strcmp(argv[1], "ls") == 0) {
+			return utool_open_dev_step(dev, 0, 0, UTOOL_DEV_STEP_LS);
 		}
 
 		if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0) ||
