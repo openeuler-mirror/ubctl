@@ -28,7 +28,7 @@ static void utool_help(void)
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
-		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba.\n\n"
+		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba, qos.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
 		       "                nl: pkt_stats, abn_stats, ssu_stats\n"

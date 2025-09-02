@@ -70,6 +70,7 @@ do {					\
 #define UTOOL_MODULE_TA "ta"
 #define UTOOL_MODULE_TP "tp"
 #define UTOOL_MODULE_BA "ba"
+#define UTOOL_MODULE_QOS "qos"
 
 enum utool_module_name {
 	UTOOL_MODULE_NAME_DL,
@@ -77,6 +78,7 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_TA,
 	UTOOL_MODULE_NAME_TP,
 	UTOOL_MODULE_NAME_BA,
+	UTOOL_MODULE_NAME_QOS,
 
 	UTOOL_MODULE_NAME_BUTT,
 };
