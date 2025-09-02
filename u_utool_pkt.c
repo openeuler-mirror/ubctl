@@ -175,6 +175,97 @@ int utool_cal_func_reg_len(const char *func_name, struct utool_cal_reg_func_para
 	return UTOOL_ERR_INVALID_CMD;
 }
 
+static int utool_module_parse_input_check(struct fwctl_rpc_ub_out *out,
+					  uint32_t func_table_cnt, struct utool_func_dispatch *func_table,
+					  uint32_t cal_reg_table_cnt, struct utool_cal_reg_cnt_dp *cal_reg_table)
+{
+	if ((out == NULL) || (func_table == NULL) || (cal_reg_table == NULL)) {
+		utool_err_msg("Param is invalid, out==null(%d), func_table==NULL(%d), cal_reg_table==NULL(%d).\n",
+			      (out == NULL), (func_table == NULL), (cal_reg_table == NULL));
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	if ((func_table_cnt == 0) || (cal_reg_table_cnt == 0)) {
+		utool_err_msg("Param is invalid, func_table_cnt==0(%d), cal_reg_table_cnt==0(%d).\n",
+			      (func_table_cnt == 0), (cal_reg_table_cnt == 0));
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	if ((out->data_size == 0) || (out->data == NULL)) {
+		utool_err_msg("Failed to split module, param is invalid data_size==0(%d), data==NULL(%d).\n",
+			      (out->data_size == 0), (out->data == NULL));
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	return UTOOL_OK;
+}
+
+int utool_module_parse(struct fwctl_rpc_ub_out *out,
+		       uint32_t func_table_cnt, struct utool_func_dispatch *func_table,
+		       uint32_t cal_reg_table_cnt, struct utool_cal_reg_cnt_dp *cal_reg_table)
+{
+	struct utool_cal_reg_func_param cal_reg_param = { NULL, 0, NULL, cal_reg_table, cal_reg_table_cnt };
+	struct fwctl_rpc_ub_out *func_pkt_out = NULL;
+	uint32_t func_pkt_out_max_len = 0;
+	uint32_t offset_data_len = 0;
+	uint32_t func_data_len = 0;
+	void *pos_index = NULL;
+	int ret = UTOOL_OK;
+	uint32_t i = 0;
+
+	if (utool_module_parse_input_check(out, func_table_cnt, func_table, cal_reg_table_cnt,
+					   cal_reg_table) != UTOOL_OK) {
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	cal_reg_param.data_len = &func_data_len;
+	cal_reg_param.offset_data_len = &offset_data_len;
+
+	func_pkt_out_max_len = (uint32_t)(out->data_size + sizeof(struct fwctl_rpc_ub_out));
+	func_pkt_out = (struct fwctl_rpc_ub_out *)UTOOL_MALLOC(func_pkt_out_max_len);
+	if (func_pkt_out == NULL) {
+		utool_err_msg("Failed to malloc space for func data.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+	func_pkt_out->retval = 0;
+
+	for (i = 0; i < func_table_cnt; i++) {
+		if (!func_table[i].is_dump) {
+			continue;
+		}
+
+		memset(func_pkt_out, 0x0, func_pkt_out_max_len);
+
+		ret = utool_cal_func_reg_len(func_table[i].func, &cal_reg_param);
+		if (ret != UTOOL_OK || func_data_len == 0) {
+			utool_err_msg("Failed to cal func %s reg cnt.\n", func_table[i].func);
+			break;
+		}
+
+		func_pkt_out->data_size = func_data_len;
+
+		pos_index = (void *)((uint8_t *)(out->data) + offset_data_len);
+		memcpy(func_pkt_out->data, pos_index, func_pkt_out->data_size);
+
+		if (func_table[i].execute == NULL) {
+			utool_err_msg("The func %s's excute is NULL.\n", func_table[i].func);
+			ret = UTOOL_ERR;
+			break;
+		}
+
+		ret = func_table[i].execute(func_pkt_out);
+		if (ret != UTOOL_OK) {
+			utool_err_msg("Failed to parse all pkt, %s parse is error, ret = %d.\n",
+				      func_table[i].func, ret);
+			break;
+		}
+	}
+
+	UTOOL_FREE(func_pkt_out);
+
+	return ret;
+}
+
 int utool_pkt_parse(struct fwctl_rpc_ub_out *out, uint32_t field_cnt, struct utool_field_info *field_info,
 		    const char *module_func_name)
 {
@@ -371,4 +462,31 @@ void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *par
 
 	pkt_in_port->port_id = param->port;
 	return pkt_in_port;
+}
+
+int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param, struct utool_pkt_exec *pkt_exec)
+{
+	uint32_t pkt_in_len = 0;
+	void *pkt_in = NULL;
+	int ret = UTOOL_OK;
+
+	if ((dev == NULL) || (param == NULL) || (pkt_exec == NULL)) {
+		utool_err_msg("Failed to check param, dev==NULL(%d), param==NULL(%d), pkt_exec==NULL(%d).\n",
+			      (dev == NULL), (param == NULL), (pkt_exec == NULL));
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	pkt_in = utool_port_create_pkt_in(&pkt_in_len, param);
+	if (pkt_in == NULL) {
+		utool_err_msg("Failed to create pkt in.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+
+	ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, pkt_exec);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
+	}
+
+	utool_destroy_pkt_in(&pkt_in);
+	return ret;
 }

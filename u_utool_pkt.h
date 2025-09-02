@@ -52,6 +52,9 @@ struct utool_cal_reg_func_param {
 };
 
 int utool_cal_func_reg_len(const char *func_name, struct utool_cal_reg_func_param *cal_reg_param);
+int utool_module_parse(struct fwctl_rpc_ub_out *out,
+		       uint32_t func_table_cnt, struct utool_func_dispatch *func_table,
+		       uint32_t cal_reg_table_cnt, struct utool_cal_reg_cnt_dp *cal_reg_table);
 int utool_pkt_parse(struct fwctl_rpc_ub_out *out, uint32_t field_cnt,
 		    struct utool_field_info *field_info, const char *module_func_name);
 int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len, struct utool_pkt_exec *pkt_exec);
@@ -59,4 +62,6 @@ int utool_cal_reg_cnt(struct utool_field_info *field_info, uint32_t field_cnt, u
 void utool_destroy_pkt_in(void **pkt_in);
 void *utool_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param, size_t struct_size);
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
+int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param,
+				  struct utool_pkt_exec *pkt_exec);
 #endif

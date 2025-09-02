@@ -11,6 +11,8 @@
 #include "u_utool_pkt.h"
 
 #define DL_PKT_STATS "pkt_stats"
+#define DL_LINK_STATUS "link_status"
+#define DL_LANE "lane"
 
 static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -604,9 +606,78 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 };
 
+static struct utool_field_info g_utool_link_status_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC1, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "link_state" },
+
+	{ false, true, UTOOL_REG_LOC29, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC28, UTOOL_FIELD_INDEX_START, "cur_port_type" },
+	{ false, true, UTOOL_REG_LOC26, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC25, UTOOL_FIELD_INDEX_START, "lstm_state" },
+	{ false, true, UTOOL_REG_LOC17, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC12, UTOOL_REG_LOC16, UTOOL_FIELD_INDEX_START, "cur_rx_link_wid" },
+	{ false, true, UTOOL_REG_LOC9, UTOOL_REG_LOC11, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC8, UTOOL_FIELD_INDEX_START, "cur_tx_link_wid" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "cur_link_speed" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_lane_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC21, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "target_rx_link_width" },
+	{ false, true, UTOOL_REG_LOC13, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC12, UTOOL_FIELD_INDEX_START, "target_tx_link_width" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "cur_link_speed" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC8, UTOOL_FIELD_INDEX_START, "cur_tx_link_wid" },
+	{ false, true, UTOOL_REG_LOC9, UTOOL_REG_LOC11, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC12, UTOOL_REG_LOC16, UTOOL_FIELD_INDEX_START, "cur_rx_link_wid" },
+	{ false, true, UTOOL_REG_LOC17, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "tx_physical_lane_use" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "rx_physical_lane_use" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "cfg_tx_lane_disable" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "cfg_rx_lane_disable" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_dl_cal_reg_table[] = {
 	{ true, true, DL_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_pkt_stats_field_info), g_utool_pkt_stats_field_info },
+	{ true, true, DL_LINK_STATUS, UTOOL_ARRAY_SIZE(g_utool_link_status_field_info),
+	  g_utool_link_status_field_info },
+	{ true, true, DL_LANE, UTOOL_ARRAY_SIZE(g_utool_lane_field_info), g_utool_lane_field_info },
 };
+
+int utool_dl_cal_data_len(uint32_t *dl_data_len)
+{
+	struct utool_cal_reg_func_param dl_cal_reg_param = {
+		dl_data_len, UTOOL_REG_CNT_DEFAULT, NULL,
+		g_utool_dl_cal_reg_table, UTOOL_ARRAY_SIZE(g_utool_dl_cal_reg_table)
+	};
+	int ret = UTOOL_OK;
+
+	if (dl_data_len == NULL) {
+		utool_err_msg("Param is invalid, dl data len is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_cal_func_reg_len(UTOOL_FUNC_ALL, &dl_cal_reg_param);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt, ret = %d.\n", ret);
+		return ret;
+	}
+
+	return UTOOL_OK;
+}
 
 static int utool_dl_pkt_stats_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_pkt_stats_out)
 {
@@ -622,15 +693,47 @@ static int utool_dl_pkt_stats_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_pkt_stat
 	return UTOOL_OK;
 }
 
+static int utool_dl_link_status_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_link_status_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(dl_link_status_out, UTOOL_ARRAY_SIZE(g_utool_link_status_field_info),
+			      g_utool_link_status_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_DL, DL_LINK_STATUS));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse dl link status data.\n");
+		return ret;
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_dl_lane_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_lane_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(dl_lane_out, UTOOL_ARRAY_SIZE(g_utool_lane_field_info),
+			      g_utool_lane_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_DL, DL_LANE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse dl lane data.\n");
+		return ret;
+	}
+
+	return UTOOL_OK;
+}
+
 static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	{ true, DL_PKT_STATS, UTOOL_CMD_QUERY_DL_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_dl_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ true, DL_LINK_STATUS, UTOOL_CMD_QUERY_DL_LINK_STATUS, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_link_status_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ true, DL_LANE, UTOOL_CMD_QUERY_DL_LANE, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_lane_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
 static void utool_dl_print_help(void)
 {
 	utool_err_msg("The ubctl dl command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane\n");
 }
 
 static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -685,12 +788,58 @@ static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 	return UTOOL_ERR_FUNC_NOT_FOUND;
 }
 
+int utool_dl_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_out)
+{
+	int ret = UTOOL_OK;
+
+	if (dl_out == NULL) {
+		utool_err_msg("Param is invalid, dl out is NULL.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_module_parse(dl_out, UTOOL_ARRAY_SIZE(g_utool_dl_func_table), g_utool_dl_func_table,
+				 UTOOL_ARRAY_SIZE(g_utool_dl_cal_reg_table), g_utool_dl_cal_reg_table);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse dl rpc pkt.\n");
+	}
+
+	return ret;
+}
+
+static int utool_dl_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
+			struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_DL, 0, NULL };
+	int ret = UTOOL_OK;
+
+	UTOOL_SET_USED(func_table);
+	UTOOL_SET_USED(func_cnt);
+
+	func_pkt_exec.execute = utool_dl_parse_rpc_pkt;
+
+	ret = utool_dl_cal_data_len(&func_pkt_exec.data_len);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt of dl all, ret = %d.\n", ret);
+		return ret;
+	}
+
+	ret = utool_pkt_operation_have_port(dev, param, &func_pkt_exec);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
 int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
 	struct utool_cmd_dispatch utool_dl_cmd_table[] = {
 		{
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
 			utool_dl_cmd_func, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table)
+		}, {
+			UTOOL_FLAG_M | UTOOL_FLAG_P,
+			utool_dl_cmd, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table)
 		}
 	};
 

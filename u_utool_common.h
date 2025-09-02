@@ -31,6 +31,7 @@
 #define UTOOL_ARRAY_SIZE(arr) (uint32_t)(sizeof(arr) / sizeof((arr)[0]))
 
 #define UTOOL_CONCAT_STR(str1, str2) (str1 "-" str2)
+#define UTOOL_SET_USED(x) (void)(x)
 
 #define UTOOL_FLAG_M UTOOL_BIT(0) /* -m */
 #define UTOOL_FLAG_P UTOOL_BIT(1) /* -p */
@@ -60,6 +61,7 @@ do {					\
 #define utool_reg_msg(fmt, ...) \
 	fprintf(stdout, fmt, ##__VA_ARGS__)
 
+#define UTOOL_FUNC_ALL "all"
 #define UTOOL_MODULE_DL "dl"
 
 enum utool_module_name {
