@@ -14,7 +14,27 @@
 #define BA_MAR "mar"
 #define BA_MAR_CYC_EN "mar_cyc_en"
 
+#define BA_UB_MEM_DECODER_TABLE "ub_mem_decoder"
+#define BA_MAR_INTER_SP_ROUT_TABLE "inter_sp_rout"
+#define BA_MAR_INTER_MP_ROUT_TABLE "inter_mp_rout"
+#define BA_MAR_INTRA_SP_ROUT_TABLE "intra_sp_rout"
+#define BA_MAR_INTRA_MP_ROUT_TABLE "intra_mp_rout"
+#define BA_MAR_PORT_SCNA_TABLE "port_scna"
+#define BA_MAR_PORT_TABLE "port_table"
+#define BA_MAR_PORT_WB_TABLE "port_wb_table"
+
 #define UTOOL_MAR_CYC_EN_CNT 6U
+
+struct utool_mp_route {
+	uint32_t port_id;
+	uint32_t table_num;
+	uint32_t index;
+	uint32_t port;
+};
+
+struct utool_mar_table_name {
+	char func[UBCTL_ARG_MAX_LEN];
+};
 
 static struct utool_field_info g_utool_ba_pkt_stats_field_info[] = {
 	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -727,12 +747,162 @@ static struct utool_field_info g_utool_ba_mar_cyc_en_field_info[] = {
 	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 };
 
+static struct utool_field_info g_utool_ub_mem_decoder_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "table_num" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "index" },
+	/*
+	* Print format:
+	* BLOCK_0:
+	*     valid_0:xx
+	*     mem_base_0:xx
+	*     mem_limit_0:xx
+	*     onepath_0:xx
+	*     wr_delay_comp_0:xx
+	*     reduce_delay_comp_0:xx
+	*     cmo_delay_comp_0:xx
+	*     so_0:xx
+	*     lb_0:xx
+	*     token_id_0:xx
+	*     dcna_0:xx
+	*     uba_base_0:xx
+	*     adtroc_0:xx
+	*/
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "\tBLOCK_0:\n\t\tvalid_0" },
+	{ false, false, UTOOL_REG_LOC1, UTOOL_REG_LOC9, UTOOL_FIELD_INDEX_START, "\t\tmem_base_0" },
+	{ false, false, UTOOL_REG_LOC10, UTOOL_REG_LOC18, UTOOL_FIELD_INDEX_START, "\t\tmem_limit_0" },
+	{ false, false, UTOOL_REG_LOC19, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\tonepath_0" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "\t\twr_delay_comp_0" },
+	{ false, false, UTOOL_REG_LOC21, UTOOL_REG_LOC21, UTOOL_FIELD_INDEX_START, "\t\treduce_delay_comp_0" },
+	{ false, false, UTOOL_REG_LOC22, UTOOL_REG_LOC22, UTOOL_FIELD_INDEX_START, "\t\tcmo_delay_comp_0" },
+	{ false, false, UTOOL_REG_LOC23, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "\t\tso_0" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tlb_0" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\ttoken_id_0" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tdcna_0" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_1, "\t\tdcna_0" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tuba_base_0" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_1, "\t\tuba_base_0" },
+	{ false, false, UTOOL_REG_LOC15, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "\t\tadtroc_0" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "\tBLOCK_1:\n\t\tvalid_1" },
+	{ false, false, UTOOL_REG_LOC1, UTOOL_REG_LOC9, UTOOL_FIELD_INDEX_START, "\t\tmem_base_1" },
+	{ false, false, UTOOL_REG_LOC10, UTOOL_REG_LOC18, UTOOL_FIELD_INDEX_START, "\t\tmem_limit_1" },
+	{ false, false, UTOOL_REG_LOC19, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\tonepath_1" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "\t\twr_delay_comp_1" },
+	{ false, false, UTOOL_REG_LOC21, UTOOL_REG_LOC21, UTOOL_FIELD_INDEX_START, "\t\treduce_delay_comp_1" },
+	{ false, false, UTOOL_REG_LOC22, UTOOL_REG_LOC22, UTOOL_FIELD_INDEX_START, "\t\tcmo_delay_comp_1" },
+	{ false, false, UTOOL_REG_LOC23, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "\t\tso_1" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tlb_1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\ttoken_id_1" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tdcna_1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_1, "\t\tdcna_1" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tuba_base_1" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_1, "\t\tuba_base_1" },
+	{ false, false, UTOOL_REG_LOC15, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "\t\tadtroc_1" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "\tBLOCK_2:\n\t\tvalid_2" },
+	{ false, false, UTOOL_REG_LOC1, UTOOL_REG_LOC9, UTOOL_FIELD_INDEX_START, "\t\tmem_base_2" },
+	{ false, false, UTOOL_REG_LOC10, UTOOL_REG_LOC18, UTOOL_FIELD_INDEX_START, "\t\tmem_limit_2" },
+	{ false, false, UTOOL_REG_LOC19, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\tonepath_2" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "\t\twr_delay_comp_2" },
+	{ false, false, UTOOL_REG_LOC21, UTOOL_REG_LOC21, UTOOL_FIELD_INDEX_START, "\t\treduce_delay_comp_2" },
+	{ false, false, UTOOL_REG_LOC22, UTOOL_REG_LOC22, UTOOL_FIELD_INDEX_START, "\t\tcmo_delay_comp_2" },
+	{ false, false, UTOOL_REG_LOC23, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "\t\tso_2" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tlb_2" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\ttoken_id_2" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tdcna_2" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_1, "\t\tdcna_2" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tuba_base_2" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_1, "\t\tuba_base_2" },
+	{ false, false, UTOOL_REG_LOC15, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "\t\tadtroc_2" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "\tBLOCK_3:\n\t\tvalid_3" },
+	{ false, false, UTOOL_REG_LOC1, UTOOL_REG_LOC9, UTOOL_FIELD_INDEX_START, "\t\tmem_base_3" },
+	{ false, false, UTOOL_REG_LOC10, UTOOL_REG_LOC18, UTOOL_FIELD_INDEX_START, "\t\tmem_limit_3" },
+	{ false, false, UTOOL_REG_LOC19, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\tonepath_3" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "\t\twr_delay_comp_3" },
+	{ false, false, UTOOL_REG_LOC21, UTOOL_REG_LOC21, UTOOL_FIELD_INDEX_START, "\t\treduce_delay_comp_3" },
+	{ false, false, UTOOL_REG_LOC22, UTOOL_REG_LOC22, UTOOL_FIELD_INDEX_START, "\t\tcmo_delay_comp_3" },
+	{ false, false, UTOOL_REG_LOC23, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "\t\tso_3" },
+	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tlb_3" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC19, UTOOL_FIELD_INDEX_START, "\t\ttoken_id_3" },
+	{ false, false, UTOOL_REG_LOC20, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tdcna_3" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_1, "\t\tdcna_3" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "\t\tuba_base_3" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_1, "\t\tuba_base_3" },
+	{ false, false, UTOOL_REG_LOC15, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "\t\tadtroc_3" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rserved" },
+
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_sp_rout_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "table_num" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "index" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "Port" },
+	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "valid" },
+	{ false, true, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_port_scna_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "table_num" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "index" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "Port_CNA" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_mar_port_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "table_num" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "index" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "Response_VL" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "Req_VL" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC8, UTOOL_FIELD_INDEX_START, "valid" },
+	{ false, true, UTOOL_REG_LOC9, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
+static struct utool_field_info g_utool_mar_port_wb_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "table_num" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "index" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "Req_Wb_VL" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC4, UTOOL_FIELD_INDEX_START, "valid" },
+	{ false, true, UTOOL_REG_LOC5, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_ba_cal_reg_table[] = {
 	{ true, true, BA_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_ba_pkt_stats_field_info),
 	  g_utool_ba_pkt_stats_field_info },
 	{ true, true, BA_MAR, UTOOL_ARRAY_SIZE(g_utool_ba_mar_field_info), g_utool_ba_mar_field_info },
 	{ true, false, BA_MAR_CYC_EN, UTOOL_ARRAY_SIZE(g_utool_ba_mar_cyc_en_field_info),
 	  g_utool_ba_mar_cyc_en_field_info },
+
+	{ true, false, BA_UB_MEM_DECODER_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_INTER_SP_ROUT_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_INTER_MP_ROUT_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_INTRA_SP_ROUT_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_INTRA_MP_ROUT_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_PORT_SCNA_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_PORT_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_MAR_PORT_WB_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+	  g_utool_ub_mem_decoder_field_info },
 };
 
 static int utool_ba_pkt_stats_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_pkt_stats_out)
@@ -775,6 +945,207 @@ static int utool_ba_mar_cyc_en_parse_rpc_pkt(struct fwctl_rpc_ub_out * ba_mar_cy
 	return ret;
 }
 
+static int utool_mp_rout_table_parse(uint32_t *mp_rout_data, uint32_t data_len)
+{
+#define MP_ROUT_PORT_INDEX 3U
+#define MP_ROUT_PORT_NUM 8U
+
+	uint32_t port_num = 0;
+	uint32_t i;
+
+	if ((MP_ROUT_PORT_INDEX * sizeof(uint32_t)) >= data_len) {
+		return UTOOL_ERR_PARSE;
+	}
+
+	port_num = UTOOL_EXTRACT_BITS(mp_rout_data[MP_ROUT_PORT_INDEX], UTOOL_REG_LOC0, UTOOL_REG_LOC7);
+	utool_reg_msg("Port: ");
+	if (port_num == 0) {
+		utool_reg_msg("NA\n");
+		return UTOOL_OK;
+	}
+
+	for (i = 0; i < MP_ROUT_PORT_NUM; i++) {
+		if ((port_num & (1UL << i)) != 0) {
+			utool_reg_msg("%u ", i);
+		}
+	}
+
+	utool_reg_msg("\n");
+
+	return UTOOL_OK;
+}
+
+static int utool_mp_rout_parse_rpc_pkt(struct fwctl_rpc_ub_out *mp_rout_out)
+{
+	int ret = UTOOL_OK;
+
+	struct utool_mp_route *mp_rout = (struct utool_mp_route *)(mp_rout_out->data);
+
+	utool_reg_msg("port_id: 0x%x\n", mp_rout->port_id);
+	utool_reg_msg("index: 0x%x\n", mp_rout->index);
+
+	ret = utool_mp_rout_table_parse((uint32_t *)mp_rout, mp_rout_out->data_size);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse mp rout port data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_inter_mp_rout_parse_rpc_pkt(struct fwctl_rpc_ub_out *inter_sp_rout_out)
+{
+	utool_reg_msg("-------------------------- ba-inter_mp_rout --------------------------\n");
+
+	return utool_mp_rout_parse_rpc_pkt(inter_sp_rout_out);
+}
+
+static int utool_intra_mp_rout_parse_rpc_pkt(struct fwctl_rpc_ub_out *intra_sp_rout_out)
+{
+	utool_reg_msg("-------------------------- ba-intra_mp_rout --------------------------\n");
+
+	return utool_mp_rout_parse_rpc_pkt(intra_sp_rout_out);
+}
+
+static int utool_inter_sp_rout_parse_rpc_pkt(struct fwctl_rpc_ub_out *inter_sp_rout_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(inter_sp_rout_out, UTOOL_ARRAY_SIZE(g_utool_sp_rout_field_info),
+			      g_utool_sp_rout_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_MAR_INTER_SP_ROUT_TABLE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse inter sp rout table data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_intra_sp_rout_parse_rpc_pkt(struct fwctl_rpc_ub_out *intra_sp_rout_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(intra_sp_rout_out, UTOOL_ARRAY_SIZE(g_utool_sp_rout_field_info),
+			      g_utool_sp_rout_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_MAR_INTRA_SP_ROUT_TABLE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse intra sp rout table data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_port_scna_parse_rpc_pkt(struct fwctl_rpc_ub_out *port_scna_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(port_scna_out, UTOOL_ARRAY_SIZE(g_utool_port_scna_field_info),
+			      g_utool_port_scna_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_MAR_PORT_SCNA_TABLE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse mar port scna table data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_mar_port_parse_rpc_pkt(struct fwctl_rpc_ub_out *mar_port_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(mar_port_out, UTOOL_ARRAY_SIZE(g_utool_mar_port_field_info),
+			      g_utool_mar_port_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_MAR_PORT_TABLE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse mar port table data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_mar_port_wb_parse_rpc_pkt(struct fwctl_rpc_ub_out *mar_port_wb_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(mar_port_wb_out, UTOOL_ARRAY_SIZE(g_utool_mar_port_wb_field_info),
+			      g_utool_mar_port_wb_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_MAR_PORT_WB_TABLE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse mar port wb table data.\n");
+	}
+
+	return ret;
+}
+
+
+static int utool_ub_mem_decoder_parse_rpc_pkt(struct fwctl_rpc_ub_out *ub_mem_decoder_out)
+{
+#define UB_MEM_DECODER_INDEX 2U
+#define UB_MEM_DECODER_ENTRY_WIDTH 4U
+
+	uint32_t *index = ub_mem_decoder_out->data[UB_MEM_DECODER_INDEX];
+	int ret = UTOOL_OK;
+
+	*index = *index >> UB_MEM_DECODER_ENTRY_WIDTH;
+
+	ret = utool_pkt_parse(ub_mem_decoder_out, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
+			      g_utool_ub_mem_decoder_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_UB_MEM_DECODER_TABLE));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse ub mem decoder table data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_table_func_convert_num(char *func, uint32_t *table_num)
+{
+	struct utool_mar_table_name mar_table_name[] = {
+		{ BA_MAR_INTRA_SP_ROUT_TABLE },
+		{ BA_MAR_INTRA_MP_ROUT_TABLE },
+		{ BA_MAR_INTER_SP_ROUT_TABLE },
+		{ BA_MAR_INTER_MP_ROUT_TABLE },
+		{ BA_MAR_PORT_SCNA_TABLE },
+		{ BA_MAR_PORT_TABLE },
+		{ BA_MAR_PORT_WB_TABLE },
+		{ BA_UB_MEM_DECODER_TABLE },
+	};
+	uint32_t i;
+
+	for (i = 0; i < UTOOL_ARRAY_SIZE(mar_table_name); i++) {
+		if (strcmp(func, mar_table_name[i].func) == 0) {
+			*table_num = i;
+			return UTOOL_OK;
+		}
+	}
+
+	return UTOOL_ERR;
+}
+
+static void *utool_mar_table_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_table *mar_table = NULL;
+	int ret = UTOOL_OK;
+
+	mar_table = (struct fwctl_pkt_in_table *)utool_create_pkt_in(pkt_in_len, param,
+								     sizeof(struct fwctl_pkt_in_table));
+	if (mar_table == NULL) {
+		return NULL;
+	}
+
+	ret = utool_table_func_convert_num(param->func, &param->table_num);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to convert func num, func name = %s, ret = %d.\n", param->func, ret);
+		utool_destroy_pkt_in((void **)&mar_table);
+		return NULL;
+	}
+
+	mar_table->port_id = param->port;
+	mar_table->table_num = param->table_num;
+	mar_table->index = param->index;
+
+	return mar_table;
+}
+
 struct utool_func_dispatch g_utool_ba_flag_mpf_table[] = {
 	{ true, BA_PKT_STATS, UTOOL_CMD_QUERY_BA_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_ba_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
@@ -788,7 +1159,9 @@ static void utool_ba_print_help(void)
 {
 	utool_err_msg("The ubctl ba command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f ub_mem_decoder/inter_sp_rout/inter_mp_rout"
+		      "/intra_sp_rout/intra_mp_rout/port_scna/port_table/port_wb_table -i ${index}\n");
 }
 
 static int utool_ba_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -857,17 +1230,49 @@ static int utool_ba_cmd_conf(struct utool_dev *dev, struct utool_cmd_param *para
 	return utool_ba_cmd_func(dev, param, func_table, func_cnt);
 }
 
+static struct utool_func_dispatch *utool_ba_get_mpfi_table(uint32_t *func_cnt)
+{
+	static struct utool_func_dispatch utool_ba_flag_mpfi_table[] = {
+		{ false, BA_UB_MEM_DECODER_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_ub_mem_decoder_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_INTRA_SP_ROUT_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_intra_sp_rout_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_INTRA_MP_ROUT_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_intra_mp_rout_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_INTER_SP_ROUT_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_inter_sp_rout_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_INTER_MP_ROUT_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_inter_mp_rout_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_PORT_SCNA_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_port_scna_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_PORT_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_mar_port_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+		{ false, BA_MAR_PORT_WB_TABLE, UTOOL_CMD_QUERY_BA_MAR_TABLE, UTOOL_REG_CNT_DEFAULT,
+		  utool_mar_port_wb_parse_rpc_pkt, utool_mar_table_create_pkt_in },
+	};
+
+	*func_cnt = UTOOL_ARRAY_SIZE(utool_ba_flag_mpfi_table);
+
+	return utool_ba_flag_mpfi_table;
+}
+
 int utool_ba_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
 	struct utool_func_dispatch utool_ba_flag_mpfe_table[] = {
 		{ false, BA_MAR_CYC_EN, UTOOL_CMD_CONF_BA_MAR_CYC_EN, UTOOL_REG_CNT_DEFAULT,
 		  utool_ba_mar_cyc_en_parse_rpc_pkt, utool_port_enable_create_pkt_in },
 	};
+	struct utool_func_dispatch *utool_ba_flag_mpfi_table = NULL;
+	uint32_t utool_ba_mpfi_func_cnt = 0;
+
+	utool_ba_flag_mpfi_table = utool_ba_get_mpfi_table(&utool_ba_mpfi_func_cnt);
 	struct utool_cmd_dispatch utool_ba_cmd_table[] = {
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F, utool_ba_cmd_func,
 		  g_utool_ba_flag_mpf_table, UTOOL_ARRAY_SIZE(g_utool_ba_flag_mpf_table) },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E, utool_ba_cmd_conf,
 		  utool_ba_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_ba_flag_mpfe_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I, utool_ba_cmd_func,
+		  utool_ba_flag_mpfi_table, utool_ba_mpfi_func_cnt },
 	};
 
 	uint32_t ba_cmd_cnt = UTOOL_ARRAY_SIZE(utool_ba_cmd_table);
