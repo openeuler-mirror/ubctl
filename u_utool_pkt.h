@@ -68,6 +68,7 @@ void *utool_null_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *par
 void *utool_port_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
+void *utool_port_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param,
 				  struct utool_pkt_exec *pkt_exec);

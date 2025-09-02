@@ -509,6 +509,21 @@ void *utool_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *pa
 	return pkt_in_index;
 }
 
+void *utool_port_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_port_time *pkt_in_port_time;
+
+	pkt_in_port_time = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_port_time));
+	if (pkt_in_port_time == NULL) {
+		return NULL;
+	}
+
+	pkt_in_port_time->port_id = param->port;
+	pkt_in_port_time->time = param->time;
+
+	return pkt_in_port_time;
+}
+
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
 {
 	struct fwctl_pkt_in_port *pkt_in_port;

@@ -6,6 +6,11 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
+#include <errno.h>
+#include <sys/file.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
 #include "u_utool_pkt.h"
 #include "u_utool_error.h"
 #include "u_utool_ba.h"
@@ -13,6 +18,7 @@
 #define BA_PKT_STATS "pkt_stats"
 #define BA_MAR "mar"
 #define BA_MAR_CYC_EN "mar_cyc_en"
+#define BA_MAR_PERF "mar_perf"
 
 #define BA_UB_MEM_DECODER_TABLE "ub_mem_decoder"
 #define BA_MAR_INTER_SP_ROUT_TABLE "inter_sp_rout"
@@ -24,6 +30,9 @@
 #define BA_MAR_PORT_WB_TABLE "port_wb_table"
 
 #define UTOOL_MAR_CYC_EN_CNT 6U
+#define BA_MAR_PERF_NUM_TWO 2
+
+uint32_t g_ba_mar_perf_time = 0;
 
 struct utool_mp_route {
 	uint32_t port_id;
@@ -34,6 +43,21 @@ struct utool_mp_route {
 
 struct utool_mar_table_name {
 	char func[UBCTL_ARG_MAX_LEN];
+};
+
+struct utool_ba_mar_perf_query {
+	uint32_t port_id;
+
+	uint32_t flux_wr;
+	uint32_t flux_rd;
+	uint32_t flux_sum;
+
+	uint32_t wr_cmd_cnt;
+	uint32_t rd_cmd_cnt;
+	uint32_t sum_cmd_cnt;
+
+	uint32_t wlatcnt_first;
+	uint32_t rlatcnt_first;
 };
 
 static struct utool_field_info g_utool_ba_pkt_stats_field_info[] = {
@@ -1146,6 +1170,177 @@ static void *utool_mar_table_create_pkt_in(uint32_t *pkt_in_len, struct utool_cm
 	return mar_table;
 }
 
+static inline int utool_ba_mar_perf_conf_rpc_pkt(struct fwctl_rpc_ub_out *ba_conf_mar_perf_out)
+{
+#define BA_MAR_PERF_MS_TO_US 1000U
+
+	UTOOL_SET_USED(ba_conf_mar_perf_out);
+
+	(void)usleep(g_ba_mar_perf_time * BA_MAR_PERF_MS_TO_US);
+
+	return UTOOL_OK;
+}
+
+static int utool_ba_mar_perf_obtain_data(struct utool_ba_mar_perf_query *ba_mar_perf_data,
+					 uint32_t *ba_mar_perf_data_arr, uint32_t data_arr_size)
+{
+#define FLUX_WR_LOC 2
+#define FLUX_RD_LOC 3
+#define FLUX_SUM_LOC 4
+#define WR_CMD_LOC 5
+#define RD_CMD_LOC 6
+#define SUM_CMD_LOC 7
+#define WLATCNT_FIRST_LOC 8
+#define RLATCNT_FIRST_LOC 9
+#define BA_MAR_PERF_MAX_SIZE 10
+
+	if (data_arr_size < (BA_MAR_PERF_MAX_SIZE * sizeof(*ba_mar_perf_data_arr))) {
+		utool_err_msg("Failed to get mar perf out data, data size is err.\n");
+		return UTOOL_ERR;
+	}
+
+	ba_mar_perf_data->port_id = ba_mar_perf_data_arr[0];
+	ba_mar_perf_data->flux_wr = ba_mar_perf_data_arr[FLUX_WR_LOC];
+	ba_mar_perf_data->flux_rd = ba_mar_perf_data_arr[FLUX_RD_LOC];
+	ba_mar_perf_data->flux_sum = ba_mar_perf_data_arr[FLUX_SUM_LOC];
+
+	ba_mar_perf_data->wr_cmd_cnt = ba_mar_perf_data_arr[WR_CMD_LOC];
+	ba_mar_perf_data->rd_cmd_cnt = ba_mar_perf_data_arr[RD_CMD_LOC];
+	ba_mar_perf_data->sum_cmd_cnt = ba_mar_perf_data_arr[SUM_CMD_LOC];
+
+	ba_mar_perf_data->wlatcnt_first = ba_mar_perf_data_arr[WLATCNT_FIRST_LOC];
+	ba_mar_perf_data->rlatcnt_first = ba_mar_perf_data_arr[RLATCNT_FIRST_LOC];
+
+	return UTOOL_OK;
+}
+
+static void utool_ba_mar_perf_print_data(struct utool_ba_mar_perf_query *ba_mar_perf_data, double ba_mar_perf_time_s,
+					 double clock_cycle_frequency_ns)
+{
+	uint32_t second_port_id = ba_mar_perf_data->port_id;
+	uint32_t first_port_id = ba_mar_perf_data->port_id;
+
+	utool_reg_msg("-------------------------- ba-mar_perf --------------------------\n");
+	(ba_mar_perf_data->port_id % BA_MAR_PERF_NUM_TWO) != 0 ? first_port_id-- : second_port_id++;
+	utool_reg_msg("port: %u + port: %u\n", first_port_id, second_port_id);
+
+	utool_reg_msg("wr_traffic: %u\n", (uint32_t)((double)ba_mar_perf_data->flux_wr / ba_mar_perf_time_s));
+	utool_reg_msg("rd_traffic: %u\n", (uint32_t)((double)ba_mar_perf_data->flux_rd / ba_mar_perf_time_s));
+	utool_reg_msg("sum_traffic: %u\n", (uint32_t)((double)ba_mar_perf_data->flux_sum / ba_mar_perf_time_s));
+
+	if (ba_mar_perf_data->wr_cmd_cnt == 0) {
+		utool_reg_msg("wr_pld_avg_len: 0\n");
+	} else {
+		utool_reg_msg("wr_pld_avg_len: %u\n", (ba_mar_perf_data->flux_wr / ba_mar_perf_data->wr_cmd_cnt));
+	}
+
+	if (ba_mar_perf_data->rd_cmd_cnt == 0) {
+		utool_reg_msg("rd_pld_avg_len: 0\n");
+	} else {
+		utool_reg_msg("rd_pld_avg_len: %u\n", (ba_mar_perf_data->flux_rd / ba_mar_perf_data->rd_cmd_cnt));
+	}
+
+	if (ba_mar_perf_data->sum_cmd_cnt == 0) {
+		utool_reg_msg("pld_avg_len: 0\n");
+	} else {
+		utool_reg_msg("pld_avg_len: %u\n", (ba_mar_perf_data->flux_sum / ba_mar_perf_data->sum_cmd_cnt));
+	}
+
+	utool_reg_msg("wr_delayed: %u\n", (uint32_t)((double)ba_mar_perf_data->wlatcnt_first /
+						     clock_cycle_frequency_ns));
+	utool_reg_msg("rd_delayed: %u\n", (uint32_t)((double)ba_mar_perf_data->rlatcnt_first /
+						     clock_cycle_frequency_ns));
+}
+
+static int utool_ba_mar_perf_query_rpc_pkt(struct fwctl_rpc_ub_out *ba_query_mar_perf_out)
+{
+#define BA_MAR_PERF_HZ_TO_GHZ 1e-9
+#define BA_MAR_PERF_MS_TO_S 1e-3
+#define CLOCK_CYCLE_IDX 1
+
+	uint32_t *ba_mar_perf_data_arr = ba_query_mar_perf_out->data;
+	uint32_t clock_cycle_frequency = ba_mar_perf_data_arr[CLOCK_CYCLE_IDX];
+	struct utool_ba_mar_perf_query ba_mar_perf_data = {};
+	double clock_cycle_frequency_ghz = 0.0;
+	double clock_cycle_frequency_ns = 0.0;
+	double ba_mar_perf_time_s = 0.0;
+	int ret = UTOOL_OK;
+
+	if (g_ba_mar_perf_time == 0) {
+		utool_err_msg("Mar perf time is 0, please check input param.\n");
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	if (clock_cycle_frequency == 0) {
+		utool_err_msg("Clock cycle frequency is 0.\n");
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	clock_cycle_frequency_ghz = clock_cycle_frequency * BA_MAR_PERF_HZ_TO_GHZ;
+	clock_cycle_frequency_ns = 1 / clock_cycle_frequency_ghz;
+
+	ba_mar_perf_time_s = g_ba_mar_perf_time * BA_MAR_PERF_MS_TO_S;
+
+	ret = utool_ba_mar_perf_obtain_data(&ba_mar_perf_data, ba_mar_perf_data_arr, ba_query_mar_perf_out->data_size);
+	if (ret != UTOOL_OK) {
+		return ret;
+	}
+
+	utool_ba_mar_perf_print_data(&ba_mar_perf_data, ba_mar_perf_time_s, clock_cycle_frequency_ns);
+
+	return ret;
+}
+
+static int utool_ba_mar_perf_conf_operation(struct utool_dev *dev, struct utool_cmd_param *param)
+{
+#define BA_MAR_PERF_CONF_LEN 24
+
+	struct utool_pkt_exec ba_mar_perf_conf_pkt = { UTOOL_CMD_CONFIG_BA_MAR_PEFR_STATS, BA_MAR_PERF_CONF_LEN,
+						       utool_ba_mar_perf_conf_rpc_pkt };
+	uint32_t pkt_in_len = 0;
+	void *pkt_in = NULL;
+	int ret = UTOOL_OK;
+
+	pkt_in = utool_port_time_create_pkt_in(&pkt_in_len, param);
+	if (pkt_in == NULL) {
+		utool_err_msg("Failed to create pkt in.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+
+	ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, &ba_mar_perf_conf_pkt);
+	utool_destroy_pkt_in(&pkt_in);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to conf ba mar perf reg.\n");
+	}
+
+	return ret;
+}
+
+static int utool_ba_mar_perf_query_operation(struct utool_dev *dev, struct utool_cmd_param *param)
+{
+#define BA_MAR_PERF_QUERY_LEN 56
+
+	struct utool_pkt_exec ba_mar_perf_query_pkt = { UTOOL_CMD_QUERY_BA_MAR_PEFR_STATS, BA_MAR_PERF_QUERY_LEN,
+							utool_ba_mar_perf_query_rpc_pkt };
+	uint32_t pkt_in_len;
+	void *pkt_in = NULL;
+	int ret = UTOOL_OK;
+
+	pkt_in = utool_port_create_pkt_in(&pkt_in_len, param);
+	if (pkt_in == NULL) {
+		utool_err_msg("Failed to create pkt in.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+
+	ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, &ba_mar_perf_query_pkt);
+	utool_destroy_pkt_in(&pkt_in);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse ba mar perf reg.\n");
+	}
+
+	return ret;
+}
+
 struct utool_func_dispatch g_utool_ba_flag_mpf_table[] = {
 	{ true, BA_PKT_STATS, UTOOL_CMD_QUERY_BA_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_ba_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
@@ -1160,6 +1355,7 @@ static void utool_ba_print_help(void)
 	utool_err_msg("The ubctl ba command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_perf -t ${time}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f ub_mem_decoder/inter_sp_rout/inter_mp_rout"
 		      "/intra_sp_rout/intra_mp_rout/port_scna/port_table/port_wb_table -i ${index}\n");
 }
@@ -1230,6 +1426,62 @@ static int utool_ba_cmd_conf(struct utool_dev *dev, struct utool_cmd_param *para
 	return utool_ba_cmd_func(dev, param, func_table, func_cnt);
 }
 
+static int utool_ba_cmd_mar_perf(struct utool_dev *dev, struct utool_cmd_param *param,
+				 struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+#define BA_MAR_SHM_PATH_AUTHORITY 0600
+#define BA_MAR_PERF_MAX_TIME 3600
+#define UBCTL "/ubctl"
+
+	UTOOL_SET_USED(func_table);
+	UTOOL_SET_USED(func_cnt);
+
+	char shm_path[UTOOL_DEV_NAME_LEN_MAX] = {0};
+	int ret = UTOOL_OK, fd = -1;
+
+	if (strcmp(param->func, BA_MAR_PERF) != 0) {
+		utool_ba_print_help();
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = snprintf(shm_path, UTOOL_DEV_NAME_LEN_MAX, UBCTL "_%u_%u_nl_%u",
+		       param->chip_id, param->die_id, (param->port / BA_MAR_PERF_NUM_TWO));
+	if (ret <= 0 || ret >= UTOOL_DEV_NAME_LEN_MAX) {
+		utool_err_msg("Failed to format shared memory path, ret = %d, %s.\n", ret, strerror(errno));
+		return UTOOL_ERR;
+	}
+
+	fd = shm_open(shm_path, O_CREAT | O_RDWR, BA_MAR_SHM_PATH_AUTHORITY);
+	if (fd == -1) {
+		utool_err_msg("Failed to open shm path: %s\n", strerror(errno));
+		return UTOOL_ERR_OPEN_FILE;
+	}
+
+	if (flock(fd, LOCK_EX) == -1) {
+		utool_err_msg("Failed to acquire lock: %s\n", strerror(errno));
+		ret = UTOOL_ERR_OPEN_FILE;
+		goto cleanup;
+	}
+
+	if (param->time < 1 || param->time > BA_MAR_PERF_MAX_TIME) {
+		utool_err_msg("Invalid time, time = %u.\n", param->time);
+		ret = UTOOL_ERR_INVALID_CMD;
+	} else {
+		g_ba_mar_perf_time = param->time;
+		ret = utool_ba_mar_perf_conf_operation(dev, param);
+		if (ret == UTOOL_OK) {
+			ret = utool_ba_mar_perf_query_operation(dev, param);
+		}
+	}
+
+	(void)flock(fd, LOCK_UN);
+cleanup:
+	(void)close(fd);
+	(void)shm_unlink(shm_path);
+
+	return ret;
+}
+
 static struct utool_func_dispatch *utool_ba_get_mpfi_table(uint32_t *func_cnt)
 {
 	static struct utool_func_dispatch utool_ba_flag_mpfi_table[] = {
@@ -1273,6 +1525,7 @@ int utool_ba_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		  utool_ba_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_ba_flag_mpfe_table) },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I, utool_ba_cmd_func,
 		  utool_ba_flag_mpfi_table, utool_ba_mpfi_func_cnt },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T, utool_ba_cmd_mar_perf, NULL, 0 },
 	};
 
 	uint32_t ba_cmd_cnt = UTOOL_ARRAY_SIZE(utool_ba_cmd_table);

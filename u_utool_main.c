@@ -24,7 +24,7 @@ enum utool_dev_step_flag {
 static void utool_help(void)
 {
 	utool_info_msg("Usage: ubctl <-c ${chip_id}> <-d ${ub_ctl_id}> <-m ${module}> [-f ${function}]\n"
-		       "       [-p ${port}] [-e ${value}] [-i ${index}] [-h]\n\n"
+		       "       [-p ${port}] [-e ${value}] [-i ${index}] [-t ${time}] [-h]\n\n"
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
@@ -35,12 +35,13 @@ static void utool_help(void)
 		       "                ta: pkt_stats, abn_stats\n"
 		       "                tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank,\n"
 		       "                    route_result\n"
-		       "                ba: pkt_stats, mar, ub_mem_decoder, inter_sp_rout, inter_mp_rout,\n"
+		       "                ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,\n"
 		       "                    intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table,\n"
 		       "                    mar_cyc_en\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
 		       "  -i $index: entry index, indicates the index of entry.\n\n"
+		       "  -t $time: time, used to query mar_perf statistics.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
 		       "example:\n\n"
 		       "   ubctl -m dl -p 0 -f bit_err -d 0 -c 0       query the number of bit errors by port\n\n"

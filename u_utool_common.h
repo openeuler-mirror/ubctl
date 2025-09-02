@@ -38,6 +38,7 @@
 #define UTOOL_FLAG_F UTOOL_BIT(2) /* -f */
 #define UTOOL_FLAG_E UTOOL_BIT(3) /* -e */
 #define UTOOL_FLAG_I UTOOL_BIT(4) /* -i */
+#define UTOOL_FLAG_T UTOOL_BIT(5) /* -t */
 
 #define UTOOL_MALLOC(length) malloc(length)
 #define UTOOL_FREE(x)			\
@@ -129,6 +130,7 @@ struct utool_cmd_param {
 	uint32_t value;
 	uint32_t index;
 	uint32_t table_num;
+	uint32_t time;
 	char func[UBCTL_ARG_MAX_LEN];
 	char module[UBCTL_ARG_MAX_LEN];
 };
