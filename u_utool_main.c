@@ -33,7 +33,7 @@ static void utool_help(void)
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
 		       "                nl: pkt_stats, abn_stats, ssu_stats\n"
 		       "                ta: pkt_stats, abn_stats\n"
-		       "                tp: pkt_stats, abn_stats, route_result\n"
+		       "                tp: pkt_stats, abn_stats, rx_bank, route_result\n"
 		       "  -p $port: port index, indicates the physical port index.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"

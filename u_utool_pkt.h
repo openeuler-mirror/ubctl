@@ -20,6 +20,9 @@
 #define UTOOL_REG_MAX_LEN 32U
 #define UTOOL_REG_NAME_MAX_LEN 256U
 
+#define TP_RX_BANK "rx_bank"
+#define UBCTL_TP_RX_BANK_NUM 3
+
 struct utool_field_info {
 	bool is_high_before; /* true：high_before， false: low_before */
 	bool is_reserved;

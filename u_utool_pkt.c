@@ -157,6 +157,10 @@ int utool_cal_func_reg_len(const char *func_name, struct utool_cal_reg_func_para
 			return ret;
 		}
 
+		if (strcmp(reg_table[i].func, TP_RX_BANK) == 0) {
+			func_reg_cnt *= UBCTL_TP_RX_BANK_NUM;
+		}
+
 		if (strcmp(reg_table[i].func, func_name) == 0) {
 			if (cal_reg_param->offset_data_len != NULL) {
 				*cal_reg_param->offset_data_len = total_reg_cnt * sizeof(uint32_t);
