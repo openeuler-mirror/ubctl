@@ -12,6 +12,9 @@
 
 #define BA_PKT_STATS "pkt_stats"
 #define BA_MAR "mar"
+#define BA_MAR_CYC_EN "mar_cyc_en"
+
+#define UTOOL_MAR_CYC_EN_CNT 6U
 
 static struct utool_field_info g_utool_ba_pkt_stats_field_info[] = {
 	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -713,10 +716,23 @@ static struct utool_field_info g_utool_ba_mar_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "mar_ccua_wr_req_sent_to_lsad_cnt" },
 };
 
+static struct utool_field_info g_utool_ba_mar_cyc_en_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "cnt_clr_ce" },
+	{ false, false, UTOOL_REG_LOC1, UTOOL_REG_LOC1, UTOOL_FIELD_INDEX_START, "snap_en" },
+	{ false, true, UTOOL_REG_LOC2, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_ba_cal_reg_table[] = {
 	{ true, true, BA_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_ba_pkt_stats_field_info),
 	  g_utool_ba_pkt_stats_field_info },
 	{ true, true, BA_MAR, UTOOL_ARRAY_SIZE(g_utool_ba_mar_field_info), g_utool_ba_mar_field_info },
+	{ true, false, BA_MAR_CYC_EN, UTOOL_ARRAY_SIZE(g_utool_ba_mar_cyc_en_field_info),
+	  g_utool_ba_mar_cyc_en_field_info },
 };
 
 static int utool_ba_pkt_stats_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_pkt_stats_out)
@@ -745,17 +761,34 @@ static int utool_ba_mar_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_mar_out)
 	return ret;
 }
 
+static int utool_ba_mar_cyc_en_parse_rpc_pkt(struct fwctl_rpc_ub_out * ba_mar_cyc_en_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(ba_mar_cyc_en_out, UTOOL_ARRAY_SIZE(g_utool_ba_mar_cyc_en_field_info),
+			      g_utool_ba_mar_cyc_en_field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_MAR_CYC_EN));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse ba mar cyc en data.\n");
+	}
+
+	return ret;
+}
+
 struct utool_func_dispatch g_utool_ba_flag_mpf_table[] = {
 	{ true, BA_PKT_STATS, UTOOL_CMD_QUERY_BA_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_ba_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
 	{ true, BA_MAR, UTOOL_CMD_QUERY_BA_MAR, UTOOL_REG_CNT_DEFAULT,
 	  utool_ba_mar_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, BA_MAR_CYC_EN, UTOOL_CMD_QUERY_BA_MAR_CYC_EN, UTOOL_REG_CNT_DEFAULT,
+	  utool_ba_mar_cyc_en_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
 static void utool_ba_print_help(void)
 {
 	utool_err_msg("The ubctl ba command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n");
 }
 
 static int utool_ba_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -809,12 +842,34 @@ static int utool_ba_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 	return UTOOL_ERR_FUNC_NOT_FOUND;
 }
 
+static int utool_ba_cmd_conf(struct utool_dev *dev, struct utool_cmd_param *param,
+			     struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+#define UTOOL_MAR_CYC_EN_MAX_VALUE 3U
+
+	if (strcmp(param->func, BA_MAR_CYC_EN) == 0) {
+		if (param->value > UTOOL_MAR_CYC_EN_MAX_VALUE) {
+			utool_err_msg("Invalid value, value should be in [0, %u].\n", UTOOL_MAR_CYC_EN_MAX_VALUE);
+			return UTOOL_ERR_INVALID_PARAM;
+		}
+	}
+
+	return utool_ba_cmd_func(dev, param, func_table, func_cnt);
+}
+
 int utool_ba_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
+	struct utool_func_dispatch utool_ba_flag_mpfe_table[] = {
+		{ false, BA_MAR_CYC_EN, UTOOL_CMD_CONF_BA_MAR_CYC_EN, UTOOL_REG_CNT_DEFAULT,
+		  utool_ba_mar_cyc_en_parse_rpc_pkt, utool_port_enable_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_ba_cmd_table[] = {
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F, utool_ba_cmd_func,
 		  g_utool_ba_flag_mpf_table, UTOOL_ARRAY_SIZE(g_utool_ba_flag_mpf_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E, utool_ba_cmd_conf,
+		  utool_ba_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_ba_flag_mpfe_table) },
 	};
+
 	uint32_t ba_cmd_cnt = UTOOL_ARRAY_SIZE(utool_ba_cmd_table);
 	uint32_t i;
 
