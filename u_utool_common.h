@@ -1,0 +1,108 @@
+/* SPDX-License-Identifier: MIT */
+/*
+ * Copyright (c) 2025 HiSilicon Technologies Co., Ltd. All rights reserved.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ */
+
+#ifndef __U_UTOOL_COMMON_H__
+#define __U_UTOOL_COMMON_H__
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <linux/types.h>
+
+#include "./kernel_headers/ub_fwctl.h"
+
+#define UBCTL_ARG_MAX_LEN 20
+#define UTOOL_LINE_BUF_LEN 300
+#define UTOOL_DEV_NAME_LEN_MAX 512
+#define UTOOL_DEV_CHIP_DIE_ID_MAX (1U << 16)
+
+#define UTOOL_BIT(shift) (1U << (shift))
+
+#define UTOOL_ARRAY_SIZE(arr) (uint32_t)(sizeof(arr) / sizeof((arr)[0]))
+
+#define UTOOL_CONCAT_STR(str1, str2) (str1 "-" str2)
+
+#define UTOOL_FLAG_M UTOOL_BIT(0) /* -m */
+#define UTOOL_FLAG_P UTOOL_BIT(1) /* -p */
+#define UTOOL_FLAG_F UTOOL_BIT(2) /* -f */
+
+#define UTOOL_MALLOC(length) malloc(length)
+#define UTOOL_FREE(x)			\
+do {					\
+	if ((x) != NULL) {		\
+		free((void *)(x));	\
+		(x) = NULL;		\
+	}				\
+} while (0)
+
+#define utool_err_msg(fmt, ...) \
+	fprintf(stderr, "ERROR : " fmt, ##__VA_ARGS__)
+
+#define utool_info_msg(fmt, ...) \
+	fprintf(stdout, "INFO : " fmt, ##__VA_ARGS__)
+
+#define utool_warn_msg(fmt, ...) \
+	fprintf(stdout, "WARN : " fmt, ##__VA_ARGS__)
+
+#define utool_reg_msg(fmt, ...) \
+	fprintf(stdout, fmt, ##__VA_ARGS__)
+
+#define UTOOL_MODULE_DL "dl"
+
+enum utool_module_name {
+	UTOOL_MODULE_NAME_DL,
+
+	UTOOL_MODULE_NAME_BUTT,
+};
+
+struct utool_dev {
+	char devname[UTOOL_DEV_NAME_LEN_MAX];
+	int32_t fd;
+};
+
+struct utool_cmd_param {
+	uint32_t port;
+	uint32_t flags;
+	uint32_t chip_id;
+	uint32_t die_id;
+	uint32_t module_id;
+	char func[UBCTL_ARG_MAX_LEN];
+	char module[UBCTL_ARG_MAX_LEN];
+};
+
+struct utool_module_dispatch {
+	char module_name[UBCTL_ARG_MAX_LEN];
+	uint32_t module_flags;
+	int (*execute)(struct utool_dev *dev, struct utool_cmd_param *param);
+};
+
+struct utool_func_dispatch {
+	bool is_dump;
+	char func[UBCTL_ARG_MAX_LEN];
+	enum ub_fwctl_cmdrpc_type rpc_cmd;
+	uint32_t data_len;
+	int (*execute)(struct fwctl_rpc_ub_out *out);
+	void *(*create_pkt_in)(uint32_t *pkt_in_len, struct utool_cmd_param *param);
+};
+
+struct utool_cmd_dispatch {
+	uint32_t flags;
+	int (*execute)(struct utool_dev *dev, struct utool_cmd_param *param,
+		       struct utool_func_dispatch *func_table, uint32_t func_cnt);
+	struct utool_func_dispatch *func_table;
+	uint32_t func_cnt;
+};
+
+struct utool_cmd_option_parse {
+	char option;
+	int (*cmd_select_func) (char *param);
+};
+
+#endif
