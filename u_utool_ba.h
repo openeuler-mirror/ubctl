@@ -13,5 +13,7 @@
 #include "u_utool_common.h"
 
 int utool_ba_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param);
+int utool_ba_cal_data_len(uint32_t *ba_data_len);
+int utool_ba_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_out);
 
 #endif

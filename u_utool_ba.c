@@ -929,6 +929,27 @@ struct utool_cal_reg_cnt_dp g_utool_ba_cal_reg_table[] = {
 	  g_utool_ub_mem_decoder_field_info },
 };
 
+int utool_ba_cal_data_len(uint32_t *ba_data_len)
+{
+	struct utool_cal_reg_func_param ba_cal_reg_param = {
+		ba_data_len, UTOOL_REG_CNT_DEFAULT, NULL,
+		g_utool_ba_cal_reg_table, UTOOL_ARRAY_SIZE(g_utool_ba_cal_reg_table)
+	};
+	int ret = UTOOL_OK;
+
+	if (ba_data_len == NULL) {
+		utool_err_msg("Param is invalid, ba data len is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_cal_func_reg_len(UTOOL_FUNC_ALL, &ba_cal_reg_param);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
 static int utool_ba_pkt_stats_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_pkt_stats_out)
 {
 	int ret = UTOOL_OK;
@@ -1350,9 +1371,28 @@ struct utool_func_dispatch g_utool_ba_flag_mpf_table[] = {
 	  utool_ba_mar_cyc_en_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
+int utool_ba_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_out)
+{
+	int ret = UTOOL_OK;
+
+	if (ba_out == NULL) {
+		utool_err_msg("Param is invalid, ba out is NULL.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_module_parse(ba_out, UTOOL_ARRAY_SIZE(g_utool_ba_flag_mpf_table), g_utool_ba_flag_mpf_table,
+				 UTOOL_ARRAY_SIZE(g_utool_ba_cal_reg_table), g_utool_ba_cal_reg_table);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse ba rpc pkt.\n");
+	}
+
+	return ret;
+}
+
 static void utool_ba_print_help(void)
 {
 	utool_err_msg("The ubctl ba command must be in the following formats:\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_perf -t ${time}\n"
@@ -1482,6 +1522,31 @@ cleanup:
 	return ret;
 }
 
+static int utool_ba_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
+			struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+	struct utool_pkt_exec ba_pkt_exec = { UTOOL_CMD_QUERY_BA, 0, NULL };
+	int ret = UTOOL_OK;
+
+	UTOOL_SET_USED(func_table);
+	UTOOL_SET_USED(func_cnt);
+
+	ba_pkt_exec.execute = utool_ba_parse_rpc_pkt;
+
+	ret = utool_ba_cal_data_len(&ba_pkt_exec.data_len);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt of ba all, ret = %d.\n", ret);
+		return ret;
+	}
+
+	ret = utool_pkt_operation_have_port(dev, param, &ba_pkt_exec);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
 static struct utool_func_dispatch *utool_ba_get_mpfi_table(uint32_t *func_cnt)
 {
 	static struct utool_func_dispatch utool_ba_flag_mpfi_table[] = {
@@ -1526,6 +1591,7 @@ int utool_ba_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I, utool_ba_cmd_func,
 		  utool_ba_flag_mpfi_table, utool_ba_mpfi_func_cnt },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T, utool_ba_cmd_mar_perf, NULL, 0 },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P, utool_ba_cmd, NULL, 0 },
 	};
 
 	uint32_t ba_cmd_cnt = UTOOL_ARRAY_SIZE(utool_ba_cmd_table);
