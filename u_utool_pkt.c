@@ -175,6 +175,11 @@ int utool_cal_func_reg_len(const char *func_name, struct utool_cal_reg_func_para
 		}
 	}
 
+	if (strcmp(func_name, UTOOL_FUNC_ALL) == 0) {
+		*cal_reg_param->data_len = total_reg_cnt * sizeof(uint32_t);
+		return UTOOL_OK;
+	}
+
 	utool_err_msg("Unknown func name: %s.\n", func_name);
 
 	return UTOOL_ERR_INVALID_CMD;

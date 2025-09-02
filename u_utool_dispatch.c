@@ -23,6 +23,7 @@
 #include "u_utool_ummu.h"
 #include "u_utool_msg.h"
 #include "u_utool_queue.h"
+#include "u_utool_dump.h"
 #include "u_utool_error.h"
 #include "u_utool_common.h"
 #include "u_utool_dispatch.h"
@@ -45,6 +46,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_UMMU, UTOOL_MODULE_NAME_UMMU, utool_ummu_cmd_dispatch },
 	{ UTOOL_MODULE_MSGQ, UTOOL_MODULE_NAME_MSGQ, utool_msgq_cmd_dispatch },
 	{ UTOOL_MODULE_QUEUE, UTOOL_MODULE_NAME_QUEUE, utool_queue_cmd_dispatch },
+	{ UTOOL_MODULE_DUMP, UTOOL_MODULE_NAME_DUMP, utool_dump_cmd_dispatch },
 };
 
 const struct utool_cmd_param *utool_get_cmd_param(void)
