@@ -49,7 +49,7 @@ static struct utool_dump_dp g_utool_dump_table[] = {
 static void utool_dump_lydata_format(struct fwctl_rpc_ub_out *out, uint32_t offset,
 				     struct fwctl_rpc_ub_out *layer_out, uint32_t layer_data_len)
 {
-	uint32_t *pos_index = out->data[offset / sizeof(uint32_t)];
+	uint32_t *pos_index = out->data + offset / sizeof(uint32_t);
 
 	layer_out->data_size = layer_data_len;
 	memcpy(layer_out->data, pos_index, layer_data_len);

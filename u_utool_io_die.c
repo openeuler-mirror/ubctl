@@ -22,7 +22,7 @@ static int utool_display_io_die_info(struct fwctl_io_die_info *data)
 {
 	struct fwctl_port_info *port_info = data->port_info;
 	uint32_t port_num = data->port_count;
-	uint32_t i = 0;
+	uint32_t i;
 
 	utool_reg_msg("ubctl_id: %u\n", g_ubctl_id++);
 	utool_reg_msg("\tchip_id: %u\n", data->chip_id);
@@ -34,7 +34,7 @@ static int utool_display_io_die_info(struct fwctl_io_die_info *data)
 		return UTOOL_ERR;
 	}
 
-	for (i; i < port_num; i++) {
+	for (i = 0; i < port_num; i++) {
 		utool_reg_msg("\t\tport_id: 0x%x\n", port_info->port_id);
 		utool_reg_msg("\t\tport_type: %s\n", port_info->port_type ? "ub" : "eth");
 		utool_reg_msg("\t\tlink_status: %s\n", port_info->link_status ? "up" : "down");
@@ -85,7 +85,7 @@ int utool_io_die_parse_rpc_pkt(struct fwctl_rpc_ub_out *out)
 	data = (struct fwctl_io_die_info *)out->data;
 
 	if (out->data_size != sizeof(struct fwctl_io_die_info) + data->port_count * sizeof(struct fwctl_port_info)) {
-		utool_err_msg("out data is invalid, data size = %d, port count = %d", out->data_size, data->port_count);
+		utool_err_msg("out data is invalid, data size = %u, port count = %u", out->data_size, data->port_count);
 		return UTOOL_ERR_PARSE;
 	}
 
