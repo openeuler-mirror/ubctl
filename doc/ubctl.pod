@@ -1,0 +1,238 @@
+=pod
+
+=head1 NAME
+
+ubctl
+
+=head1 SYNOPSIS
+
+B<ubctl>
+<B<-c> ${chip_id}>
+<B<-d> ${ub_ctl_id}>
+<B<-m> ${module}>
+[B<-f> ${function}]
+[B<-p> ${port}]
+[B<-e> ${value}]
+[B<-u> ${ummu_id}]
+[B<-i> ${index}]
+[B<-t> ${time}]
+[B<-h>]
+[B<ls>]
+
+=head1 DESCRIPTION
+
+=head2 Terms and Abbreviations
+
+B<UB>
+    UnifiedBus
+
+B<BA>
+    Bus Adapter
+
+B<DL> 
+    Data Link Layer
+
+B<TP> 
+    Transport Layer
+
+B<TA> 
+    Transaction Layer
+
+B<NL> 
+    Network Link Layer
+
+B<cmdq> 
+    Command Queue
+
+For details on related terms and abbreviations, please refer to L<UnifiedBus (UB) Base Specification|https://www.unifiedbus.com/zh/docs/UB-Base-Specification-2.0-preview-zh>
+
+The B<ubctl> command-line tool is part of the UB (Unified Bus) system, designed to query public function configurations, module statuses, statistical data, and firmware information.
+Built on the open-source fwctl framework, it interacts with hardware through the kernel module ub_fwctl to provide read-only query functionality (the current version does not support configuration modifications).
+As an essential component of the UB system's DFX (Maintenance Information) function, ubctl supports low-level debugging, operation and maintenance, and fault analysis.
+
+B<Function Implementation Scheme:>
+
+    1. ub_fwctl registers to the fwctl framework.
+
+    2. As an auxiliary device, ub_fwctl connects to ubase via the auxiliary bus. It utilizes the command queue (cmdq) of the PMU IDEV to invoke the firmware programming interface for register read and write operations.
+
+    3. ubctl provides a command-line interface for user interaction. During startup, ubctl opens the ubctl device file, assembles the corresponding data structure based on user input, and invokes an ioctl call to enter kernel mode.
+       Upon receiving a command from ubctl, ub_fwctl first validates the command's legitimacy. And then, it communicates with the firmware by calling the cmdq access interface provided by ubase.
+       The firmware returns the register access result via cmdq to ub_fwctl, which subsequently passes the data back to user space. Finally, upon termination, ubctl closes the previously opened device file.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<help/--help/-help/-h>
+
+query the help information for ubctl.
+
+=item B<-c> ${chip_id}
+
+$chip_id: chip id, required parameter, chip id and ub ctl id  are used to find the valid device.
+
+=item B<-d> ${ub_ctl_id}
+
+$ub_ctl_id: ub ctl id, required parameter, chip id and ub ctl id  are used to find the valid device.
+
+=item B<-m> ${module}
+
+$module: module name, required parameter, current module include: dl, ba, ta, nl, qos, tp, msgq, dump, ummu, port_info, ubommu, ecc_2b, queue, cmdq, uboe.
+
+=item B<-f> ${function}
+
+$function: function name, optional parameters, different processing functions are provided for each module.
+
+    dl: pkt_stats, bit_err, lane, link_status, link_trace, bist, bist_err
+
+    ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,
+        intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table, mar_cyc_en
+
+    ta: pkt_stats, abn_stats
+
+    nl: pkt_stats, abn_stats, ssu_stats
+
+    tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result
+
+    msgq: que_stats, entry
+
+    ummu: ummu_sync_query, ummu_sync_config
+
+    uboe: rxmac2txmac, txmac2rxmac, txpcs2rxpcs, prbs, prbs_err_cnt
+
+=item B<-p> ${port}
+
+$port: port index, optional parameters, indicates the physical port index.
+
+=item B<-e> ${value}
+
+$value: value, optional parameters, used to set the value of the register.
+
+=item B<-u> ${ummu_id}
+
+$ummu_id: ummu id, optional parameters, it is used to search the corresponding ummu register,
+               the value of ummu_id is the same as the number of io_die, the io_ide with
+               a smaller absolute address corresponds to a smaller ummu_id index.
+
+
+=item B<-i> ${index}
+
+$index: entry index, optional parameters, indicates the index of entry.
+
+=item B<-t> ${time}
+
+$time: time, optional parameters, used to query mar_perf statistics.
+
+=item B<ls>
+
+querying information about all chip.
+
+
+=back
+
+=head1 COMMAND
+
+B<Query HELP information>:
+
+ ubctl help/-help/--help/-h
+
+B<Query all chip information>:
+
+ ubctl ls
+
+B<Query BA Layer Information>:
+
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id}
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f pkt_stats
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f mar
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f mar_perf -t $time
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f ub_mem_decoder -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f inter_mp_rout -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f intra_mp_rout -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f inter_sp_rout -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f intra_sp_rout -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f port_table -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f port_wb_table -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f port_scna -i $index
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f mar
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f mar_cyc_en
+
+B<Query DL Layer Information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id}
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f pkt_stats
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f link_status
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bit_err
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f lane
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f link_trace
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist -e ${value}
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist_err
+
+B<Query TP Layer Information>:
+ 
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m tp
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f scc_version
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f scc_log
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f scc_debug_en
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f rx_bank
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f route_result
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m tp -f abn_stats
+
+B<Query TA Layer Information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta -f pkt_stats
+ ubctl -m ta -c ${chip_id} -d ${ub_ctl_id} -f abn_stats
+
+B<Query NL Layer Information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id}
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f pkt_stats
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_stats
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f abn_stats
+
+B<Query UB internal MSG queue information and entry details>:
+ 
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m msgq -f que_stats
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m msgq -f entry -i ${index}
+
+B<Query QOS Information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m qos -p ${port_id}
+
+B<Query the port information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_info -p ${port_id}
+
+B<Query UBOMMU Information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m ubommu
+
+B<Query UB Memory Management Unit DFX(Maintenance Information) Register>:
+
+ ubctl -m ummu -u ${ummu_id}
+ ubctl -m ummu -u ${ummu_id} -f ummu_sync_query
+
+B<DUMP All Registers Infomation>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dump -p ${port_id}
+
+B<Query 2bit ECC statistics>:
+
+ ubctl -m ecc_2b -c ${chip_id} -d ${ub_ctl_id} -p ${port_id}
+
+B<Query queue information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m queue
+
+
+=head1 COPYRIGHT
+
+Copyright (c) 2025 HiSilicon Technologies Co., Ltd. All rights reserved.
+
+This software is provided on an "as is" basis, without warranties of any kind, either express or implied, including but not limited to non-infringement, merchantability or fit for a particular purpose.
+
+=cut
