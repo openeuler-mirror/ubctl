@@ -31,6 +31,11 @@ struct fwctl_cmdrpc {
 	__aligned_u64 out; /* RPC outbox buffer user */
 };
 
+struct fwctl_pkt_in_port_index {
+	uint32_t port_id;
+	uint32_t index;
+};
+
 struct fwctl_pkt_in_port_enable {
 	uint32_t port_id;
 	uint8_t enable;

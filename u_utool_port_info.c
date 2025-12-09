@@ -219,6 +219,7 @@ struct utool_port_dlphy_info {
 	uint32_t retry_cnt;
 	uint32_t dl_link_fsm;
 	uint32_t fec_err_high;
+	uint16_t port_cna;
 };
 
 union utool_port_info {
@@ -588,6 +589,7 @@ static int utool_ub_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_inf
 
 	utool_print_port_id(port_info_out_data->head.port_id);
 	utool_reg_msg("\n======================== UB DLPHY INFO ==========================\n");
+	utool_reg_msg("port_cna: 0x%x\n", dlphy_info.port_cna);
 	utool_print_enum("fec", (uint32_t)dlphy_info.fec, utool_dlphy_fec_table,
 			 UTOOL_ARRAY_SIZE(utool_dlphy_fec_table), "NA");
 	utool_print_two_type_info("phy_mode_ctrl", dlphy_info.phy_mode_ctrl, "Mode2", "Mode1");
