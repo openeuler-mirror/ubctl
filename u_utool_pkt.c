@@ -622,6 +622,22 @@ void *utool_ummu_value_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_para
 	return pkt_in_ummu_value;
 }
 
+void *utool_port_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_port_index *pkt_in_port_index;
+
+	pkt_in_port_index = (struct fwctl_pkt_in_port_index *)utool_create_pkt_in(pkt_in_len, param,
+		sizeof(struct fwctl_pkt_in_port_index));
+	if (pkt_in_port_index == NULL) {
+		return NULL;
+	}
+
+	pkt_in_port_index->port_id = param->port;
+	pkt_in_port_index->index = param->index;
+
+	return pkt_in_port_index;
+}
+
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
 {
 	struct fwctl_pkt_in_port *pkt_in_port;
