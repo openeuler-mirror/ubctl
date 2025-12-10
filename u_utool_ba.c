@@ -1127,7 +1127,7 @@ static int utool_ub_mem_decoder_parse_rpc_pkt(struct fwctl_rpc_ub_out *ub_mem_de
 #define UB_MEM_DECODER_INDEX 2U
 #define UB_MEM_DECODER_ENTRY_WIDTH 4U
 
-	uint32_t *index = ub_mem_decoder_out->data[UB_MEM_DECODER_INDEX];
+	uint32_t *index = ub_mem_decoder_out->data + UB_MEM_DECODER_INDEX;
 	int ret = UTOOL_OK;
 
 	*index = *index >> UB_MEM_DECODER_ENTRY_WIDTH;
