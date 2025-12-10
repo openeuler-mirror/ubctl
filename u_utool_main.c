@@ -35,7 +35,7 @@ static void utool_help(void)
 		       "              ummu, port_info, ubommu, ecc_2b, queue, uboe, dump.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
-		       "                nl: pkt_stats, abn_stats, ssu_stats\n"
+		       "                nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p\n"
 		       "                ta: pkt_stats, abn_stats\n"
 		       "                tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank,\n"
 		       "                    route_result\n"
