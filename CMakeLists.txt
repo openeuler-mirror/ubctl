@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 set(UB_TOOL_VERSION 0.1.0)
 
 project(ubctl VERSION ${UB_TOOL_VERSION} LANGUAGES C CXX)

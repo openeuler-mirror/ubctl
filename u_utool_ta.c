@@ -781,8 +781,8 @@ static struct utool_field_info g_utool_ta_abn_stats_info[] = {
 
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "dma_mode_0(cqm)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "dma_mode_1(cqm)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "split_size_glb" },
-	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "mtu_size_clan" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "split_size" },
+	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "mtu_size_compact" },
 	{ false, true, UTOOL_REG_LOC6, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "mrd_func_err_info_0" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "mrd_func_err_info_2" },
