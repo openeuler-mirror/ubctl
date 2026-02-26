@@ -84,7 +84,7 @@ $module: module name, required parameter, current module include: dl, ba, ta, nl
 
 $function: function name, optional parameters, different processing functions are provided for each module.
 
-    dl: pkt_stats, bit_err, lane, link_status, link_trace, bist, bist_err
+    dl: pkt_stats, bit_err, lane, link_status, link_trace, bist, bist_err, rt_bandwidth
 
     ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,
         intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table, mar_cyc_en
@@ -104,6 +104,7 @@ $function: function name, optional parameters, different processing functions ar
 =item B<-p> ${port}
 
 $port: port index, optional parameters, indicates the physical port index.
+       The port_bitmap represents each bit as a port, used in the rt_bandwidth.
 
 =item B<-e> ${value}
 
@@ -169,6 +170,7 @@ B<Query DL Layer Information>:
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist -e ${value}
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist_err
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth
 
 B<Query TP Layer Information>:
  
