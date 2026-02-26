@@ -28,6 +28,7 @@
 #include "u_utool_dump.h"
 #include "u_utool_error.h"
 #include "u_utool_common.h"
+#include "u_utool_port_link.h"
 #include "u_utool_dispatch.h"
 
 static struct utool_cmd_param g_utool_cmd_param = {};
@@ -50,6 +51,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_QUEUE, UTOOL_MODULE_NAME_QUEUE, utool_queue_cmd_dispatch },
 	{ UTOOL_MODULE_FIRMWARE_VERSION, UTOOL_MODULE_NAME_FIRMWARE_VERSION, utool_fw_version_cmd_dispatch },
 	{ UTOOL_MODULE_PORT_PKT_STATS, UTOOL_MODULE_NAME_PORT_PKT_STATS, utool_port_pkt_cmd_dispatch },
+	{ UTOOL_MODULE_PORT_LINK, UTOOL_MODULE_NAME_PORT_LINK, utool_port_link_cmd_dispatch },
 	{ UTOOL_MODULE_DUMP, UTOOL_MODULE_NAME_DUMP, utool_dump_cmd_dispatch },
 };
 

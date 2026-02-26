@@ -33,7 +33,7 @@ static void utool_help(void)
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba, qos, msgq,\n\n"
 		       "              ummu, port_info, ubommu, ecc_2b, queue, uboe, dump,\n\n"
-		       "              port_pkt_stats, fw_version."
+		       "              port_pkt_stats, fw_version, port_link."
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace,\n"
 		       "                    rt_bandwidth"
