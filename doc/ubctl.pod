@@ -78,7 +78,7 @@ $ub_ctl_id: ub ctl id, required parameter, chip id and ub ctl id  are used to fi
 
 =item B<-m> ${module}
 
-$module: module name, required parameter, current module include: dl, ba, ta, nl, qos, tp, msgq, dump, ummu, port_info, ubommu, ecc_2b, queue, cmdq, uboe.
+$module: module name, required parameter, current module include: dl, ba, ta, nl, qos, tp, msgq, dump, ummu, port_info, ubommu, ecc_2b, queue, cmdq, uboe, port_pkt_stats.
 
 =item B<-f> ${function}
 
@@ -231,6 +231,9 @@ B<Query queue information>:
 
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m queue
 
+B<Query statistical indicators>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_pkt_stats -p ${port_id}
 
 =head1 COPYRIGHT
 

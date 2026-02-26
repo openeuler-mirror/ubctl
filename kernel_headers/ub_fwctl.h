@@ -264,6 +264,10 @@ enum ub_fwctl_cmdrpc_type {
 	 * @UTOOL_CMD_QUERY_PRBS_RESULT: Query PRBS error count result
 	 */
 	UTOOL_CMD_QUERY_PRBS_RESULT = 0x00D5,
+	/**
+	 * @UTOOL_CMD_QUERY_PORT_PKT_STATS: Query statistical indicators at the ub port and uboe port
+	 */
+	UTOOL_CMD_QUERY_PORT_PKT_STATS = 0x00E2,
 
 	/**
 	 * @UTOOL_CMD_QUERY_DUMP: Dump all register data
