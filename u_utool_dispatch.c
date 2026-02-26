@@ -23,6 +23,7 @@
 #include "u_utool_ummu.h"
 #include "u_utool_msg.h"
 #include "u_utool_queue.h"
+#include "u_utool_fw_version.h"
 #include "u_utool_port_pkt.h"
 #include "u_utool_dump.h"
 #include "u_utool_error.h"
@@ -47,6 +48,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_UMMU, UTOOL_MODULE_NAME_UMMU, utool_ummu_cmd_dispatch },
 	{ UTOOL_MODULE_MSGQ, UTOOL_MODULE_NAME_MSGQ, utool_msgq_cmd_dispatch },
 	{ UTOOL_MODULE_QUEUE, UTOOL_MODULE_NAME_QUEUE, utool_queue_cmd_dispatch },
+	{ UTOOL_MODULE_FIRMWARE_VERSION, UTOOL_MODULE_NAME_FIRMWARE_VERSION, utool_fw_version_cmd_dispatch },
 	{ UTOOL_MODULE_PORT_PKT_STATS, UTOOL_MODULE_NAME_PORT_PKT_STATS, utool_port_pkt_cmd_dispatch },
 	{ UTOOL_MODULE_DUMP, UTOOL_MODULE_NAME_DUMP, utool_dump_cmd_dispatch },
 };

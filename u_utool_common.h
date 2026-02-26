@@ -80,6 +80,7 @@ do {					\
 #define UTOOL_MODULE_MSGQ "msgq"
 #define UTOOL_MODULE_QUEUE "queue"
 #define UTOOL_MODULE_DUMP "dump"
+#define UTOOL_MODULE_FIRMWARE_VERSION "fw_version"
 #define UTOOL_MODULE_PORT_PKT_STATS "port_pkt_stats"
 
 enum utool_module_name {
@@ -96,6 +97,7 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_UMMU,
 	UTOOL_MODULE_NAME_MSGQ,
 	UTOOL_MODULE_NAME_QUEUE,
+	UTOOL_MODULE_NAME_FIRMWARE_VERSION,
 	UTOOL_MODULE_NAME_PORT_PKT_STATS,
 	UTOOL_MODULE_NAME_DUMP,
 
