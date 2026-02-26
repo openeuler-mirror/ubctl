@@ -412,8 +412,8 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "link_credit_ageing_th" },
 
 	{ false, true, UTOOL_REG_LOC6, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "ssu_tx_port_dfx_sel(NL_SSU_IO_GLB)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "ssu_rx_port_dfx_sel(NL_SSU_IO_GLB)" },
+	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "ssu_tx_port_dfx_sel(NL_SSU_IO)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "ssu_rx_port_dfx_sel(NL_SSU_IO)" },
 
 	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "rxdma_bp_status" },
@@ -1000,15 +1000,6 @@ struct utool_func_dispatch g_utool_nl_func_table[] = {
 	  utool_nl_abn_stats_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
-struct utool_func_dispatch g_utool_nl_ssu_func_table[] = {
-	{ false, NL_SSU_SW, UTOOL_CMD_QUERY_NL_SSU_SW, UTOOL_REG_CNT_DEFAULT,
-	  utool_ssu_sw_parse_rpc_pkt, utool_port_index_create_pkt_in },
-	{ false, NL_SSU_OQ, UTOOL_CMD_QUERY_NL_SSU_OQ, UTOOL_REG_CNT_DEFAULT,
-	  utool_ssu_oq_parse_rpc_pkt, utool_port_index_create_pkt_in },
-	{ false, NL_SSU_P2P, UTOOL_CMD_QUERY_NL_SSU_P2P, UTOOL_REG_CNT_DEFAULT,
-	  utool_ssu_p2p_parse_rpc_pkt, utool_port_index_create_pkt_in },
-};
-
 static int utool_nl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
 			     struct utool_func_dispatch *func_table, uint32_t func_cnt)
 {
@@ -1106,6 +1097,14 @@ static int utool_nl_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 
 int utool_nl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
+	struct utool_func_dispatch utool_nl_ssu_func_table[] = {
+		{ false, NL_SSU_SW, UTOOL_CMD_QUERY_NL_SSU_SW, UTOOL_REG_CNT_DEFAULT,
+			utool_ssu_sw_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		{ false, NL_SSU_OQ, UTOOL_CMD_QUERY_NL_SSU_OQ, UTOOL_REG_CNT_DEFAULT,
+			utool_ssu_oq_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		{ false, NL_SSU_P2P, UTOOL_CMD_QUERY_NL_SSU_P2P, UTOOL_REG_CNT_DEFAULT,
+			utool_ssu_p2p_parse_rpc_pkt, utool_port_index_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_nl_cmd_table[] = {
 		{
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
@@ -1116,7 +1115,7 @@ int utool_nl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		}, {
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I,
 			utool_nl_cmd_func,
-			g_utool_nl_ssu_func_table, UTOOL_ARRAY_SIZE(g_utool_nl_ssu_func_table)
+			utool_nl_ssu_func_table, UTOOL_ARRAY_SIZE(utool_nl_ssu_func_table)
 		}
 	};
 	uint32_t nl_cmd_cnt = UTOOL_ARRAY_SIZE(utool_nl_cmd_table);

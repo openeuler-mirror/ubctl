@@ -609,7 +609,7 @@ struct utool_field_info g_utool_tp_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "lsar_in_wqe_cnt" },
 	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "lsar_out_credit_cnt" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "lsar_out_credit_last_cnt" },
-	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rpp_global_ecn_cnt" },
+	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rpp_ecn_cnt" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "rpp_compact_ecn_cnt" },
 	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tai2tpp_alloc_ssu_cnt" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "tai2tpp_alloc_ssu_rslt_cnt" },
