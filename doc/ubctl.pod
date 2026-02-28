@@ -78,20 +78,20 @@ $ub_ctl_id: ub ctl id, required parameter, chip id and ub ctl id  are used to fi
 
 =item B<-m> ${module}
 
-$module: module name, required parameter, current module include: dl, ba, ta, nl, qos, tp, msgq, dump, ummu, port_info, ubommu, ecc_2b, queue, cmdq, uboe.
+$module: module name, required parameter, current module include: dl, ba, ta, nl, qos, tp, msgq, dump, ummu, port_info, ubommu, ecc_2b, queue, cmdq, uboe, port_pkt_stats, fw_version, port_link.
 
 =item B<-f> ${function}
 
 $function: function name, optional parameters, different processing functions are provided for each module.
 
-    dl: pkt_stats, bit_err, lane, link_status, link_trace, bist, bist_err
+    dl: pkt_stats, bit_err, lane, link_status, link_trace, bist, bist_err, rt_bandwidth
 
     ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,
         intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table, mar_cyc_en
 
     ta: pkt_stats, abn_stats
 
-    nl: pkt_stats, abn_stats, ssu_stats
+    nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p
 
     tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result
 
@@ -104,6 +104,7 @@ $function: function name, optional parameters, different processing functions ar
 =item B<-p> ${port}
 
 $port: port index, optional parameters, indicates the physical port index.
+       The port_bitmap represents each bit as a port, used in the rt_bandwidth.
 
 =item B<-e> ${value}
 
@@ -169,6 +170,7 @@ B<Query DL Layer Information>:
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist -e ${value}
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist_err
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth
 
 B<Query TP Layer Information>:
  
@@ -193,6 +195,9 @@ B<Query NL Layer Information>:
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f pkt_stats
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_stats
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f abn_stats
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_sw
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_oq
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_p2p
 
 B<Query UB internal MSG queue information and entry details>:
  
@@ -228,6 +233,15 @@ B<Query queue information>:
 
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m queue
 
+B<Query statistical indicators>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_pkt_stats -p ${port_id}
+
+B<Query firmware version>:
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m fw_version
+
+B<Query port link historical status>:
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_link -p {port_id}
 
 =head1 COPYRIGHT
 
