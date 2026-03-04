@@ -29,7 +29,7 @@ static int utool_display_io_die_info(struct fwctl_io_die_info *data)
 	utool_reg_msg("\tdie_id: %u\n", data->die_id);
 	utool_reg_msg("\tport_count: %u\n", port_num);
 
-	if (port_num == 0 || port_num > UTOOL_MAX_IO_DIE_PORT_NUM) {
+	if (port_num > UTOOL_MAX_IO_DIE_PORT_NUM) {
 		utool_err_msg("Port num is invalid.\n");
 		return UTOOL_ERR;
 	}

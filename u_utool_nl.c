@@ -42,12 +42,12 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "pa_out_l4e_pkt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "pa_out_ub_pkt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "pa_out_outer_udp0_pkt(TX)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_glb_ipv4_pkt_cnt(TX)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_glb_ipv6_pkt_cnt(TX)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_ipv4_pkt_cnt(TX)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_ipv6_pkt_cnt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "unic_ipv4_pkt_cnt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "unic_ipv6_pkt_cnt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "unic_ncp_pkt_cnt(TX)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_clan_pkt_cnt(TX)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_compact_pkt_cnt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_umoc_ctph_cnt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_umoc_ntph_cnt(TX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_mem_pkt_cnt(TX)" },
@@ -82,12 +82,12 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "pa_out_l4e_pkt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "pa_out_ub_pkt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "pa_out_outer_udp0_pkt(RX)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_glb_ipv4_pkt_cnt(RX)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_glb_ipv6_pkt_cnt(RX)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_ipv4_pkt_cnt(RX)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_ipv6_pkt_cnt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "unic_ipv4_pkt_cnt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "unic_ipv6_pkt_cnt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "unic_ncp_pkt_cnt(RX)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_clan_pkt_cnt(RX)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_compact_pkt_cnt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_umoc_ctph_cnt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_umoc_ntph_cnt(RX)" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "ub_mem_pkt_cnt(RX)" },
@@ -412,8 +412,8 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "link_credit_ageing_th" },
 
 	{ false, true, UTOOL_REG_LOC6, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "ssu_tx_port_dfx_sel(NL_SSU_IO_GLB)" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "ssu_rx_port_dfx_sel(NL_SSU_IO_GLB)" },
+	{ false, false, UTOOL_REG_LOC3, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "ssu_tx_port_dfx_sel(NL_SSU_IO)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "ssu_rx_port_dfx_sel(NL_SSU_IO)" },
 
 	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "rxdma_bp_status" },
@@ -476,7 +476,7 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "ssu_p2p_specu_more_th" },
 
 	{ false, true, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "master_p2p_credit_init(NL_SSU_GLB)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "master_p2p_credit_init(NL_SSU)" },
 
 	{ false, true, UTOOL_REG_LOC12, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC11, UTOOL_FIELD_INDEX_START, "eg_hos_clk_gating_i" },
@@ -596,7 +596,7 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 
 	{ false, true, UTOOL_REG_LOC4, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START,
-	  "master_p2p_credit_init(NL_SSU_IO_GLB)" },
+	  "master_p2p_credit_init(NL_SSU_IO)" },
 
 	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "p2p_nl7_mst_req_ost" },
 	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "p2p_nl6_mst_req_ost" },
@@ -848,7 +848,7 @@ static struct utool_field_info g_utool_ssu_sw_field_info[] = {
 static struct utool_field_info g_utool_ssu_oq_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
 	{ false, true, UTOOL_REG_LOC8, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "ssu_oq_sel_index" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "index" },
 	{ false, false, UTOOL_REG_LOC22, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "oq_inner_status_0" },
 	{ false, false, UTOOL_REG_LOC21, UTOOL_REG_LOC21, UTOOL_FIELD_INDEX_START, "tc_sch_rdy" },
 	{ false, true, UTOOL_REG_LOC18, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "reserved" },
@@ -862,7 +862,7 @@ static struct utool_field_info g_utool_ssu_oq_field_info[] = {
 static struct utool_field_info g_utool_ssu_p2p_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
 	{ false, true, UTOOL_REG_LOC8, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "ssu_p2p_q_sel_index" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "index" },
 	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "p2p_q_req_cell_num" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "p2p_q_specu_cell_num" },
 	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "p2p_q_wait_data_ack_cnt" },
@@ -1000,15 +1000,6 @@ struct utool_func_dispatch g_utool_nl_func_table[] = {
 	  utool_nl_abn_stats_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
-struct utool_func_dispatch g_utool_nl_ssu_func_table[] = {
-	{ false, NL_SSU_SW, UTOOL_CMD_QUERY_NL_SSU_SW, UTOOL_REG_CNT_DEFAULT,
-	  utool_ssu_sw_parse_rpc_pkt, utool_port_index_create_pkt_in },
-	{ false, NL_SSU_OQ, UTOOL_CMD_QUERY_NL_SSU_OQ, UTOOL_REG_CNT_DEFAULT,
-	  utool_ssu_oq_parse_rpc_pkt, utool_port_index_create_pkt_in },
-	{ false, NL_SSU_P2P, UTOOL_CMD_QUERY_NL_SSU_P2P, UTOOL_REG_CNT_DEFAULT,
-	  utool_ssu_p2p_parse_rpc_pkt, utool_port_index_create_pkt_in },
-};
-
 static int utool_nl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
 			     struct utool_func_dispatch *func_table, uint32_t func_cnt)
 {
@@ -1106,6 +1097,14 @@ static int utool_nl_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 
 int utool_nl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
+	struct utool_func_dispatch utool_nl_ssu_func_table[] = {
+		{ false, NL_SSU_SW, UTOOL_CMD_QUERY_NL_SSU_SW, UTOOL_REG_CNT_DEFAULT,
+			utool_ssu_sw_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		{ false, NL_SSU_OQ, UTOOL_CMD_QUERY_NL_SSU_OQ, UTOOL_REG_CNT_DEFAULT,
+			utool_ssu_oq_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		{ false, NL_SSU_P2P, UTOOL_CMD_QUERY_NL_SSU_P2P, UTOOL_REG_CNT_DEFAULT,
+			utool_ssu_p2p_parse_rpc_pkt, utool_port_index_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_nl_cmd_table[] = {
 		{
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
@@ -1116,7 +1115,7 @@ int utool_nl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		}, {
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I,
 			utool_nl_cmd_func,
-			g_utool_nl_ssu_func_table, UTOOL_ARRAY_SIZE(g_utool_nl_ssu_func_table)
+			utool_nl_ssu_func_table, UTOOL_ARRAY_SIZE(utool_nl_ssu_func_table)
 		}
 	};
 	uint32_t nl_cmd_cnt = UTOOL_ARRAY_SIZE(utool_nl_cmd_table);

@@ -17,8 +17,20 @@
 #define DL_BIST "bist"
 #define DL_BIST_ERR "bist_err"
 #define DL_LINK_TRACE "link_trace"
+#define DL_RT_BANDWIDTH "rt_bandwidth"
 
 #define UTOOL_TRACE_4K 0x0001000
+#define UTOOL_MAX_PORT 64U
+#define UBCTL_MAX_QUERY_NUM 2
+
+struct utool_rt_bandwidth_info {
+	uint32_t port_id;
+	uint32_t is_valid;
+	uint64_t tx_bandwidth;
+	uint64_t rx_bandwidth;
+};
+static uint32_t g_query_rt_bw_num = 0;
+static struct utool_rt_bandwidth_info *g_rt_bw_result_data[UBCTL_MAX_QUERY_NUM];
 
 static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -887,6 +899,140 @@ static int utool_dl_trace_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_trace_out)
 	return UTOOL_OK;
 }
 
+int utool_rt_bandwidth_parse_rpc_pkt(struct fwctl_rpc_ub_out *rt_bandwidth_out)
+{
+	if (rt_bandwidth_out == NULL) {
+		utool_err_msg("Failed to parse real time bandwidth, rt bandwidth out is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+	if (rt_bandwidth_out->data_size !=
+		sizeof(struct utool_rt_bandwidth_info) * UTOOL_MAX_PORT) {
+		utool_err_msg("Failed to parse real time bandwidth, data size = %u.\n",
+			      rt_bandwidth_out->data_size);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+	if (g_query_rt_bw_num >= UBCTL_MAX_QUERY_NUM) {
+		utool_err_msg("Failed to parse real time bandwidth, query num = %u.\n", g_query_rt_bw_num);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	memcpy(g_rt_bw_result_data[g_query_rt_bw_num], rt_bandwidth_out->data, rt_bandwidth_out->data_size);
+	g_query_rt_bw_num++;
+
+	return UTOOL_OK;
+}
+
+static void utool_rt_bandwidth_data_print(const char *reg_name, uint64_t bandwidth)
+{
+#define KBPS_PER_MBPS 1000U
+#define MAX_FRACTION_DIGITS 4
+	char frac_str[MAX_FRACTION_DIGITS];
+	uint32_t fractional_part;
+	uint64_t integer_part;
+	int ret = 0;
+	int len;
+
+	if (bandwidth < KBPS_PER_MBPS) {
+		utool_reg_msg("%s: %lu kbps\n", reg_name, bandwidth);
+		return;
+	}
+	integer_part = bandwidth / KBPS_PER_MBPS;
+	fractional_part = bandwidth % KBPS_PER_MBPS;
+
+	if (fractional_part == 0) {
+		utool_reg_msg("%s: %lu Mbps\n", reg_name, integer_part);
+		return;
+	}
+
+	ret = snprintf(frac_str, sizeof(frac_str), "%03u", fractional_part);
+	if (ret < 0) {
+		utool_err_msg("Failed to get frac str, ret = %d.\n", ret);
+		return;
+	}
+
+	len = strlen(frac_str);
+	while (len > 0 && frac_str[len - 1] == '0') {
+		frac_str[--len] = '\0';
+	}
+
+	utool_reg_msg("%s: %lu.%s Mbps\n", reg_name, integer_part, frac_str);
+}
+
+static void utool_rt_bandwidth_parse(uint32_t time)
+{
+#define UBCTL_IS_VALID 1
+#define UBCTL_BYTE_TO_BIT 8
+
+	struct utool_rt_bandwidth_info *first_result_data = g_rt_bw_result_data[0];
+	struct utool_rt_bandwidth_info *second_result_data = g_rt_bw_result_data[1];
+	struct utool_rt_bandwidth_info count_result;
+	uint32_t i = 0;
+
+	for (; i < UTOOL_MAX_PORT; i++) {
+		if ((first_result_data[i].is_valid == UBCTL_IS_VALID) &&
+		    (second_result_data[i].is_valid == UBCTL_IS_VALID)) {
+			if (first_result_data[i].rx_bandwidth > second_result_data[i].rx_bandwidth ||
+			    first_result_data[i].tx_bandwidth > second_result_data[i].tx_bandwidth) {
+				utool_err_msg("The second traffic is less than the first, port id = %u.\n",
+					      first_result_data[i].port_id);
+				break;
+			}
+			count_result.port_id = first_result_data[i].port_id;
+			count_result.tx_bandwidth = second_result_data[i].tx_bandwidth -
+						    first_result_data[i].tx_bandwidth;
+			count_result.rx_bandwidth = second_result_data[i].rx_bandwidth -
+						    first_result_data[i].rx_bandwidth;
+			utool_reg_msg("port_id : %u\n", count_result.port_id);
+			utool_rt_bandwidth_data_print("real_time_bandwidth_tx",
+						      (count_result.tx_bandwidth * UBCTL_BYTE_TO_BIT) / time);
+			utool_rt_bandwidth_data_print("real_time_bandwidth_rx",
+						      (count_result.rx_bandwidth * UBCTL_BYTE_TO_BIT) / time);
+		}
+	}
+}
+
+static int utool_rt_bandwidth_pkt_operation(struct utool_dev *dev, struct utool_cmd_param *param)
+{
+	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_DL_RT_BANDWIDTH, 0, NULL };
+	int ret = UTOOL_OK;
+
+	func_pkt_exec.execute = utool_rt_bandwidth_parse_rpc_pkt;
+	func_pkt_exec.data_len = sizeof(struct utool_rt_bandwidth_info) * UTOOL_MAX_PORT;
+
+	ret = utool_pkt_operation_have_port(dev, param, &func_pkt_exec);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
+static int utool_rt_result_data_buf_init(void)
+{
+	uint32_t i = 0;
+
+	for (; i < UBCTL_MAX_QUERY_NUM; i++) {
+		g_rt_bw_result_data[i] = (struct utool_rt_bandwidth_info *)UTOOL_MALLOC
+			(sizeof(struct utool_rt_bandwidth_info) * UTOOL_MAX_PORT);
+		if (g_rt_bw_result_data[i] == NULL) {
+			utool_err_msg("Failed to init real time bandwidth result data.\n");
+			break;
+		}
+	}
+
+	if (i < UBCTL_MAX_QUERY_NUM) {
+		while (i > 0) {
+			i--;
+			UTOOL_FREE(g_rt_bw_result_data[i]);
+			g_rt_bw_result_data[i] = NULL;
+		}
+		return UTOOL_ERR_MALLOC;
+	}
+	g_query_rt_bw_num = 0;
+
+	return UTOOL_OK;
+}
+
 static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	{ true, DL_PKT_STATS, UTOOL_CMD_QUERY_DL_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_dl_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
@@ -910,7 +1056,8 @@ static void utool_dl_print_help(void)
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane/bit_err"
 		      "/bist/bist_err/link_trace\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port} -f bist -e ${value}\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port} -f bist -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth\n");
 }
 
 static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -970,6 +1117,48 @@ static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 	return UTOOL_ERR_FUNC_NOT_FOUND;
 }
 
+static int utool_dl_bandwidth_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
+				  struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+#define MIN_PERIOD_SIZE 100U
+#define MAX_PERIOD_SIZE 10000U
+#define UTOOL_MS_TO_US 1000U
+
+	int ret = UTOOL_OK;
+	uint32_t i;
+
+	if (param->time > MAX_PERIOD_SIZE || param->time < MIN_PERIOD_SIZE) {
+		utool_err_msg("Invalid time, time = %u.\n", param->time);
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	ret = utool_rt_result_data_buf_init();
+	if (ret != UTOOL_OK) {
+		return ret;
+	}
+
+	ret = utool_rt_bandwidth_pkt_operation(dev, param);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("first query real time bandwidth failed, ret = %d.\n", ret);
+		goto query_err;
+	}
+	usleep(param->time * UTOOL_MS_TO_US);
+	ret = utool_rt_bandwidth_pkt_operation(dev, param);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("second query real time bandwidth failed, ret = %d.\n", ret);
+		goto query_err;
+	}
+	utool_rt_bandwidth_parse(param->time);
+
+query_err:
+	for (i = 0; i < UBCTL_MAX_QUERY_NUM; i++) {
+		UTOOL_FREE(g_rt_bw_result_data[i]);
+		g_rt_bw_result_data[i] = NULL;
+	}
+
+	return ret;
+}
+
 int utool_dl_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_out)
 {
 	int ret = UTOOL_OK;
@@ -1019,6 +1208,10 @@ int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		{ false, DL_BIST, UTOOL_CMD_CONF_DL_BIST, UTOOL_REG_CNT_DEFAULT,
 		  utool_dl_conf_bist_parse_rpc_pkt, utool_port_enable_create_pkt_in },
 	};
+	static struct utool_func_dispatch utool_dl_port_perf_table[] = {
+		{ false, DL_RT_BANDWIDTH, UTOOL_CMD_QUERY_DL_RT_BANDWIDTH, UTOOL_REG_CNT_DEFAULT,
+		  utool_rt_bandwidth_parse_rpc_pkt, utool_port_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_dl_cmd_table[] = {
 		{
 			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
@@ -1029,6 +1222,9 @@ int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		}, {
 			UTOOL_FLAG_M | UTOOL_FLAG_P,
 			utool_dl_cmd, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table)
+		}, {
+			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T,
+			utool_dl_bandwidth_cmd, utool_dl_port_perf_table, UTOOL_ARRAY_SIZE(utool_dl_port_perf_table)
 		}
 	};
 
