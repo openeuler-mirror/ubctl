@@ -33,7 +33,7 @@ int utool_fw_version_parse_rpc_pkt(struct fwctl_rpc_ub_out *fw_version_out)
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	version_data = (struct utool_fw_version_data *)(fw_version_out + 1);
+	version_data = (struct utool_fw_version_data *)(fw_version_out->data);
 	utool_reg_msg("firmware version: B%04X_%04X\n",
 		      (version_data->fw_version >> UTOOL_FW_HIGH_OFFSET) & UTOOL_FW_HIGH_MASK,
 		      version_data->fw_version & UTOOL_FW_HIGH_MASK);

@@ -848,7 +848,7 @@ static struct utool_field_info g_utool_ssu_sw_field_info[] = {
 static struct utool_field_info g_utool_ssu_oq_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
 	{ false, true, UTOOL_REG_LOC8, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "ssu_oq_sel_index" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "index" },
 	{ false, false, UTOOL_REG_LOC22, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "oq_inner_status_0" },
 	{ false, false, UTOOL_REG_LOC21, UTOOL_REG_LOC21, UTOOL_FIELD_INDEX_START, "tc_sch_rdy" },
 	{ false, true, UTOOL_REG_LOC18, UTOOL_REG_LOC20, UTOOL_FIELD_INDEX_START, "reserved" },
@@ -862,7 +862,7 @@ static struct utool_field_info g_utool_ssu_oq_field_info[] = {
 static struct utool_field_info g_utool_ssu_p2p_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
 	{ false, true, UTOOL_REG_LOC8, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "ssu_p2p_q_sel_index" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "index" },
 	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "p2p_q_req_cell_num" },
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "p2p_q_specu_cell_num" },
 	{ false, false, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "p2p_q_wait_data_ack_cnt" },

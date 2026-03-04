@@ -18,6 +18,8 @@
 #include "u_utool_dispatch.h"
 #include "u_utool_io_die.h"
 
+#define UTOOL_INVALID_FD (-1)
+
 enum utool_dev_step_flag {
 	UTOOL_DEV_STEP_SCAN = 0,
 	UTOOL_DEV_STEP_LS,
@@ -66,13 +68,12 @@ static void utool_close(struct utool_dev *dev)
 {
 	if (dev->fd >= 0) {
 		close(dev->fd);
+		dev->fd = UTOOL_INVALID_FD;
 	}
 }
 
 static int utool_open(struct utool_dev *dev)
 {
-#define UTOOL_INVALID_FD (-1)
-
 	char *resolved_path = NULL;
 
 	dev->fd = UTOOL_INVALID_FD;
@@ -432,7 +433,7 @@ int main(int argc, char *argv[])
 
 	ret = utool_main_parse_sub(argc, argv, &dev);
 	if (ret != UTOOL_OK) {
-		return ret;
+		return ret == UTOOL_OK_LS ? UTOOL_OK : ret;
 	}
 
 	cmd_param = utool_get_cmd_param();
