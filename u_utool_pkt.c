@@ -65,9 +65,9 @@ static int utool_parse_param_check(struct fwctl_rpc_ub_out *out, struct utool_fi
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	if ((out->data_size == 0) || (out->data == NULL)) {
-		utool_err_msg("Failed to parse pkt, param is invalid data_size==0(%d), data==NULL(%d).\n",
-			      (out->data_size == 0), (out->data == NULL));
+	if ((out->data_size == 0)) {
+		utool_err_msg("Failed to parse pkt, param is invalid data_size==0(%d).\n",
+			      (out->data_size == 0));
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
@@ -201,9 +201,9 @@ static int utool_module_parse_input_check(struct fwctl_rpc_ub_out *out,
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	if ((out->data_size == 0) || (out->data == NULL)) {
-		utool_err_msg("Failed to split module, param is invalid data_size==0(%d), data==NULL(%d).\n",
-			      (out->data_size == 0), (out->data == NULL));
+	if ((out->data_size == 0)) {
+		utool_err_msg("Failed to split module, param is invalid data_size==0(%d).\n",
+			      (out->data_size == 0));
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
@@ -670,9 +670,6 @@ int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param 
 	}
 
 	ret = utool_pkt_operation(dev, pkt_in, pkt_in_len, pkt_exec);
-	if (ret != UTOOL_OK) {
-		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
-	}
 
 	utool_destroy_pkt_in(&pkt_in);
 	return ret;
