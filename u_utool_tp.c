@@ -84,7 +84,7 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 	route_result_field_info = utool_tp_get_field_info_by_name(TP_TX_ROUTE_FIELD_INFO);
 	rx_bank_field_info = utool_tp_get_field_info_by_name(TP_RX_BANK_FIELD_INFO);
 
-	if ((pkt_stats_field_info == NULL) || abn_stats_field_info == NULL || (route_result_field_info == NULL) ||
+	if ((pkt_stats_field_info == NULL) || (abn_stats_field_info == NULL) || (route_result_field_info == NULL) ||
 	    (rx_bank_field_info == NULL)) {
 		utool_err_msg("Failed to get field info.\n");
 		return NULL;
@@ -626,7 +626,6 @@ static int utool_handle_matched_func(struct utool_dev *dev, struct utool_cmd_par
 	func_pkt_exec.rpc_cmd = func_entry->rpc_cmd;
 	func_pkt_exec.execute = func_entry->execute;
 
-	tp_cal_reg_param->data_len = &func_pkt_exec.data_len;
 	tp_cal_reg_param->user_def_data_len = func_entry->data_len;
 
 	ret = utool_cal_func_reg_len(param->func, tp_cal_reg_param);
@@ -635,6 +634,7 @@ static int utool_handle_matched_func(struct utool_dev *dev, struct utool_cmd_par
 		return ret;
 	}
 
+	func_pkt_exec.data_len = *tp_cal_reg_param->data_len;
 	if (func_entry->create_pkt_in == NULL) {
 		utool_err_msg("Failed to create tp func pkt in. Callback is NULL.\n");
 		return UTOOL_ERR_INVALID_PARAM;
@@ -667,6 +667,7 @@ static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 {
 	struct utool_cal_reg_table_dp *cal_reg_table_dp = utool_tp_get_cal_reg_table();
 	struct utool_cal_reg_func_param tp_cal_reg_param = {};
+	uint32_t data_len = 0;
 	uint32_t i;
 
 	if (cal_reg_table_dp == NULL) {
@@ -676,6 +677,7 @@ static int utool_tp_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 
 	tp_cal_reg_param.utool_cal_reg_table = cal_reg_table_dp->reg_table;
 	tp_cal_reg_param.func_cnt = cal_reg_table_dp->func_cnt;
+	tp_cal_reg_param.data_len = &data_len;
 
 	for (i = 0; i < func_cnt; i++) {
 		if (strcmp(param->func, func_table[i].func) == 0) {

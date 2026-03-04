@@ -220,6 +220,8 @@ struct utool_port_dlphy_info {
 	uint32_t dl_link_fsm;
 	uint32_t fec_err_high;
 	uint16_t port_cna;
+	uint16_t sds_lpbk_en_bitmap;
+	uint32_t clock_freq;
 };
 
 union utool_port_info {
@@ -545,6 +547,22 @@ static void utool_print_eth_lane_num_info(uint8_t cur_lane_num, const char *str)
 			 UTOOL_ARRAY_SIZE(utool_lane_num_table), "NA");
 }
 
+static void utool_print_eth_lpbk_en(struct utool_port_dlphy_info *dlphy)
+{
+	const char *lpbk_en_lane_names[] = {
+		"sds_lpbk_en_lane0", "sds_lpbk_en_lane1",
+		"sds_lpbk_en_lane2", "sds_lpbk_en_lane3"
+	};
+	uint8_t lane_num;
+	uint8_t i;
+
+	lane_num = (dlphy->port_mode) ? UTOOL_MAC_LANES_X2 : UTOOL_MAC_LANES_X4;
+
+	for (i = 0; i < lane_num; i++) {
+		utool_print_two_type_info(lpbk_en_lane_names[i], (dlphy->sds_lpbk_en_bitmap >> i) & 0x1, "on", "off");
+	}
+}
+
 static int utool_ub_port_info_parse_link_info(struct fwctl_rpc_ub_out *port_info_out)
 {
 	struct utool_port_data *port_info_out_data = (struct utool_port_data *)(port_info_out->data);
@@ -590,6 +608,7 @@ static int utool_ub_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_inf
 	utool_print_port_id(port_info_out_data->head.port_id);
 	utool_reg_msg("\n======================== UB DLPHY INFO ==========================\n");
 	utool_reg_msg("port_cna: 0x%x\n", dlphy_info.port_cna);
+	utool_reg_msg("clock_freq: 0x%x\n", dlphy_info.clock_freq);
 	utool_print_enum("fec", (uint32_t)dlphy_info.fec, utool_dlphy_fec_table,
 			 UTOOL_ARRAY_SIZE(utool_dlphy_fec_table), "NA");
 	utool_print_two_type_info("phy_mode_ctrl", dlphy_info.phy_mode_ctrl, "Mode2", "Mode1");
@@ -649,6 +668,7 @@ static int utool_eth_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_in
 
 	utool_print_port_id(port_info_out_data->head.port_id);
 	utool_reg_msg("\n======================== ETH DLPHY INFO ==========================\n");
+	utool_reg_msg("clock_freq: 0x%x\n", dlphy_info.clock_freq);
 	utool_print_eth_dlphy_fec_info(dlphy_info.fec);
 	utool_print_eth_dlphy_mode_info(dlphy_info.phy_mode_ctrl);
 	utool_print_eth_sds_rate(dlphy_info.sds_rate);
@@ -656,6 +676,7 @@ static int utool_eth_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_in
 	utool_print_eth_lane_num_info(dlphy_info.cur_tx_lane_num, "cur_rx_lane_num");
 	utool_print_two_type_info("port_en", dlphy_info.port_en, "enable", "disable");
 	utool_print_two_type_info("port_mode", dlphy_info.port_mode, "X2 2port", "X4 1port");
+	utool_print_eth_lpbk_en(&dlphy_info);
 	utool_print_two_type_info("phy_link", dlphy_info.phy_link, "link", "no link");
 	utool_reg_msg("mac lstm: 0x%x\n", dlphy_info.mac_lstm);
 	utool_reg_msg("decoded_fail_block_num: 0x%x\n", dlphy_info.decoded_fail_block_num);

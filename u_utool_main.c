@@ -18,6 +18,8 @@
 #include "u_utool_dispatch.h"
 #include "u_utool_io_die.h"
 
+#define UTOOL_INVALID_FD (-1)
+
 enum utool_dev_step_flag {
 	UTOOL_DEV_STEP_SCAN = 0,
 	UTOOL_DEV_STEP_LS,
@@ -32,9 +34,11 @@ static void utool_help(void)
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba, qos, msgq,\n\n"
-		       "              ummu, port_info, ubommu, ecc_2b, queue, uboe, dump.\n\n"
+		       "              ummu, port_info, ubommu, ecc_2b, queue, uboe, dump,\n\n"
+		       "              port_pkt_stats, fw_version, port_link."
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
-		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace.\n"
+		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace,\n"
+		       "                    rt_bandwidth"
 		       "                nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p\n"
 		       "                ta: pkt_stats, abn_stats\n"
 		       "                tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank,\n"
@@ -45,7 +49,8 @@ static void utool_help(void)
 		       "                msgq: que_stats, entry\n"
 		       "                ummu: ummu_sync_query, ummu_sync_config\n\n"
 		       "                uboe: rxmac2txmac, txmac2rxmac, txpcs2rxpcs, prbs, prbs_err_cnt\n\n"
-		       "  -p $port: port index, indicates the physical port index.\n\n"
+		       "  -p $port: port index, indicates the physical port index,\n"
+		       "            The port_bitmap represents each bit as a port, used in the rt_bandwidth.\n\n"
 		       "  -e $value: value, used to set the value of the register.\n\n"
 		       "  -u $ummu_id: ummu id, it is used to search for the corresponding ummu register,\n"
 		       "               the value of ummu_id is the same as the number of io_die, the io_ide with\n"
@@ -63,13 +68,12 @@ static void utool_close(struct utool_dev *dev)
 {
 	if (dev->fd >= 0) {
 		close(dev->fd);
+		dev->fd = UTOOL_INVALID_FD;
 	}
 }
 
 static int utool_open(struct utool_dev *dev)
 {
-#define UTOOL_INVALID_FD (-1)
-
 	char *resolved_path = NULL;
 
 	dev->fd = UTOOL_INVALID_FD;
@@ -429,7 +433,7 @@ int main(int argc, char *argv[])
 
 	ret = utool_main_parse_sub(argc, argv, &dev);
 	if (ret != UTOOL_OK) {
-		return ret;
+		return ret == UTOOL_OK_LS ? UTOOL_OK : ret;
 	}
 
 	cmd_param = utool_get_cmd_param();
