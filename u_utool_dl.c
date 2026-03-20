@@ -1127,6 +1127,11 @@ static int utool_dl_bandwidth_cmd(struct utool_dev *dev, struct utool_cmd_param 
 	int ret = UTOOL_OK;
 	uint32_t i;
 
+	if (strcmp(param->func, DL_RT_BANDWIDTH) != 0) {
+		ret = utool_dl_cmd_func(dev, param, func_table, func_cnt);
+		return ret;
+	}
+
 	if (param->time > MAX_PERIOD_SIZE || param->time < MIN_PERIOD_SIZE) {
 		utool_err_msg("Invalid time, time = %u.\n", param->time);
 		return UTOOL_ERR_INVALID_CMD;
