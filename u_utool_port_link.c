@@ -21,6 +21,13 @@ struct port_link_info {
 	uint32_t link_status;
 };
 
+struct ubctl_port_link_stats {
+	uint32_t link_info_num;
+	uint32_t link_up_num;
+	uint32_t link_down_num;
+	struct port_link_info link_info[UTOOL_MAX_PORT_LINK_STATUS];
+};
+
 static int utool_time_parse(char *buf, struct tm time)
 {
 #define YEAR_BASE_NUM 1900
@@ -51,43 +58,29 @@ static int utool_time_parse(char *buf, struct tm time)
 	return UTOOL_OK;
 }
 
-static int utool_port_link_print(struct port_link_info *data, uint32_t data_num, char *buf)
+static int utool_port_link_print(struct ubctl_port_link_stats *data, uint32_t data_num, char *buf)
 {
 #define LINK_DOWN "LINK_DOWN"
 #define LINK_UP "LINK_UP"
 #define LINK_DOWN_FLAG 1
 
-	struct port_link_info *link_data;
-	uint32_t link_down_num = 0;
-	uint32_t link_up_num = 0;
 	time_t ker_time;
 	uint32_t i;
 	int ret;
 
-	link_data = data;
-	for (i = 0; i < data_num; i++) {
-		if (link_data->link_status == LINK_DOWN_FLAG) {
-			link_down_num++;
-		} else {
-			link_up_num++;
-		}
-		link_data++;
-	}
 	utool_reg_msg("current time        : %s\n", buf);
-	utool_reg_msg("link up count       : %u\n", link_up_num);
-	utool_reg_msg("link down count     : %u\n", link_down_num);
+	utool_reg_msg("link up count       : %u\n", data->link_up_num);
+	utool_reg_msg("link down count     : %u\n", data->link_down_num);
 	utool_reg_msg("link change records :\n");
 
-	link_data = data;
 	for (i = 0; i < data_num; i++) {
-		ker_time = (time_t)link_data->time;
+		ker_time = (time_t)data->link_info[i].time;
 		ret = utool_time_parse(buf, *(gmtime(&ker_time)));
 		if (ret) {
 			return ret;
 		}
 		utool_reg_msg("    %s    %s\n", buf,
-			      (link_data->link_status == LINK_DOWN_FLAG ? LINK_DOWN : LINK_UP));
-		link_data++;
+			      (data->link_info[i].link_status == LINK_DOWN_FLAG ? LINK_DOWN : LINK_UP));
 	}
 
 	return UTOOL_OK;
@@ -95,18 +88,14 @@ static int utool_port_link_print(struct port_link_info *data, uint32_t data_num,
 
 int utool_port_link_parse_rpc_pkt(struct fwctl_rpc_ub_out *out)
 {
-#define UTOOL_DATA_SIZE_FLAG 0
-#define UTOOL_LINK_INFO_FLAG 1
-
 	char buf[UTOOL_MAX_TIME_INFO_SIZE];
-	struct port_link_info *data;
+	struct ubctl_port_link_stats *data;
 	struct timespec ts;
 	int ret = UTOOL_OK;
 	uint32_t data_num;
 	struct tm time;
 
-	if ((out == NULL) || (out->data_size <
-			      (sizeof(struct port_link_info) * UTOOL_MAX_PORT_LINK_STATUS) + sizeof(uint32_t))) {
+	if ((out == NULL) || (out->data_size < sizeof(struct ubctl_port_link_stats))) {
 		utool_err_msg("Param is invalid, out==null(%d), data size is too small(%d).\n",
 			      (out == NULL), out == NULL ? 0 : 1);
 		return UTOOL_ERR_INVALID_PARAM;
@@ -118,13 +107,12 @@ int utool_port_link_parse_rpc_pkt(struct fwctl_rpc_ub_out *out)
 	if (ret) {
 		return ret;
 	}
-
-	data_num = out->data[UTOOL_DATA_SIZE_FLAG];
+	data = (struct ubctl_port_link_stats *)out->data;
+	data_num = data->link_info_num;
 	if (data_num > UTOOL_MAX_PORT_LINK_STATUS) {
 		utool_err_msg("the volume of data is excessive, data num = %u\n", data_num);
 		return UTOOL_ERR_INVALID_PARAM;
 	}
-	data = (struct port_link_info *)(&out->data[UTOOL_LINK_INFO_FLAG]);
 
 	return utool_port_link_print(data, data_num, buf);
 }
@@ -140,7 +128,7 @@ static int utool_port_link_cmd(struct utool_dev *dev, struct utool_cmd_param *pa
 	UTOOL_SET_USED(func_table);
 	UTOOL_SET_USED(func_cnt);
 
-	port_link_pkt_exec.data_len = sizeof(struct port_link_info) * UTOOL_MAX_PORT_LINK_STATUS + sizeof(uint32_t);
+	port_link_pkt_exec.data_len = sizeof(struct ubctl_port_link_stats);
 
 	pkt_in = utool_port_create_pkt_in(&pkt_in_len, param);
 	if (pkt_in == NULL) {
