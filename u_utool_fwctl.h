@@ -64,6 +64,12 @@ struct fwctl_pkt_in_loopback {
 	uint32_t enable;
 };
 
+struct fwctl_pkt_in_vl {
+	uint32_t port_id;
+	uint32_t enable;
+	uint32_t vl_num;
+};
+
 int utool_cmd_exec(struct utool_dev *dev, struct fwctl_rpc_ub_in *in, uint32_t inlen,
 		   struct fwctl_rpc_ub_out *out, uint32_t *outlen);
 

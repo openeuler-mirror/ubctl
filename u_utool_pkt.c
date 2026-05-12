@@ -651,6 +651,24 @@ void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *par
 	return pkt_in_port;
 }
 
+void *utool_vl_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+#define UBCTL_CONF_SSU_VL_FLAG 1U
+
+	struct fwctl_pkt_in_vl *pkt_in_vl;
+
+	pkt_in_vl = (struct fwctl_pkt_in_vl *)utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_vl));
+	if (pkt_in_vl == NULL) {
+		return NULL;
+	}
+
+	pkt_in_vl->port_id = param->port;
+	pkt_in_vl->enable = UBCTL_CONF_SSU_VL_FLAG;
+	pkt_in_vl->vl_num = param->value;
+
+	return pkt_in_vl;
+}
+
 int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param, struct utool_pkt_exec *pkt_exec)
 {
 	uint32_t pkt_in_len = 0;

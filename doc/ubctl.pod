@@ -91,7 +91,7 @@ $function: function name, optional parameters, different processing functions ar
 
     ta: pkt_stats, abn_stats
 
-    nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p
+    nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p, ssu_vl_pkt
 
     tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result
 
@@ -198,6 +198,8 @@ B<Query NL Layer Information>:
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_sw
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_oq
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_p2p
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_vl_pkt
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port_id} -f ssu_vl_pkt -e ${value}
 
 B<Query UB internal MSG queue information and entry details>:
  
