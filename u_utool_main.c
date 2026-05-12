@@ -136,7 +136,7 @@ static int utool_check_ubase_device(char *file_path, char *dev_name)
 
 		tmp_con = strtok(con, "\n");
 		if ((strcmp(token, UTOOL_DRIVER_STR) == 0) &&
-			(strcmp(tmp_con, UTOOL_UBASE_DRIVER) != 0)) {
+		    (strcmp(tmp_con, UTOOL_UBASE_DRIVER) != 0)) {
 			utool_warn_msg("Device is not ubase device, type = %s.\n", tmp_con);
 			(void)fclose(fp);
 			return UTOOL_ERR;
@@ -406,7 +406,7 @@ static int utool_main_parse_sub(int argc, char **argv, struct utool_dev *dev)
 		}
 
 		if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0) ||
-			(strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "-help") == 0)) {
+		    (strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "-help") == 0)) {
 			ret = UTOOL_ERR_HELP;
 			break;
 		}

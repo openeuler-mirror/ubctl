@@ -46,10 +46,17 @@ enum {
 };
 
 enum {
-	UTOOL_SPEED_ABILITY_100GBPS = 1,
-	UTOOL_SPEED_ABILITY_200GBPS = 2,
-	UTOOL_SPEED_ABILITY_400GBPS = 4,
-	UTOOL_SPEED_ABILITY_800GBPS = 8,
+	UTOOL_SPEED_ABILITY_200G_X2 = UTOOL_BIT(0),
+	UTOOL_SPEED_ABILITY_200G_X4 = UTOOL_BIT(1),
+	UTOOL_SPEED_ABILITY_400G_X4 = UTOOL_BIT(2),
+	UTOOL_SPEED_ABILITY_400G_X8 = UTOOL_BIT(3),
+	UTOOL_SPEED_ABILITY_25G_X1  = UTOOL_BIT(4),
+	UTOOL_SPEED_ABILITY_50G_X1  = UTOOL_BIT(5),
+	UTOOL_SPEED_ABILITY_50G_X2  = UTOOL_BIT(6),
+	UTOOL_SPEED_ABILITY_100G_X1 = UTOOL_BIT(7),
+	UTOOL_SPEED_ABILITY_100G_X2 = UTOOL_BIT(8),
+	UTOOL_SPEED_ABILITY_100G_X4 = UTOOL_BIT(9),
+	UTOOL_SPEED_ABILITY_10G_X1  = UTOOL_BIT(10),
 };
 
 enum {
@@ -183,7 +190,7 @@ struct utool_mac_dfx_link_state {
 
 struct utool_port_link_info {
 	uint8_t target_speed;
-	uint8_t speed_ability;
+	uint8_t speed_ability_old;
 	uint8_t lane_num;
 	uint8_t fec;
 	uint8_t sds_rate;
@@ -195,6 +202,7 @@ struct utool_port_link_info {
 	uint8_t port_mode;
 	uint32_t link_down_err;
 	struct utool_mac_dfx_link_state mac_link_state;
+	uint32_t speed_ability;
 };
 
 struct utool_port_dlphy_info {
@@ -232,7 +240,6 @@ union utool_port_info {
 struct utool_port_data {
 	struct utool_port_head head;
 	union utool_port_info info;
-	uint32_t reserved;
 };
 
 struct utool_info_item {
@@ -293,19 +300,32 @@ static inline void utool_print_two_type_info(const char *label, uint8_t val,
 	utool_reg_msg("%s: %s\n", label, str);
 }
 
-static void utool_print_speed_ability(uint8_t speed_ability)
+static void utool_print_speed_ability(struct utool_port_link_info *link_info)
 {
 	struct utool_info_item utool_speed_ability_table[] = {
-		{ UTOOL_SPEED_ABILITY_100GBPS, "100Gbps" },
-		{ UTOOL_SPEED_ABILITY_200GBPS, "200Gbps" },
-		{ UTOOL_SPEED_ABILITY_400GBPS, "400Gbps" },
-		{ UTOOL_SPEED_ABILITY_800GBPS, "800Gbps" },
+		{ UTOOL_SPEED_ABILITY_200G_X2, "200Gbps" },
+		{ UTOOL_SPEED_ABILITY_200G_X4, "200Gbps" },
+		{ UTOOL_SPEED_ABILITY_400G_X4, "400Gbps" },
+		{ UTOOL_SPEED_ABILITY_400G_X8, "400Gbps" },
+		{ UTOOL_SPEED_ABILITY_25G_X1, "25Gbps" },
+		{ UTOOL_SPEED_ABILITY_50G_X1, "50Gbps" },
+		{ UTOOL_SPEED_ABILITY_50G_X2, "50Gbps" },
+		{ UTOOL_SPEED_ABILITY_100G_X1, "100Gbps" },
+		{ UTOOL_SPEED_ABILITY_100G_X2, "100Gbps" },
+		{ UTOOL_SPEED_ABILITY_100G_X4, "100Gbps" },
+		{ UTOOL_SPEED_ABILITY_10G_X1, "10Gbps" },
 	};
 	uint32_t speed_ability_cnt = UTOOL_ARRAY_SIZE(utool_speed_ability_table);
 	bool have_printed = false;
+	uint32_t speed_ability;
 	uint32_t i;
 
-	utool_reg_msg("speed ability: ");
+	if (link_info->speed_ability != 0) {
+		speed_ability = link_info->speed_ability;
+	} else {
+		speed_ability = (uint32_t)link_info->speed_ability_old;
+	}
+	utool_reg_msg("speed_ability: ");
 	for (i = 0; i < speed_ability_cnt; i++) {
 		if ((utool_speed_ability_table[i].key & speed_ability) != 0) {
 			if (have_printed) {
@@ -315,6 +335,9 @@ static void utool_print_speed_ability(uint8_t speed_ability)
 			}
 			utool_reg_msg("%s", utool_speed_ability_table[i].name);
 		}
+	}
+	if (!have_printed) {
+		utool_reg_msg("NA");
 	}
 	utool_reg_msg("\n");
 }
@@ -531,16 +554,17 @@ static void utool_print_eth_dlphy_mode_info(uint8_t phy_mode_ctrl)
 		{ UTOOL_ENHANCE_ETH_MODE, "Enhance Ethernet Mode" },
 	};
 
-	utool_print_enum("phy mode ctrl", (uint32_t)phy_mode_ctrl, utool_eth_dlphy_mode_table,
+	utool_print_enum("phy_mode_ctrl", (uint32_t)phy_mode_ctrl, utool_eth_dlphy_mode_table,
 			 UTOOL_ARRAY_SIZE(utool_eth_dlphy_mode_table), "NA");
 }
 
 static void utool_print_eth_lane_num_info(uint8_t cur_lane_num, const char *str)
 {
 	struct utool_info_item utool_lane_num_table[] = {
-		{ UTOOL_MAC_LANES_X1, "LANE_NUM_X1" },
-		{ UTOOL_MAC_LANES_X2, "LANE_NUM_X2" },
-		{ UTOOL_MAC_LANES_X4, "LANE_NUM_X4" },
+		{ UTOOL_MAC_LANES_NOT_SET, "unset" },
+		{ UTOOL_MAC_LANES_X1, "X1" },
+		{ UTOOL_MAC_LANES_X2, "X2" },
+		{ UTOOL_MAC_LANES_X4, "X4" },
 	};
 
 	utool_print_enum(str, (uint32_t)cur_lane_num, utool_lane_num_table,
@@ -572,19 +596,19 @@ static int utool_ub_port_info_parse_link_info(struct fwctl_rpc_ub_out *port_info
 	utool_print_port_id(port_info_out_data->head.port_id);
 	utool_reg_msg("\n======================= UB PORT LINK INFO =======================\n");
 	utool_print_target_speed(link_info.target_speed);
-	utool_print_speed_ability(link_info.speed_ability);
-	utool_print_enum("lane num", (uint32_t)link_info.lane_num, g_utool_lanes_table,
+	utool_print_speed_ability(&link_info);
+	utool_print_enum("lane_num", (uint32_t)link_info.lane_num, g_utool_lanes_table,
 			 UTOOL_ARRAY_SIZE(g_utool_lanes_table), "NA");
 	utool_print_enum("fec", (uint32_t)link_info.fec, g_utool_fec_table, UTOOL_ARRAY_SIZE(g_utool_fec_table), "NA");
 	utool_print_sds_rate(link_info.sds_rate);
-	utool_print_two_type_info("port usage", link_info.port_usage, "used", "unused");
-	utool_print_two_type_info("port enable", link_info.port_enable, "on", "off");
-	utool_print_two_type_info("port link", link_info.port_link, "link", "no link");
+	utool_print_two_type_info("port_usage", link_info.port_usage, "used", "unused");
+	utool_print_two_type_info("port_enable", link_info.port_enable, "on", "off");
+	utool_print_two_type_info("port_link", link_info.port_link, "link", "no link");
 	utool_print_two_type_info("driver_type", link_info.driver_type, "NA", "TYPE_NONE");
 	utool_print_port_mode(link_info.port_mode);
-	utool_reg_msg("link down err: 0x%x\n", link_info.link_down_err);
+	utool_reg_msg("link_down_err: 0x%x\n", link_info.link_down_err);
 
-	utool_reg_msg("link state: 0x%04x ", link_info.mac_link_state.cur_state);
+	utool_reg_msg("link_state: 0x%04x ", link_info.mac_link_state.cur_state);
 	for (i = 0; i < UTOOL_ARRAY_SIZE(link_info.mac_link_state.err_state); i++) {
 		utool_reg_msg("0x%04x ", link_info.mac_link_state.err_state[i]);
 	}
@@ -646,17 +670,17 @@ static int utool_eth_port_info_parse_link_info(struct fwctl_rpc_ub_out *port_inf
 	utool_print_port_id(port_info_out_data->head.port_id);
 	utool_reg_msg("\n======================= ETH PORT LINK INFO =======================\n");
 	utool_print_target_speed(link_info.target_speed);
-	utool_print_speed_ability(link_info.speed_ability);
-	utool_print_enum("lane num", (uint32_t)link_info.lane_num, g_utool_lanes_table,
+	utool_print_speed_ability(&link_info);
+	utool_print_enum("lane_num", (uint32_t)link_info.lane_num, g_utool_lanes_table,
 			 UTOOL_ARRAY_SIZE(g_utool_lanes_table), "NA");
 	utool_print_enum("fec", (uint32_t)link_info.fec, g_utool_fec_table, UTOOL_ARRAY_SIZE(g_utool_fec_table), "NA");
 	utool_print_eth_sds_rate(link_info.sds_rate);
-	utool_print_two_type_info("port usage", link_info.port_usage, "used", "unused");
-	utool_print_two_type_info("port enable", link_info.port_enable, "on", "off");
-	utool_print_two_type_info("port link", link_info.port_link, "link", "no link");
+	utool_print_two_type_info("port_usage", link_info.port_usage, "used", "unused");
+	utool_print_two_type_info("port_enable", link_info.port_enable, "on", "off");
+	utool_print_two_type_info("port_link", link_info.port_link, "link", "no link");
 	utool_print_two_type_info("driver_type", link_info.driver_type, "NA", "TYPE_NONE");
 	utool_print_port_mode(link_info.port_mode);
-	utool_print_two_type_info("link down err", link_info.link_down_err, "NA", "LINK_DOWN_ERR_UNKNOW");
+	utool_print_two_type_info("link_down_err", link_info.link_down_err, "NA", "LINK_DOWN_ERR_UNKNOW");
 
 	return UTOOL_OK;
 }
@@ -695,7 +719,7 @@ static int utool_port_info_parse_modules(struct fwctl_rpc_ub_out *port_info_out)
 	return UTOOL_OK;
 }
 
-static int utool_port_info_cmd_get_mudules(struct utool_dev *dev, struct utool_cmd_param *param)
+static int utool_port_info_cmd_get_modules(struct utool_dev *dev, struct utool_cmd_param *param)
 {
 	struct utool_pkt_exec pkt_exec = {UTOOL_CMD_QUERY_PORT_INFO, 0, NULL};
 	struct fwctl_pkt_in_port_info *pkt_in = NULL;
@@ -776,9 +800,9 @@ static int utool_port_info_cmd(struct utool_dev *dev, struct utool_cmd_param *pa
 {
 	int ret = UTOOL_OK;
 
-	ret = utool_port_info_cmd_get_mudules(dev, param);
+	ret = utool_port_info_cmd_get_modules(dev, param);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("Failed to get mudules, ret = %d.\n", ret);
+		utool_err_msg("Failed to get modules, ret = %d.\n", ret);
 		return ret;
 	}
 

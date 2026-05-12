@@ -520,7 +520,7 @@ static int utool_scc_loop_call(struct utool_dev *dev, void *pkt_in, uint32_t pkt
 		ret = utool_pkt_operation(dev, ptr_pkt_in, pkt_in_len, pkt_exec);
 		if (ret != UTOOL_OK) {
 			utool_err_msg("Failed to execute %s cmd, ret = %d.\n", param->func, ret);
-		return ret;
+			return ret;
 		}
 	}
 

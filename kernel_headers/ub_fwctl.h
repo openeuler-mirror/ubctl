@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note*/
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 /*
  * Copyright(c) 2025 HiSilicon Technologies CO., Limited. All rights reserved.
  */
@@ -314,7 +314,7 @@ struct fwctl_pkt_in_table {
 };
 
 /**
- * struct fwctl_pkt_in_enable - ioctl(FWCTL_RPC) input
+ * struct fwctl_pkt_in_port - ioctl(FWCTL_RPC) input
  * @port_id: The value of param '-p'
  */
 struct fwctl_pkt_in_port {
@@ -322,7 +322,7 @@ struct fwctl_pkt_in_port {
 };
 
 /**
- * struct fwctl_pkt_in_enable - ioctl(FWCTL_RPC) input
+ * struct fwctl_pkt_in_index - ioctl(FWCTL_RPC) input
  * @index: The value of param '-i'
  */
 struct fwctl_pkt_in_index {
@@ -330,7 +330,7 @@ struct fwctl_pkt_in_index {
 };
 
 /**
- * struct fwctl_pkt_in_enable - ioctl(FWCTL_RPC) input
+ * struct fwctl_pkt_in_ummuid_value - ioctl(FWCTL_RPC) input
  * @ummu_id: The value of param '-u'
  * @value: The value of param '-e'
  */
