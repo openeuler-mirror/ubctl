@@ -859,7 +859,7 @@ static int utool_dl_trace_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_trace_out)
 		"LINK_IDLE", "RX_EQ", "DETECT WAIT", "DETECT CONFIRM", "DISCOVERY ACTIVE", "DISCOVERY CONFIRM",
 		"CONFIG ACTIVE", "CONFIG CHECK", "CONFIG CONFIRM", "SENT NULL", "LINK ACTIVE", "RETRAIN ACTIVE",
 		"RETRAIN CONFIRM", UTOOL_DEFAULT_FSM, "CHANGE SPEED", "RETRAIN_WAIT_AMLOCK", "EQ COARSE ACTIVE",
-		"EQ PASSIVE","EQ ACTIVE", "LOOPBACK CONFIRM", "LOOPBACK ACTIVE", "LOOPBACK EXIT", "SEBT EEIB",
+		"EQ PASSIVE", "EQ ACTIVE", "LOOPBACK CONFIRM", "LOOPBACK ACTIVE", "LOOPBACK EXIT", "SEBT EEIB",
 		"CHANGE POWER", "SENT FLB", "TX LP0S ACTIVE", "RX LP0S ACTIVE", "RX LP0S WAIT SDF", "IDLE POWER",
 		"SUB DIACOVERY CROSSLINK", "EQ COARSE CONFIRM",
 	};
@@ -933,7 +933,7 @@ static void utool_rt_bandwidth_data_print(const char *reg_name, uint64_t bandwid
 	int len;
 
 	if (bandwidth < KBPS_PER_MBPS) {
-		utool_reg_msg("%s: %lu kbps\n", reg_name, bandwidth);
+		utool_reg_msg("%s: %lu Kbps\n", reg_name, bandwidth);
 		return;
 	}
 	integer_part = bandwidth / KBPS_PER_MBPS;
@@ -1144,13 +1144,13 @@ static int utool_dl_bandwidth_cmd(struct utool_dev *dev, struct utool_cmd_param 
 
 	ret = utool_rt_bandwidth_pkt_operation(dev, param);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("first query real time bandwidth failed, ret = %d.\n", ret);
+		utool_err_msg("Failed to query real time bandwidth at the first time, ret = %d.\n", ret);
 		goto query_err;
 	}
 	usleep(param->time * UTOOL_MS_TO_US);
 	ret = utool_rt_bandwidth_pkt_operation(dev, param);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("second query real time bandwidth failed, ret = %d.\n", ret);
+		utool_err_msg("Failed to query real time bandwidth at the second time, ret = %d.\n", ret);
 		goto query_err;
 	}
 	utool_rt_bandwidth_parse(param->time);
@@ -1218,19 +1218,14 @@ int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		  utool_rt_bandwidth_parse_rpc_pkt, utool_port_create_pkt_in },
 	};
 	struct utool_cmd_dispatch utool_dl_cmd_table[] = {
-		{
-			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
-			utool_dl_cmd_func, utool_dl_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_dl_flag_mpfe_table)
-		}, {
-			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
-			utool_dl_cmd_func, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table)
-		}, {
-			UTOOL_FLAG_M | UTOOL_FLAG_P,
-			utool_dl_cmd, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table)
-		}, {
-			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T,
-			utool_dl_bandwidth_cmd, utool_dl_port_perf_table, UTOOL_ARRAY_SIZE(utool_dl_port_perf_table)
-		}
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
+		  utool_dl_cmd_func, utool_dl_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_dl_flag_mpfe_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
+		  utool_dl_cmd_func, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P,
+		  utool_dl_cmd, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T,
+		  utool_dl_bandwidth_cmd, utool_dl_port_perf_table, UTOOL_ARRAY_SIZE(utool_dl_port_perf_table) }
 	};
 
 	uint32_t table_cnt = UTOOL_ARRAY_SIZE(utool_dl_cmd_table);

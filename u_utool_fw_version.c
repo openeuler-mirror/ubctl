@@ -86,10 +86,10 @@ int utool_fw_version_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param 
 
 	for (i = 0; i < cmd_fw_version_cnt; i++) {
 		if (param->flags == utool_cmd_fw_version_table[i].flags) {
-		if (utool_cmd_fw_version_table[i].execute == NULL) {
-			utool_err_msg("Failed to dispatch firmware version, execute is NULL.\n");
-			return UTOOL_ERR_INVALID_PARAM;
-		}
+			if (utool_cmd_fw_version_table[i].execute == NULL) {
+				utool_err_msg("Failed to dispatch firmware version, execute is NULL.\n");
+				return UTOOL_ERR_INVALID_PARAM;
+			}
 
 		return utool_cmd_fw_version_table[i].execute(dev, param,
 							     utool_cmd_fw_version_table[i].func_table,

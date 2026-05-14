@@ -33,6 +33,10 @@ int utool_cmd_exec(struct utool_dev *dev, struct fwctl_rpc_ub_in *in, uint32_t i
 
 	ret = ioctl(dev->fd, FWCTL_RPC, &rpc);
 	if (ret != 0) {
+		if (errno == ENOTTY) {
+			utool_err_msg("The cmd is not supported at current env type.\n");
+			return UTOOL_ERR_IOCTL;
+		}
 		utool_err_msg("Failed to interaction with the kernel, ret = %d, errno = %d.\n", ret, errno);
 		return UTOOL_ERR_IOCTL;
 	}

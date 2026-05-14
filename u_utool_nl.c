@@ -16,6 +16,7 @@
 #define NL_SSU_SW "ssu_sw"
 #define NL_SSU_OQ "ssu_oq"
 #define NL_SSU_P2P "ssu_p2p"
+#define NL_SSU_VL_PKT "ssu_vl_pkt"
 
 static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
@@ -874,6 +875,20 @@ static struct utool_field_info g_utool_ssu_p2p_field_info[] = {
 	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "p2p_q_pre_sch_fifo_empty" },
 };
 
+static struct utool_field_info g_utool_ssu_vl_pkt_field_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "enable_flag" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC12, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "ssu_tx_out_dfx_vl_sel" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC11, UTOOL_FIELD_INDEX_START, "ssu_rx_out_dfx_vl_sel" },
+	{ false, false, UTOOL_REG_LOC4, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "ssu_tx_in_dfx_vl_sel" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "ssu_rx_in_dfx_vl_sel" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_packet_in_vl_cnt" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_packet_in_vl_cnt" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_packet_out_vl_cnt" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_packet_out_vl_cnt" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_nl_cal_reg_table[] = {
 	{ true, true, NL_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_pkt_stats_field_info), g_utool_pkt_stats_field_info },
 	{ true, true, NL_SSU_STATS, UTOOL_ARRAY_SIZE(g_utool_ssu_stats_field_info), g_utool_ssu_stats_field_info },
@@ -881,14 +896,16 @@ struct utool_cal_reg_cnt_dp g_utool_nl_cal_reg_table[] = {
 	{ true, false, NL_SSU_SW, UTOOL_ARRAY_SIZE(g_utool_ssu_sw_field_info), g_utool_ssu_sw_field_info },
 	{ true, false, NL_SSU_OQ, UTOOL_ARRAY_SIZE(g_utool_ssu_oq_field_info), g_utool_ssu_oq_field_info },
 	{ true, false, NL_SSU_P2P, UTOOL_ARRAY_SIZE(g_utool_ssu_p2p_field_info), g_utool_ssu_p2p_field_info },
+	{ true, false, NL_SSU_VL_PKT, UTOOL_ARRAY_SIZE(g_utool_ssu_vl_pkt_field_info), g_utool_ssu_vl_pkt_field_info },
 };
 
 static void utool_nl_print_help(void)
 {
 	utool_err_msg("The ubctl nl command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f pkt_stats/abn_stats/ssu_stats -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f ssu_sw/ssu_oq/ssu_p2p -p ${port} -i ${index}\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f pkt_stats/abn_stats/ssu_stats/ssu_vl_pkt -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f ssu_sw/ssu_oq/ssu_p2p -p ${port} -i ${index}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f ssu_vl_pkt -p ${port} -e ${value}\n");
 }
 
 int utool_nl_cal_data_len(uint32_t *nl_data_len)
@@ -991,6 +1008,36 @@ static int utool_ssu_p2p_parse_rpc_pkt(struct fwctl_rpc_ub_out *ssu_p2p_out)
 	return ret;
 }
 
+static int utool_nl_query_ssu_vl_pkt_parse_rpc_pkt(struct fwctl_rpc_ub_out *nl_vl_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(nl_vl_out, UTOOL_ARRAY_SIZE(g_utool_ssu_vl_pkt_field_info),
+			      g_utool_ssu_vl_pkt_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_NL, NL_SSU_VL_PKT));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse nl ssu vl pkt data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_nl_conf_ssu_vl_pkt_parse_rpc_pkt(struct fwctl_rpc_ub_out *nl_vl_out)
+{
+	struct fwctl_pkt_in_vl *nl_conf_vl_value;
+
+	if (nl_vl_out == NULL || nl_vl_out->data_size == 0) {
+		utool_err_msg("Invalid data pointer in nl_vl_out.");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	nl_conf_vl_value = (struct fwctl_pkt_in_vl *)(nl_vl_out->data);
+
+	utool_reg_msg("port_id: 0x%x\n", nl_conf_vl_value->port_id);
+	utool_reg_msg("Config vl succeeded. value = %u\n", nl_conf_vl_value->vl_num);
+
+	return UTOOL_OK;
+}
+
 struct utool_func_dispatch g_utool_nl_func_table[] = {
 	{ true, NL_PKT_STATS, UTOOL_CMD_QUERY_NL_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_nl_pkt_stats_parse_rpc_pkt, utool_port_create_pkt_in },
@@ -998,6 +1045,8 @@ struct utool_func_dispatch g_utool_nl_func_table[] = {
 	  utool_nl_ssu_stats_parse_rpc_pkt, utool_port_create_pkt_in },
 	{ true, NL_ABN_STATS, UTOOL_CMD_QUERY_NL_ABN, UTOOL_REG_CNT_DEFAULT,
 	  utool_nl_abn_stats_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, NL_SSU_VL_PKT, UTOOL_CMD_QUERY_NL_SSU_VL_PKT, UTOOL_REG_CNT_DEFAULT,
+	  utool_nl_query_ssu_vl_pkt_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
 static int utool_nl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -1051,6 +1100,21 @@ static int utool_nl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 	return UTOOL_ERR_FUNC_NOT_FOUND;
 }
 
+static int utool_nl_cmd_conf(struct utool_dev *dev, struct utool_cmd_param *param,
+			     struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+#define UTOOL_SSU_VL_CONF_MAX_VALUE 15U
+
+	if (strcmp(param->func, NL_SSU_VL_PKT) == 0) {
+		if (param->value > UTOOL_SSU_VL_CONF_MAX_VALUE) {
+			utool_err_msg("Invalid value, value should be in [0, %u].\n", UTOOL_SSU_VL_CONF_MAX_VALUE);
+			return UTOOL_ERR_INVALID_PARAM;
+		}
+	}
+
+	return utool_nl_cmd_func(dev, param, func_table, func_cnt);
+}
+
 int utool_nl_parse_rpc_pkt(struct fwctl_rpc_ub_out *nl_out)
 {
 	int ret = UTOOL_OK;
@@ -1099,24 +1163,25 @@ int utool_nl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
 	struct utool_func_dispatch utool_nl_ssu_func_table[] = {
 		{ false, NL_SSU_SW, UTOOL_CMD_QUERY_NL_SSU_SW, UTOOL_REG_CNT_DEFAULT,
-			utool_ssu_sw_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		  utool_ssu_sw_parse_rpc_pkt, utool_port_index_create_pkt_in },
 		{ false, NL_SSU_OQ, UTOOL_CMD_QUERY_NL_SSU_OQ, UTOOL_REG_CNT_DEFAULT,
-			utool_ssu_oq_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		  utool_ssu_oq_parse_rpc_pkt, utool_port_index_create_pkt_in },
 		{ false, NL_SSU_P2P, UTOOL_CMD_QUERY_NL_SSU_P2P, UTOOL_REG_CNT_DEFAULT,
-			utool_ssu_p2p_parse_rpc_pkt, utool_port_index_create_pkt_in },
+		  utool_ssu_p2p_parse_rpc_pkt, utool_port_index_create_pkt_in },
+	};
+	struct utool_func_dispatch utool_nl_ssu_vl_func_table[] = {
+		{ false, NL_SSU_VL_PKT, UTOOL_CMD_CONF_NL_SSU_VL_PKT, UTOOL_REG_CNT_DEFAULT,
+		  utool_nl_conf_ssu_vl_pkt_parse_rpc_pkt, utool_vl_create_pkt_in },
 	};
 	struct utool_cmd_dispatch utool_nl_cmd_table[] = {
-		{
-			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
-			utool_nl_cmd_func, g_utool_nl_func_table, UTOOL_ARRAY_SIZE(g_utool_nl_func_table)
-		}, {
-			UTOOL_FLAG_M | UTOOL_FLAG_P, utool_nl_cmd,
-			g_utool_nl_func_table, UTOOL_ARRAY_SIZE(g_utool_nl_func_table)
-		}, {
-			UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I,
-			utool_nl_cmd_func,
-			utool_nl_ssu_func_table, UTOOL_ARRAY_SIZE(utool_nl_ssu_func_table)
-		}
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
+		  utool_nl_cmd_func, g_utool_nl_func_table, UTOOL_ARRAY_SIZE(g_utool_nl_func_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P, utool_nl_cmd,
+		  g_utool_nl_func_table, UTOOL_ARRAY_SIZE(g_utool_nl_func_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_I,
+		  utool_nl_cmd_func, utool_nl_ssu_func_table, UTOOL_ARRAY_SIZE(utool_nl_ssu_func_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
+		  utool_nl_cmd_conf, utool_nl_ssu_vl_func_table, UTOOL_ARRAY_SIZE(utool_nl_ssu_vl_func_table) },
 	};
 	uint32_t nl_cmd_cnt = UTOOL_ARRAY_SIZE(utool_nl_cmd_table);
 	uint32_t i = 0;
