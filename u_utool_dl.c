@@ -6,6 +6,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
+#include <unistd.h>
 #include "u_utool_error.h"
 #include "u_utool_dl.h"
 #include "u_utool_pkt.h"
@@ -17,9 +18,12 @@
 #define DL_BIST "bist"
 #define DL_BIST_ERR "bist_err"
 #define DL_LINK_TRACE "link_trace"
+#define DL_PERFORMANCE "performance"
 #define DL_RT_BANDWIDTH "rt_bandwidth"
+#define DL_PERF "perf"
 
 #define UTOOL_TRACE_4K 0x0001000
+#define UTOOL_PERF_DATA_LEN 9472
 #define UTOOL_MAX_PORT 64U
 #define UBCTL_MAX_QUERY_NUM 2
 
@@ -712,6 +716,52 @@ static struct utool_field_info g_utool_dl_bist_err_field_info[] = {
 	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 };
 
+static struct utool_field_info g_utool_dl_perf_stats_field_info[] = {
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "valid" },
+	{ false, true, UTOOL_REG_LOC1, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "port_id" },
+	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_port_bw" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_port_bw" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(0)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(1)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(2)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(3)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(4)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(5)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(6)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(7)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(8)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(9)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(10)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(11)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(12)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(13)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(14)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_vl_bw(15)" },
+
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(0)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(1)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(2)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(3)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(4)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(5)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(6)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(7)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(8)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(9)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(10)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(11)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(12)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(13)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(14)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_vl_bw(15)" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tx_max_port_bw" },
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "rx_max_port_bw" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_dl_cal_reg_table[] = {
 	{ true, true, DL_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_pkt_stats_field_info), g_utool_pkt_stats_field_info },
 	{ true, true, DL_LINK_STATUS, UTOOL_ARRAY_SIZE(g_utool_link_status_field_info),
@@ -720,6 +770,8 @@ struct utool_cal_reg_cnt_dp g_utool_dl_cal_reg_table[] = {
 	{ true, true, DL_BIT_ERR, UTOOL_ARRAY_SIZE(g_utool_bit_err_field_info), g_utool_bit_err_field_info },
 	{ true, false, DL_BIST, UTOOL_ARRAY_SIZE(g_utool_dl_bist_field_info), g_utool_dl_bist_field_info },
 	{ true, false, DL_BIST_ERR, UTOOL_ARRAY_SIZE(g_utool_dl_bist_err_field_info), g_utool_dl_bist_err_field_info },
+	{ true, false, DL_PERFORMANCE, UTOOL_ARRAY_SIZE(g_utool_dl_perf_stats_field_info), g_utool_dl_perf_stats_field_info },
+	{ true, false, DL_PERF, UTOOL_ARRAY_SIZE(g_utool_dl_perf_stats_field_info), g_utool_dl_perf_stats_field_info },
 	{ false, false, DL_LINK_TRACE, 0, NULL },
 };
 
@@ -899,7 +951,139 @@ static int utool_dl_trace_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_trace_out)
 	return UTOOL_OK;
 }
 
-int utool_rt_bandwidth_parse_rpc_pkt(struct fwctl_rpc_ub_out *rt_bandwidth_out)
+static void utool_dl_perf_pkt_print(bool is_reserved, const char *reg_name, uint32_t data)
+{
+#define MAX_FRACTION_DIGITS 4
+#define KBPS_PER_MBPS 1000U
+
+	char frac_str[MAX_FRACTION_DIGITS];
+	uint32_t fractional_part;
+	uint32_t integer_part;
+	int ret = 0;
+	int len;
+
+	if (is_reserved) {
+		return;
+	}
+	if (strcmp(reg_name, "port_id") == 0) {
+		utool_reg_msg("%s: %u\n", reg_name, data);
+		return;
+	}
+	if (data < KBPS_PER_MBPS) {
+		utool_reg_msg("%s: %u Kbps\n", reg_name, data);
+		return;
+	}
+
+	integer_part = data / KBPS_PER_MBPS;
+	fractional_part = data % KBPS_PER_MBPS;
+
+	if (fractional_part == 0) {
+		utool_reg_msg("%s: %u Mbps\n", reg_name, integer_part);
+		return;
+	}
+
+	ret = snprintf(frac_str, sizeof(frac_str), "%03u", fractional_part);
+	if (ret < 0) {
+		utool_err_msg("Failed to get frac str, ret = %d.\n", ret);
+		return;
+	}
+
+	len = strlen(frac_str);
+	while (len > 0 && frac_str[len - 1] == '0') {
+		frac_str[--len] = '\0';
+	}
+
+	utool_reg_msg("%s: %u.%s Mbps\n", reg_name, integer_part, frac_str);
+}
+
+static int utool_dl_perf_parse(struct fwctl_rpc_ub_out *out, uint32_t field_cnt,
+			       struct utool_field_info *field_info, uint32_t reg_cnt)
+{
+#define UB_VALID_MASK 0x1
+	uint32_t i, j, k;
+	uint32_t offset;
+	uint32_t count;
+	uint32_t data;
+	uint32_t len;
+
+	utool_reg_msg("-------------------------- dl-performance --------------------------\n");
+	for (k = 0; k < UTOOL_MAX_PORT; k++) {
+		offset = k * reg_cnt;
+		count = 0;
+		j = 0;
+		if (!(out->data[offset] & UB_VALID_MASK)) {
+			continue;
+		}
+		for (i = 0; i < reg_cnt; i++) {
+			for (; j < field_cnt; j++) {
+				if (count >= UTOOL_REG_MAX_LEN) {
+					count = 0;
+				break;
+				}
+				if (field_info[j].end < field_info[j].start) {
+					utool_err_msg("Failed to parse pkt, start is bigger than end.\n");
+				return UTOOL_ERR_PARSE;
+				}
+
+				len = field_info[j].end - field_info[j].start + 1;
+
+				if (len == UTOOL_REG_MAX_LEN) {
+					data = out->data[i + offset];
+				} else {
+					data = UTOOL_EXTRACT_BITS(out->data[i + offset],
+								  field_info[j].start, field_info[j].end);
+				}
+				count += len;
+				utool_dl_perf_pkt_print(field_info[j].is_reserved, field_info[j].reg_name, data);
+			}
+		}
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_dl_start_perf_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_perf_out)
+{
+	UTOOL_SET_USED(dl_perf_out);
+	utool_reg_msg("Peak bandwidth statistics period configured successfully.\n");
+	return UTOOL_OK;
+}
+
+static int utool_dl_end_perf_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_perf_out)
+{
+	UTOOL_SET_USED(dl_perf_out);
+	utool_reg_msg("Peak bandwidth statistics collection completed.\n");
+	return UTOOL_OK;
+}
+
+static int utool_dl_perf_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_perf_out)
+{
+	uint32_t field_cnt = UTOOL_ARRAY_SIZE(g_utool_dl_perf_stats_field_info);
+	int ret = UTOOL_OK;
+	uint32_t reg_cnt;
+
+	if (dl_perf_out == NULL) {
+		utool_err_msg("Failed to parse pkt, out data is NULL.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_cal_reg_cnt(g_utool_dl_perf_stats_field_info, field_cnt, &reg_cnt);
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to calculate reg cnt, func name = %s, ret = %d.\n",
+			      DL_PERFORMANCE, ret);
+		return ret;
+	}
+
+	if (dl_perf_out->data_size != UTOOL_MAX_PORT * reg_cnt * sizeof(uint32_t)) {
+		utool_err_msg("Failed to parse pkt, param is invalid data size = %u.\n",
+			      dl_perf_out->data_size);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	return utool_dl_perf_parse(dl_perf_out, field_cnt, g_utool_dl_perf_stats_field_info, reg_cnt);
+}
+
+static int utool_rt_bandwidth_parse_rpc_pkt(struct fwctl_rpc_ub_out *rt_bandwidth_out)
 {
 	if (rt_bandwidth_out == NULL) {
 		utool_err_msg("Failed to parse real time bandwidth, rt bandwidth out is null.\n");
@@ -1048,6 +1232,28 @@ static struct utool_func_dispatch g_utool_dl_func_table[] = {
 	  utool_dl_bist_err_parse_rpc_pkt, utool_port_create_pkt_in },
 	{ false, DL_LINK_TRACE, UTOOL_CMD_QUERY_DL_LINK_TRACE, UTOOL_TRACE_4K,
 	  utool_dl_trace_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, DL_PERF, UTOOL_CMD_QUERY_DL_PERF, UTOOL_PERF_DATA_LEN,
+	  utool_dl_perf_parse_rpc_pkt, utool_port_create_pkt_in },
+};
+static struct utool_func_dispatch g_utool_dl_flag_mpfe_table[] = {
+	{ false, DL_BIST, UTOOL_CMD_CONF_DL_BIST, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_conf_bist_parse_rpc_pkt, utool_port_enable_create_pkt_in },
+	{ false, DL_PERF, UTOOL_CMD_QUERY_DL_PERF_STOP, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_end_perf_parse_rpc_pkt, utool_port_create_pkt_in },
+};
+static struct utool_func_dispatch g_utool_dl_all_port_perf_table[] = {
+	{ false, DL_PERFORMANCE, UTOOL_CMD_QUERY_DL_ALL_PERF, UTOOL_PERF_DATA_LEN,
+	  utool_dl_perf_parse_rpc_pkt, utool_time_create_pkt_in },
+};
+static struct utool_func_dispatch g_utool_dl_port_perf_table[] = {
+	{ false, DL_PERFORMANCE, UTOOL_CMD_QUERY_DL_PERFORMANCE, UTOOL_PERF_DATA_LEN,
+	  utool_dl_perf_parse_rpc_pkt, utool_port_time_create_pkt_in },
+	{ false, DL_RT_BANDWIDTH, UTOOL_CMD_QUERY_DL_RT_BANDWIDTH, UTOOL_REG_CNT_DEFAULT,
+	  utool_rt_bandwidth_parse_rpc_pkt, utool_port_create_pkt_in },
+};
+static struct utool_func_dispatch g_utool_dl_perf_start_table[] = {
+	{ false, DL_PERF, UTOOL_CMD_QUERY_DL_PERF_START, UTOOL_REG_CNT_DEFAULT,
+	  utool_dl_start_perf_parse_rpc_pkt, utool_port_time_create_pkt_in },
 };
 
 static void utool_dl_print_help(void)
@@ -1057,6 +1263,11 @@ static void utool_dl_print_help(void)
 		      "/bist/bist_err/link_trace\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port} -f bist -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f performance\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -t ${period} -f performance\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f perf -e 1\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -f perf\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -f perf -e 0\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth\n");
 }
 
@@ -1093,6 +1304,10 @@ static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 			return ret;
 		}
 
+		if (strcmp(param->func, DL_PERFORMANCE) == 0 || strcmp(param->func, DL_PERF) == 0) {
+			func_pkt_exec.data_len = func_table[i].data_len;
+		}
+
 		if (func_table[i].create_pkt_in == NULL) {
 			utool_err_msg("Failed to create dl func pkt in. Callback is NULL.\n");
 			return UTOOL_ERR_INVALID_PARAM;
@@ -1115,6 +1330,19 @@ static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *para
 	utool_dl_print_help();
 
 	return UTOOL_ERR_FUNC_NOT_FOUND;
+}
+
+static int utool_dl_perf_start_func(struct utool_dev *dev, struct utool_cmd_param *param,
+				    struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+#define UBCTL_ENABLE_FLAG 1
+
+	if (param->value != UBCTL_ENABLE_FLAG) {
+		utool_err_msg("ubctl query perf start enable value error.\n");
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	return utool_dl_cmd_func(dev, param, func_table, func_cnt);
 }
 
 static int utool_dl_bandwidth_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -1160,7 +1388,6 @@ query_err:
 		UTOOL_FREE(g_rt_bw_result_data[i]);
 		g_rt_bw_result_data[i] = NULL;
 	}
-
 	return ret;
 }
 
@@ -1180,6 +1407,17 @@ int utool_dl_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_out)
 	}
 
 	return ret;
+}
+
+static int utool_dl_perf_stop_func(struct utool_dev *dev, struct utool_cmd_param *param,
+				   struct utool_func_dispatch *func_table, uint32_t func_cnt)
+{
+	if (param->value != 0 && strcmp(param->func, DL_PERF) == 0) {
+		utool_err_msg("ubctl query perf stop enable value error, enable must be 0.\n");
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	return utool_dl_cmd_func(dev, param, func_table, func_cnt);
 }
 
 static int utool_dl_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -1209,23 +1447,19 @@ static int utool_dl_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 
 int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 {
-	static struct utool_func_dispatch utool_dl_flag_mpfe_table[] = {
-		{ false, DL_BIST, UTOOL_CMD_CONF_DL_BIST, UTOOL_REG_CNT_DEFAULT,
-		  utool_dl_conf_bist_parse_rpc_pkt, utool_port_enable_create_pkt_in },
-	};
-	static struct utool_func_dispatch utool_dl_port_perf_table[] = {
-		{ false, DL_RT_BANDWIDTH, UTOOL_CMD_QUERY_DL_RT_BANDWIDTH, UTOOL_REG_CNT_DEFAULT,
-		  utool_rt_bandwidth_parse_rpc_pkt, utool_port_create_pkt_in },
-	};
 	struct utool_cmd_dispatch utool_dl_cmd_table[] = {
-		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
-		  utool_dl_cmd_func, utool_dl_flag_mpfe_table, UTOOL_ARRAY_SIZE(utool_dl_flag_mpfe_table) },
-		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
-		  utool_dl_cmd_func, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table) },
-		{ UTOOL_FLAG_M | UTOOL_FLAG_P,
-		  utool_dl_cmd, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table) },
-		{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T,
-		  utool_dl_bandwidth_cmd, utool_dl_port_perf_table, UTOOL_ARRAY_SIZE(utool_dl_port_perf_table) }
+	{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E | UTOOL_FLAG_T,
+	  utool_dl_perf_start_func, g_utool_dl_perf_start_table, UTOOL_ARRAY_SIZE(g_utool_dl_perf_start_table) },
+	{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_E,
+	  utool_dl_perf_stop_func, g_utool_dl_flag_mpfe_table, UTOOL_ARRAY_SIZE(g_utool_dl_flag_mpfe_table) },
+	{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F | UTOOL_FLAG_T,
+	  utool_dl_bandwidth_cmd, g_utool_dl_port_perf_table, UTOOL_ARRAY_SIZE(g_utool_dl_port_perf_table) },
+	{ UTOOL_FLAG_M | UTOOL_FLAG_P | UTOOL_FLAG_F,
+	  utool_dl_cmd_func, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table) },
+	{ UTOOL_FLAG_M | UTOOL_FLAG_P,
+	  utool_dl_cmd, g_utool_dl_func_table, UTOOL_ARRAY_SIZE(g_utool_dl_func_table) },
+	{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_T,
+	  utool_dl_cmd_func, g_utool_dl_all_port_perf_table, UTOOL_ARRAY_SIZE(g_utool_dl_all_port_perf_table) }
 	};
 
 	uint32_t table_cnt = UTOOL_ARRAY_SIZE(utool_dl_cmd_table);
@@ -1250,7 +1484,6 @@ int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		return utool_dl_cmd_table[i].execute(dev, param,
 						     utool_dl_cmd_table[i].func_table,
 						     utool_dl_cmd_table[i].func_cnt);
-
 	}
 
 	utool_dl_print_help();
