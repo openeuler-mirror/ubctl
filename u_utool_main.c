@@ -35,11 +35,11 @@ static void utool_help(void)
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba, qos, msgq,\n\n"
 		       "              ummu, port_info, ubommu, ecc_2b, queue, uboe, dump,\n\n"
-		       "              port_pkt_stats, fw_version, port_link."
+		       "              port_pkt_stats, fw_version, port_link.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace,\n"
-		       "                    rt_bandwidth"
-		       "                nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p\n"
+		       "                    rt_bandwidth\n"
+		       "                nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p, ssu_vl_pkt\n"
 		       "                ta: pkt_stats, abn_stats\n"
 		       "                tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank,\n"
 		       "                    route_result\n"
@@ -136,7 +136,7 @@ static int utool_check_ubase_device(char *file_path, char *dev_name)
 
 		tmp_con = strtok(con, "\n");
 		if ((strcmp(token, UTOOL_DRIVER_STR) == 0) &&
-			(strcmp(tmp_con, UTOOL_UBASE_DRIVER) != 0)) {
+		    (strcmp(tmp_con, UTOOL_UBASE_DRIVER) != 0)) {
 			utool_warn_msg("Device is not ubase device, type = %s.\n", tmp_con);
 			(void)fclose(fp);
 			return UTOOL_ERR;
@@ -406,7 +406,7 @@ static int utool_main_parse_sub(int argc, char **argv, struct utool_dev *dev)
 		}
 
 		if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0) ||
-			(strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "-help") == 0)) {
+		    (strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "-help") == 0)) {
 			ret = UTOOL_ERR_HELP;
 			break;
 		}

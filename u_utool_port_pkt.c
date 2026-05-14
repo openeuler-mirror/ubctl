@@ -155,7 +155,7 @@ static int utool_port_pkt_cal_data_len(uint32_t *port_data_len)
 
 static int utool_port_pkt_parse_rpc_pkt(struct fwctl_rpc_ub_out *port_out)
 {
-	#define UTOOL_WHETHER_UBOE_IDX 1
+#define UTOOL_WHETHER_UBOE_IDX 1
 
 	int ret = UTOOL_OK;
 

@@ -311,6 +311,9 @@ static int utool_qos_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 	struct utool_pkt_exec qos_pkt_exec = { UTOOL_CMD_QUERY_QOS, 0, NULL };
 	int ret = UTOOL_OK;
 
+	UTOOL_SET_USED(func_table);
+	UTOOL_SET_USED(func_cnt);
+
 	ret = utool_qos_cal_data_len(&qos_pkt_exec.data_len);
 	if (ret != UTOOL_OK) {
 		utool_err_msg("Failed to cal qos reg cnt.\n");

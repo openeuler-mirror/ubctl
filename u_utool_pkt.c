@@ -65,7 +65,7 @@ static int utool_parse_param_check(struct fwctl_rpc_ub_out *out, struct utool_fi
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	if ((out->data_size == 0)) {
+	if (out->data_size == 0) {
 		utool_err_msg("Failed to parse pkt, param is invalid data_size==0(%d).\n",
 			      (out->data_size == 0));
 		return UTOOL_ERR_INVALID_PARAM;
@@ -201,7 +201,7 @@ static int utool_module_parse_input_check(struct fwctl_rpc_ub_out *out,
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	if ((out->data_size == 0)) {
+	if (out->data_size == 0) {
 		utool_err_msg("Failed to split module, param is invalid data_size==0(%d).\n",
 			      (out->data_size == 0));
 		return UTOOL_ERR_INVALID_PARAM;
@@ -446,7 +446,7 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 		}
 
 		if ((pkt_out->data_size != pkt_exec->data_len) &&
-			(pkt_exec->rpc_cmd != UTOOL_CMD_QUERY_IO_DIE_PORT_INFO)) {
+		    (pkt_exec->rpc_cmd != UTOOL_CMD_QUERY_IO_DIE_PORT_INFO)) {
 			utool_err_msg("Failed to get pkt_out data, datasize is err, pkt out data_size = %u, data len = %u.\n",
 				      pkt_out->data_size, pkt_exec->data_len);
 			ret = UTOOL_ERR;
@@ -649,6 +649,24 @@ void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *par
 
 	pkt_in_port->port_id = param->port;
 	return pkt_in_port;
+}
+
+void *utool_vl_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+#define UBCTL_CONF_SSU_VL_FLAG 1U
+
+	struct fwctl_pkt_in_vl *pkt_in_vl;
+
+	pkt_in_vl = (struct fwctl_pkt_in_vl *)utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_vl));
+	if (pkt_in_vl == NULL) {
+		return NULL;
+	}
+
+	pkt_in_vl->port_id = param->port;
+	pkt_in_vl->enable = UBCTL_CONF_SSU_VL_FLAG;
+	pkt_in_vl->vl_num = param->value;
+
+	return pkt_in_vl;
 }
 
 int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param, struct utool_pkt_exec *pkt_exec)
