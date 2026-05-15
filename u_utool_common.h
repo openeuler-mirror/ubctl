@@ -21,6 +21,7 @@
 #define UTOOL_VERSION 0
 
 #define UBCTL_ARG_MAX_LEN 20
+#define UBCTL_FILE_NAME_MAX_LEN 128
 #define UTOOL_LINE_BUF_LEN 300
 #define UTOOL_DEV_NAME_LEN_MAX 512
 #define UTOOL_DEV_CHIP_DIE_ID_MAX (1U << 16)
@@ -40,6 +41,9 @@
 #define UTOOL_FLAG_I UTOOL_BIT(4) /* -i */
 #define UTOOL_FLAG_T UTOOL_BIT(5) /* -t */
 #define UTOOL_FLAG_U UTOOL_BIT(6) /* -u */
+#define UTOOL_FLAG_DEV UTOOL_BIT(7) /* -dev */
+#define UTOOL_FLAG_FILE UTOOL_BIT(8) /* -file */
+#define UTOOL_FLAG_LS UTOOL_BIT(9) /* ls */
 
 #define UTOOL_MALLOC(length) malloc(length)
 #define UTOOL_FREE(x)			\
@@ -77,6 +81,7 @@ do {					\
 #define UTOOL_MODULE_ECC_2B "ecc_2b"
 #define UTOOL_MODULE_UBOE "uboe"
 #define UTOOL_MODULE_UMMU "ummu"
+#define UTOOL_MODULE_DEBUGFS "debugfs"
 #define UTOOL_MODULE_MSGQ "msgq"
 #define UTOOL_MODULE_QUEUE "queue"
 #define UTOOL_MODULE_DUMP "dump"
@@ -96,6 +101,7 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_ECC_2B,
 	UTOOL_MODULE_NAME_UBOE,
 	UTOOL_MODULE_NAME_UMMU,
+	UTOOL_MODULE_NAME_DEBUGFS,
 	UTOOL_MODULE_NAME_MSGQ,
 	UTOOL_MODULE_NAME_QUEUE,
 	UTOOL_MODULE_NAME_FIRMWARE_VERSION,
@@ -159,6 +165,8 @@ struct utool_cmd_param {
 	uint32_t ummu_id;
 	char func[UBCTL_ARG_MAX_LEN];
 	char module[UBCTL_ARG_MAX_LEN];
+	char device[UBCTL_ARG_MAX_LEN];
+	char file[UBCTL_FILE_NAME_MAX_LEN];
 };
 
 struct utool_module_dispatch {

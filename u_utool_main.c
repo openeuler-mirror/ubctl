@@ -24,6 +24,7 @@ enum utool_dev_step_flag {
 	UTOOL_DEV_STEP_SCAN = 0,
 	UTOOL_DEV_STEP_LS,
 	UTOOL_DEV_STEP_UMMU,
+	UTOOL_DEV_STEP_DEBUGFS,
 };
 
 static void utool_help(void)
@@ -35,7 +36,7 @@ static void utool_help(void)
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -m $module: module name, current module include: dl, nl, ta, tp, ba, qos, msgq,\n\n"
 		       "              ummu, port_info, ubommu, ecc_2b, queue, uboe, dump,\n\n"
-		       "              port_pkt_stats, fw_version, port_link.\n\n"
+		       "              port_pkt_stats, fw_version, port_link, debugfs.\n\n"
 		       "  -f $function: function name, different processing functions are provided for each module.\n"
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace,\n"
 		       "                    performance, rt_bandwidth, perf\n"
@@ -59,6 +60,8 @@ static void utool_help(void)
 		       "  -i $index: entry index, indicates the index of entry.\n\n"
 		       "  -t $time: time, used to query mar_perf statistics.\n\n"
 		       "            period, used to query port performance.\n\n"
+		       "  -dev $device: device name, can be entered: bus number / device name / netdev name.\n\n"
+		       "  -file $file: file name, the specific file name queried by debugfs.\n\n"
 		       "  -h: help. display the help information, also use -h or --help or help or -help.\n\n"
 		       "  ls: querying information about all chip.\n\n"
 		       "example:\n\n"
@@ -368,7 +371,7 @@ static int utool_check_arg(int argc, char **argv)
 		}
 
 		argv_len = strlen(argv[i]);
-		if (argv_len > UBCTL_ARG_MAX_LEN) {
+		if (argv_len > UBCTL_FILE_NAME_MAX_LEN) {
 			utool_err_msg("The input parameter length is too long.\n");
 			return UTOOL_ERR;
 		}
@@ -446,6 +449,8 @@ int main(int argc, char *argv[])
 
 	if (cmd_param->module_id == UTOOL_MODULE_NAME_UMMU) {
 		ret = utool_open_dev_step(&dev, 0, 0, UTOOL_DEV_STEP_UMMU);
+	} else if (cmd_param->module_id == UTOOL_MODULE_NAME_DEBUGFS) {
+		dev.fd = UTOOL_INVALID_FD; // debugfs does not need to open dev.
 	} else {
 		ret = utool_open_dev_step(&dev, cmd_param->chip_id, cmd_param->die_id,
 					  UTOOL_DEV_STEP_SCAN);
