@@ -41,11 +41,6 @@ struct fwctl_pkt_in_port_enable {
 	uint8_t enable;
 };
 
-struct fwctl_pkt_in_port_time {
-	uint32_t port_id;
-	uint32_t time;
-};
-
 struct fwctl_pkt_in_port_info {
 	uint32_t port_id;
 	uint16_t query_type;
