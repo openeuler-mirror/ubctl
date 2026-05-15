@@ -402,6 +402,22 @@ static void utool_deal_sys_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
 	}
 }
 
+static int utool_deal_perf_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
+{
+	if (retval == -EBADFD) {
+		if (rpc_cmd == UTOOL_CMD_QUERY_DL_PERF_START) {
+			utool_err_msg("Repeated port enabling: %d.\n", retval);
+			return retval;
+		} else if (rpc_cmd == UTOOL_CMD_QUERY_DL_PERF) {
+			utool_err_msg("The port traffic statistics function is not enabled: %d.\n", retval);
+			return retval;
+		} else {
+			utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
+		}
+	}
+	return UTOOL_OK;
+}
+
 int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len, struct utool_pkt_exec *pkt_exec)
 {
 	struct fwctl_rpc_ub_out *pkt_out = NULL;
@@ -435,6 +451,9 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 
 		ret = utool_cmd_exec(dev, in, in_len, pkt_out, &pkt_out_len);
 		if (pkt_out->retval != 0) {
+			ret = utool_deal_perf_ret(pkt_exec->rpc_cmd, pkt_out->retval);
+			if (ret != UTOOL_OK)
+				break;
 			utool_deal_sys_ret(pkt_exec->rpc_cmd, pkt_out->retval);
 			ret = UTOOL_ERR_IOCTL;
 			break;
@@ -514,6 +533,11 @@ void *utool_port_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_par
 	struct fwctl_pkt_in_port_enable *pkt_in_port_enable;
 	uint32_t data_size = sizeof(struct fwctl_pkt_in_port_enable);
 
+	if (param->value > UINT8_MAX) {
+		utool_err_msg("The value parameter is out of range.\n");
+		return NULL;
+	}
+
 	pkt_in_port_enable = (struct fwctl_pkt_in_port_enable *)utool_create_pkt_in(pkt_in_len, param, data_size);
 	if (pkt_in_port_enable == NULL) {
 		return NULL;
@@ -563,6 +587,21 @@ void *utool_port_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param
 	pkt_in_port_time->time = param->time;
 
 	return pkt_in_port_time;
+}
+
+void *utool_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_time *pkt_in_time;
+
+	pkt_in_time = (struct fwctl_pkt_in_time *)utool_create_pkt_in(pkt_in_len,
+								      param, sizeof(struct fwctl_pkt_in_time));
+	if (pkt_in_time == NULL) {
+		return NULL;
+	}
+
+	pkt_in_time->time = param->time;
+
+	return pkt_in_time;
 }
 
 void *utool_prbs_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)

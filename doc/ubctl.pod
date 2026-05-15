@@ -171,6 +171,11 @@ B<Query DL Layer Information>:
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_id} -f bist_err
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f performance
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -t ${period} -f performance
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f perf -e 1
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -f perf
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -f perf -e 0
 
 B<Query TP Layer Information>:
  
