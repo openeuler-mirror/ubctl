@@ -20,6 +20,7 @@
 #include "u_utool_ubommu.h"
 #include "u_utool_ecc_2b.h"
 #include "u_utool_uboe.h"
+#include "u_utool_debugfs.h"
 #include "u_utool_ummu.h"
 #include "u_utool_msg.h"
 #include "u_utool_queue.h"
@@ -35,6 +36,11 @@ static struct utool_cmd_param g_utool_cmd_param = {};
 static bool g_utool_cmd_chip_id_init = false;
 static bool g_utool_cmd_die_id_init = false;
 
+struct ubctl_multi_char_option_info {
+	const char *name;
+	bool requires_arg;
+};
+
 static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_DL, UTOOL_MODULE_NAME_DL, utool_dl_cmd_dispatch },
 	{ UTOOL_MODULE_NL, UTOOL_MODULE_NAME_NL, utool_nl_cmd_dispatch },
@@ -47,6 +53,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_ECC_2B, UTOOL_MODULE_NAME_ECC_2B, utool_ecc_2b_cmd_dispatch },
 	{ UTOOL_MODULE_UBOE, UTOOL_MODULE_NAME_UBOE, utool_uboe_cmd_dispatch },
 	{ UTOOL_MODULE_UMMU, UTOOL_MODULE_NAME_UMMU, utool_ummu_cmd_dispatch },
+	{ UTOOL_MODULE_DEBUGFS, UTOOL_MODULE_NAME_DEBUGFS, utool_debugfs_cmd_dispatch },
 	{ UTOOL_MODULE_MSGQ, UTOOL_MODULE_NAME_MSGQ, utool_msgq_cmd_dispatch },
 	{ UTOOL_MODULE_QUEUE, UTOOL_MODULE_NAME_QUEUE, utool_queue_cmd_dispatch },
 	{ UTOOL_MODULE_FIRMWARE_VERSION, UTOOL_MODULE_NAME_FIRMWARE_VERSION, utool_fw_version_cmd_dispatch },
@@ -101,6 +108,7 @@ int utool_transform_str(char *param, uint32_t *value)
 		return UTOOL_ERR_INVALID_CMD;
 	}
 	if (conv_value > UINT32_MAX) {
+		utool_err_msg("Value is bigger than max u32 num");
 		return UTOOL_ERR_INVALID_CMD;
 	}
 	*value = (uint32_t)conv_value;
@@ -136,6 +144,38 @@ static int utool_cmd_select_func(char *param)
 	g_utool_cmd_param.func[sizeof(g_utool_cmd_param.func) - 1] = '\0';
 
 	return ret;
+}
+
+static int utool_cmd_select_dev(char *param)
+{
+	g_utool_cmd_param.flags |= UTOOL_FLAG_DEV;
+
+	if (strlen(param) >= sizeof(g_utool_cmd_param.device)) {
+		utool_err_msg("Device name(%s) is too long, it must be less than %ubytes.\n",
+			      param, UBCTL_ARG_MAX_LEN);
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	strncpy(g_utool_cmd_param.device, param, sizeof(g_utool_cmd_param.device) - 1);
+	g_utool_cmd_param.device[sizeof(g_utool_cmd_param.device) - 1] = '\0';
+
+	return UTOOL_OK;
+}
+
+static int utool_cmd_select_file(char *param)
+{
+	g_utool_cmd_param.flags |= UTOOL_FLAG_FILE;
+
+	if (strlen(param) >= sizeof(g_utool_cmd_param.file)) {
+		utool_err_msg("File name(%s) is too long, it must be less than %ubytes.\n",
+			      param, UBCTL_FILE_NAME_MAX_LEN);
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	strncpy(g_utool_cmd_param.file, param, sizeof(g_utool_cmd_param.file) - 1);
+	g_utool_cmd_param.file[sizeof(g_utool_cmd_param.file) - 1] = '\0';
+
+	return UTOOL_OK;
 }
 
 static int utool_cmd_select_die_id(char *param)
@@ -237,7 +277,8 @@ static int utool_check_param(void)
 		return UTOOL_ERR_CMD_NOT_FOUND;
 	}
 
-	if (g_utool_cmd_param.module_id == (uint32_t)UTOOL_MODULE_NAME_UMMU) {
+	if ((g_utool_cmd_param.module_id == (uint32_t)UTOOL_MODULE_NAME_UMMU) ||
+	    (g_utool_cmd_param.module_id == (uint32_t)UTOOL_MODULE_NAME_DEBUGFS)) {
 		return UTOOL_OK;
 	}
 
@@ -256,6 +297,103 @@ static void utool_param_init(void)
 	g_utool_cmd_param.module_id = (uint32_t)UTOOL_MODULE_NAME_BUTT;
 	g_utool_cmd_chip_id_init = false;
 	g_utool_cmd_die_id_init = false;
+}
+
+static int utool_process_double_option(const char *option, char *arg)
+{
+	if (strcmp(option, "-dev") == 0) {
+		return utool_cmd_select_dev(arg);
+	}
+	if (strcmp(option, "-file") == 0) {
+		return utool_cmd_select_file(arg);
+	}
+	return UTOOL_OK;
+}
+
+static int ubctl_check_multi_char_option(int i, int argc_new, char **argv_new)
+{
+	static const struct ubctl_multi_char_option_info multi_char_options[] = {
+		{"-dev", true},
+		{"-file", true}
+	};
+	uint32_t count = UTOOL_ARRAY_SIZE(multi_char_options);
+	const char *option = argv_new[i];
+	uint32_t j;
+
+	for (j = 0; j < count; j++) {
+		if (strcmp(option, multi_char_options[j].name) != 0) {
+			continue;
+		}
+
+		if (!multi_char_options[j].requires_arg) {
+			return UTOOL_OK;
+		}
+
+		if (i + 1 >= argc_new || argv_new[i + 1][0] == '-') {
+			utool_err_msg("Option '%s' requires an argument.\n", option);
+			return UTOOL_ERR_INVALID_PARAM;
+		}
+		return UTOOL_OK;
+	}
+	utool_err_msg("Invalid option '%s'.\n", option);
+	return UTOOL_ERR_INVALID_PARAM;
+}
+
+static int utool_process_double_options(int *argc, char **argv)
+{
+#define UBCTL_OPTIONS_PROCESSED_COUNT 2
+#define UBCTL_OPTIONS_INDEX2 2
+	char *argv_new[UBCTL_ARG_MAX_LEN];
+	int argc_new = *argc;
+	int ret = UTOOL_OK;
+	int i, j;
+
+	for (i = 0; i < argc_new; i++) {
+		argv_new[i] = argv[i];
+	}
+
+	for (i = 1; i < argc_new; i++) {
+		if (strcmp(argv_new[i], "ls") == 0) {
+			g_utool_cmd_param.flags |= UTOOL_FLAG_LS;
+			continue;
+		}
+		if (!(argv_new[i][0] == '-' && argv_new[i][1] != '\0' && argv_new[i][UBCTL_OPTIONS_INDEX2] != '\0')) {
+			continue;
+		}
+
+		ret = ubctl_check_multi_char_option(i, argc_new, argv_new);
+		if (ret != UTOOL_OK) {
+			return ret;
+		}
+
+		if (i + 1 >= argc_new || argv_new[i + 1][0] == '-') {
+			for (j = i; j < argc_new - 1; j++) {
+				argv_new[j] = argv_new[j + 1];
+			}
+			argc_new--;
+			i--;
+			continue;
+		}
+
+		ret = utool_process_double_option(argv_new[i], argv_new[i + 1]);
+		if (ret != UTOOL_OK) {
+			return ret;
+		}
+
+		for (j = i; j < argc_new - UBCTL_OPTIONS_PROCESSED_COUNT; j++) {
+			argv_new[j] = argv_new[j + UBCTL_OPTIONS_PROCESSED_COUNT];
+		}
+		argc_new -= UBCTL_OPTIONS_PROCESSED_COUNT;
+		i--;
+	}
+
+	for (i = 0; i < argc_new; i++) {
+		argv[i] = argv_new[i];
+	}
+
+	*argc = argc_new;
+
+	return UTOOL_OK;
 }
 
 int utool_parse_command(int argc, char **argv)
@@ -285,6 +423,10 @@ int utool_parse_command(int argc, char **argv)
 		{ 0, 0, 0, 0 }
 	};
 
+	ret = utool_process_double_options(&argc, argv);
+	if (ret != UTOOL_OK) {
+		return ret;
+	}
 	while (1) {
 		c = getopt_long(argc, argv, "d:c:m:p:f:e:i:t:u:", long_options, NULL);
 		if (c == -1) {
