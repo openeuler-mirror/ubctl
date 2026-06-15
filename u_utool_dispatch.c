@@ -286,7 +286,7 @@ static int utool_check_param(void)
 		return UTOOL_OK;
 	}
 
-	utool_err_msg("All modules except 'ummu' must contain the '-c' and '-d' parameters.\n");
+	utool_err_msg("All modules except 'ummu' and 'debugfs' must contain '-c' and '-d' parameters.\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }

@@ -187,13 +187,14 @@ static int utool_get_device_info(void)
 
 static int utool_get_port_names(void)
 {
+#define PORT_FILTER_CMD "ip a | awk -F ':' '{print $2}' | sed 's/^[ \\t]*//;s/[ \\t]*$//' | grep -E '^ublc|^ethc'"
 	char buffer[UBCTL_BUFFER_LEN_MAX];
 	char bus_num[UBCTL_BUS_NUM_LEN];
 	uint32_t i;
 	FILE *fp;
 	int ret;
 
-	fp = popen("ip a | grep -E '^[a-zA-Z0-9]+:' | awk -F ':' '{print$2}' | grep -v -E 'eth0|lo'", "r");
+	fp = popen(PORT_FILTER_CMD, "r");
 	if (!fp) {
 		utool_err_msg("Failed to execute ip a command: %s\n", strerror(errno));
 		return UTOOL_ERR_INVALID_CMD;
@@ -313,8 +314,8 @@ static void utool_print_help(void)
 {
 	utool_err_msg("The ubctl dev command must be in the following formats:\n"
 		      "ubctl -m debugfs ls\n"
-		      "ubctl -m debugfs -dev [bus_num / device_name / netdev_name]\n"
-		      "ubctl -m debugfs -dev [bus_num / device_name / netdev_name] -file [file_name]\n");
+		      "ubctl -m debugfs -dev [Bus_Num / Device_Name / NetDev_Name]\n"
+		      "ubctl -m debugfs -dev [Bus_Num / Device_Name / NetDev_Name] -file [File_Name]\n");
 }
 
 static int utool_debugfs_cmd_ls(void)
@@ -331,7 +332,7 @@ static int utool_debugfs_cmd_ls(void)
 		return UTOOL_ERR;
 	}
 
-	utool_reg_msg("Bus Num  Device Name  Netdev Name  Device ID  Device Type\n");
+	utool_reg_msg("Bus Num  Device Name  NetDev_Name  Device ID  Device Type\n");
 	for (i = 0; i < g_utool_debugfs_device_cnt; i++) {
 		utool_get_device_name_by_ubus_num(g_utool_debugfs_devices[i].bus_num,
 						  g_utool_debugfs_devices[i].device_name);
