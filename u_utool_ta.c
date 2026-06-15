@@ -12,6 +12,7 @@
 
 #define TA_PKT_STATS "pkt_stats"
 #define TA_ABN_STATS "abn_stats"
+#define TA_WQE_TIME "wqe_processing_time"
 
 static struct utool_field_info g_utool_ta_pkt_stats_info[] = {
 	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "eip_sta0" },
@@ -818,9 +819,19 @@ static struct utool_field_info g_utool_ta_abn_stats_info[] = {
 	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
 };
 
+static struct utool_field_info g_utool_ta_wqe_time_info[] = {
+	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "wqe_processing_time" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+};
+
 static struct utool_cal_reg_cnt_dp g_utool_ta_cal_reg_table[] = {
 	{ true, true, TA_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_ta_pkt_stats_info), g_utool_ta_pkt_stats_info },
 	{ true, true, TA_ABN_STATS, UTOOL_ARRAY_SIZE(g_utool_ta_abn_stats_info), g_utool_ta_abn_stats_info },
+	{ true, false, TA_WQE_TIME, UTOOL_ARRAY_SIZE(g_utool_ta_wqe_time_info), g_utool_ta_wqe_time_info },
 };
 
 int utool_ta_cal_data_len(uint32_t *ta_data_len)
@@ -870,11 +881,26 @@ static int utool_ta_parse_abn_stats(struct fwctl_rpc_ub_out *ta_out)
 	return ret;
 }
 
+static int utool_ta_parse_wqe_time(struct fwctl_rpc_ub_out *ta_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(ta_out, UTOOL_ARRAY_SIZE(g_utool_ta_wqe_time_info),
+			      g_utool_ta_wqe_time_info, UTOOL_CONCAT_STR(UTOOL_MODULE_TA, TA_WQE_TIME));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to print ta wqe time data.\n");
+	}
+
+	return ret;
+}
+
 static struct utool_func_dispatch g_utool_ta_func_table[] = {
 	{ true, TA_PKT_STATS, UTOOL_CMD_QUERY_TA_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_ta_parse_pkt_stats, utool_null_create_pkt_in },
 	{ true, TA_ABN_STATS, UTOOL_CMD_QUERY_TA_ABN_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_ta_parse_abn_stats, utool_null_create_pkt_in },
+	{ false, TA_WQE_TIME, UTOOL_CMD_QUERY_TA_WQE_TIME, UTOOL_REG_CNT_DEFAULT,
+	  utool_ta_parse_wqe_time, utool_null_create_pkt_in },
 };
 
 int utool_ta_parse_rpc_pkt(struct fwctl_rpc_ub_out *ta_out)
@@ -899,7 +925,7 @@ static void utool_ta_print_help(void)
 {
 	utool_err_msg("The ubctl ta command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta -f pkt_stats/abn_stats\n");
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta -f pkt_stats/abn_stats/wqe_processing_time\n");
 }
 
 static int utool_ta_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
