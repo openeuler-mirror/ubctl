@@ -42,7 +42,7 @@ static void utool_help(void)
 		       "                dl: pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace,\n"
 		       "                    performance, rt_bandwidth, perf\n"
 		       "                nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p, ssu_vl_pkt\n"
-		       "                ta: pkt_stats, abn_stats\n"
+		       "                ta: pkt_stats, abn_stats, wqe_processing_time\n"
 		       "                tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank,\n"
 		       "                    route_result\n"
 		       "                ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,\n"

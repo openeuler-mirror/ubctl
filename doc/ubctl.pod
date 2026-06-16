@@ -193,6 +193,7 @@ B<Query TA Layer Information>:
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta -f pkt_stats
  ubctl -m ta -c ${chip_id} -d ${ub_ctl_id} -f abn_stats
+ ubctl -m ta -c ${chip_id} -d ${ub_ctl_id} -f wqe_processing_time
 
 B<Query NL Layer Information>:
 
