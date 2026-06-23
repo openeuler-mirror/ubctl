@@ -52,6 +52,7 @@ static void utool_dump_lydata_format(struct fwctl_rpc_ub_out *out, uint32_t offs
 	uint32_t *pos_index = out->data + offset / sizeof(uint32_t);
 
 	layer_out->data_size = layer_data_len;
+	layer_out->env_version = out->env_version;
 	memcpy(layer_out->data, pos_index, layer_data_len);
 }
 
