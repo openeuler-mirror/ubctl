@@ -238,13 +238,14 @@ int utool_module_parse(struct fwctl_rpc_ub_out *out,
 		return UTOOL_ERR_MALLOC;
 	}
 	func_pkt_out->retval = 0;
+	func_pkt_out->env_version = out->env_version;
 
 	for (i = 0; i < func_table_cnt; i++) {
 		if (!func_table[i].is_dump) {
 			continue;
 		}
 
-		memset(func_pkt_out, 0x0, func_pkt_out_max_len);
+		memset(func_pkt_out->data, 0x0, out->data_size);
 
 		ret = utool_cal_func_reg_len(func_table[i].func, &cal_reg_param);
 		if (ret != UTOOL_OK || func_data_len == 0) {
