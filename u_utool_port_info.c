@@ -230,6 +230,10 @@ struct utool_port_dlphy_info {
 	uint16_t port_cna;
 	uint16_t sds_lpbk_en_bitmap;
 	uint32_t clock_freq;
+	uint8_t opposite_valid;
+	uint8_t opposite;
+	uint8_t media_type_valid;
+	uint8_t media_type;
 };
 
 union utool_port_info {
@@ -465,9 +469,9 @@ static void utool_print_dlphy_lstm(uint8_t mac_lstm)
 static void utool_print_port_mode(uint8_t port_mode)
 {
 	struct utool_info_item utool_port_mode_table[] = {
-		{ UTOOL_PORT_MODE_UBC, "PORT_MODE_UBC" },
+		{ UTOOL_PORT_MODE_UBC, "PORT_MODE_EXCLUSIVE" },
 		{ UTOOL_PORT_MODE_SHARED, "PORT_MODE_SHARED" },
-		{ UTOOL_PORT_MODE_UBG, "PORT_MODE_UBG" },
+		{ UTOOL_PORT_MODE_UBG, "PORT_MODE_EXCLUSIVE" },
 		{ UTOOL_PORT_MODE_UNUSED, "PORT_MODE_UNUSED" },
 	};
 
@@ -587,6 +591,51 @@ static void utool_print_eth_lpbk_en(struct utool_port_dlphy_info *dlphy)
 	}
 }
 
+static void utool_print_eth_dlphy_lstm(uint8_t mac_lstm)
+{
+#define UTOOL_MAC_LSTM_RXMAC_LINK_BIT (0x1)
+#define UTOOL_MAC_LSTM_RXPCS_LINK_BIT (0x2)
+
+	const char *rxmac_link = (mac_lstm & UTOOL_MAC_LSTM_RXMAC_LINK_BIT) ? "RXMAC_LINK_UP" : "RXMAC_LINK_DOWN";
+	const char *rxpcs_link = (mac_lstm & UTOOL_MAC_LSTM_RXPCS_LINK_BIT) ? "RXPCS_LINK_UP" : "RXPCS_LINK_DOWN";
+
+	utool_reg_msg("mac_lstm: %s, %s\n", rxmac_link, rxpcs_link);
+}
+
+static void utool_print_media_type(struct fwctl_rpc_ub_out *port_info_out)
+{
+#define MEDIA_TYPE_ELECTRIC 0
+#define MEDIA_TYPE_LPO      1
+#define MEDIA_TYPE_ODSP     2
+
+	struct utool_port_data *port_info_out_data = (struct utool_port_data *)(port_info_out->data);
+	struct utool_port_dlphy_info dlphy_info = port_info_out_data->info.dlphy_info;
+
+	if ((port_info_out->env_version != UTOOL_ENV_VER_A_0) && (port_info_out->env_version != UTOOL_ENV_VER_A_1)) {
+		return;
+	}
+
+	if (!dlphy_info.media_type_valid) {
+		utool_reg_msg("media_type: NA\n");
+		return;
+	}
+
+	switch (dlphy_info.media_type) {
+		case MEDIA_TYPE_ELECTRIC:
+			utool_reg_msg("media_type: Electrical\n");
+			break;
+		case MEDIA_TYPE_LPO:
+			utool_reg_msg("media_type: LPO Optical\n");
+			break;
+		case MEDIA_TYPE_ODSP:
+			utool_reg_msg("media_type: ODSP Optical\n");
+			break;
+		default:
+			utool_reg_msg("media_type: Unknown\n");
+			break;
+	}
+}
+
 static int utool_ub_port_info_parse_link_info(struct fwctl_rpc_ub_out *port_info_out)
 {
 	struct utool_port_data *port_info_out_data = (struct utool_port_data *)(port_info_out->data);
@@ -658,6 +707,7 @@ static int utool_ub_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_inf
 		      ((uint64_t)dlphy_info.fec_err_high << UTOOL_FEC_ERR_HIGH_SHIFT) | dlphy_info.fec_err_low);
 	utool_reg_msg("retry_cnt: 0x%x\n", dlphy_info.retry_cnt);
 	utool_print_dl_link_fsm(dlphy_info.dl_link_fsm);
+	utool_print_media_type(port_info_out);
 
 	return UTOOL_OK;
 }
@@ -702,10 +752,11 @@ static int utool_eth_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_in
 	utool_print_two_type_info("port_mode", dlphy_info.port_mode, "X2 2port", "X4 1port");
 	utool_print_eth_lpbk_en(&dlphy_info);
 	utool_print_two_type_info("phy_link", dlphy_info.phy_link, "link", "no link");
-	utool_reg_msg("mac lstm: 0x%x\n", dlphy_info.mac_lstm);
+	utool_print_eth_dlphy_lstm(dlphy_info.mac_lstm);
 	utool_reg_msg("decoded_fail_block_num: 0x%x\n", dlphy_info.decoded_fail_block_num);
 	utool_reg_msg("fec_err: 0x%llx\n",
 		      ((uint64_t)dlphy_info.fec_err_high << UTOOL_FEC_ERR_HIGH_SHIFT) | dlphy_info.fec_err_low);
+	utool_print_media_type(port_info_out);
 
 	return UTOOL_OK;
 }
