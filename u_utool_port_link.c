@@ -75,7 +75,7 @@ static int utool_port_link_print(struct ubctl_port_link_stats *data, uint32_t da
 
 	for (i = 0; i < data_num; i++) {
 		ker_time = (time_t)data->link_info[i].time;
-		ret = utool_time_parse(buf, *(gmtime(&ker_time)));
+		ret = utool_time_parse(buf, *(localtime(&ker_time)));
 		if (ret) {
 			return ret;
 		}

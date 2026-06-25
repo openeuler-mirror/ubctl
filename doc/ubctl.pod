@@ -229,7 +229,7 @@ B<Query UB Memory Management Unit DFX(Maintenance Information) Register>:
  ubctl -m ummu -u ${ummu_id}
  ubctl -m ummu -u ${ummu_id} -f ummu_sync_query
 
-B<DUMP All Registers Infomation>:
+B<DUMP All Registers Information>:
 
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m dump -p ${port_id}
 
@@ -237,7 +237,7 @@ B<Query 2bit ECC statistics>:
 
  ubctl -m ecc_2b -c ${chip_id} -d ${ub_ctl_id} -p ${port_id}
 
-B<Query queue information>:
+B<Query queue Information>:
 
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m queue
 
