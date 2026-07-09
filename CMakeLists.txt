@@ -11,6 +11,9 @@ add_executable(ubctl ${UTOOL_SRC})
 
 target_link_directories(ubctl PRIVATE ${CMAKE_INSTALL_PREFIX}/lib)
 
+target_link_libraries(ubctl PRIVATE rt)
+
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wuninitialized -Wno-error=format -Wundef -Wunused -Wdate-time -Wfloat-equal -Wshadow -Wvla \
     -Wdisabled-optimization -Wempty-body -Wignored-qualifiers -Wimplicit-fallthrough=3 -Wtype-limits -Wshift-negative-value -Wswitch-default \
     -Wframe-larger-than=8192 -Wshift-overflow=2 -Wwrite-strings -Wmissing-format-attribute -Wformat-nonliteral -Wduplicated-cond -Wtrampolines \
