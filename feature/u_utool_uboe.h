@@ -6,14 +6,12 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __U_UTOOL_DISPATCH_H__
-#define __U_UTOOL_DISPATCH_H__
+#ifndef __U_UTOOL_UBOE_H__
+#define __U_UTOOL_UBOE_H__
 
-#include "./common/u_utool_common.h"
+#include "../common/u_utool_common.h"
+#include "../common/u_utool_fwctl.h"
 
-int utool_transform_str(char *param, uint32_t *value);
-int utool_cmd_select(struct utool_dev *dev);
-int utool_parse_command(int argc, char **argv);
-const struct utool_cmd_param *utool_get_cmd_param(void);
+int utool_uboe_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param);
 
 #endif

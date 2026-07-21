@@ -10,26 +10,26 @@
 #include <limits.h>
 #include <errno.h>
 
-#include "u_utool_dl.h"
-#include "u_utool_nl.h"
-#include "u_utool_ta.h"
-#include "u_utool_tp.h"
-#include "u_utool_ba.h"
-#include "u_utool_qos.h"
-#include "u_utool_port_info.h"
-#include "u_utool_ubommu.h"
-#include "u_utool_ecc_2b.h"
-#include "u_utool_uboe.h"
-#include "u_utool_debugfs.h"
-#include "u_utool_ummu.h"
-#include "u_utool_msg.h"
-#include "u_utool_queue.h"
-#include "u_utool_fw_version.h"
-#include "u_utool_port_pkt.h"
-#include "u_utool_dump.h"
-#include "u_utool_error.h"
-#include "u_utool_common.h"
-#include "u_utool_port_link.h"
+#include "./common/u_utool_error.h"
+#include "./common/u_utool_common.h"
+#include "./protocol_layer/u_utool_dump.h"
+#include "./protocol_layer/u_utool_dl.h"
+#include "./protocol_layer/u_utool_nl.h"
+#include "./protocol_layer/u_utool_ta.h"
+#include "./protocol_layer/u_utool_tp.h"
+#include "./protocol_layer/u_utool_ba.h"
+#include "./protocol_layer/u_utool_ubommu.h"
+#include "./protocol_layer/u_utool_ummu.h"
+#include "./protocol_layer/u_utool_ecc_2b.h"
+#include "./feature/u_utool_qos.h"
+#include "./feature/u_utool_port_info.h"
+#include "./feature/u_utool_uboe.h"
+#include "./feature/u_utool_debugfs.h"
+#include "./feature/u_utool_msg.h"
+#include "./feature/u_utool_queue.h"
+#include "./feature/u_utool_port_link.h"
+#include "./feature/u_utool_fw_version.h"
+#include "./feature/u_utool_port_pkt.h"
 #include "u_utool_dispatch.h"
 
 static struct utool_cmd_param g_utool_cmd_param = {};
@@ -136,7 +136,7 @@ static int utool_cmd_select_func(char *param)
 	g_utool_cmd_param.flags |= UTOOL_FLAG_F;
 
 	if (strlen(param) >= sizeof(g_utool_cmd_param.func)) {
-		utool_err_msg("Func name %s too long.\n", param);
+		utool_err_msg("Func name %s is too long, it must be less than %dbytes.\n", param, UBCTL_ARG_MAX_LEN);
 		return UTOOL_ERR_INVALID_CMD;
 	}
 
@@ -151,7 +151,7 @@ static int utool_cmd_select_dev(char *param)
 	g_utool_cmd_param.flags |= UTOOL_FLAG_DEV;
 
 	if (strlen(param) >= sizeof(g_utool_cmd_param.device)) {
-		utool_err_msg("Device name(%s) is too long, it must be less than %ubytes.\n",
+		utool_err_msg("Device name(%s) is too long, it must be less than %dbytes.\n",
 			      param, UBCTL_ARG_MAX_LEN);
 		return UTOOL_ERR_INVALID_CMD;
 	}

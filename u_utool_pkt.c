@@ -9,7 +9,7 @@
 #include <inttypes.h>
 #include <errno.h>
 
-#include "u_utool_error.h"
+#include "./common/u_utool_error.h"
 #include "u_utool_pkt.h"
 
 static void utool_delete_substr(char *str, const char *substr)
@@ -66,8 +66,7 @@ static int utool_parse_param_check(struct fwctl_rpc_ub_out *out, struct utool_fi
 	}
 
 	if (out->data_size == 0) {
-		utool_err_msg("Failed to parse pkt, param is invalid data_size==0(%d).\n",
-			      (out->data_size == 0));
+		utool_err_msg("Failed to parse pkt, out data size is 0.\n");
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
@@ -113,7 +112,8 @@ static inline void utool_pkt_print(bool is_reserved, const char *reg_name, uint6
 static int utool_cal_func_reg_len_check(const char *func_name, struct utool_cal_reg_func_param *cal_reg_param)
 {
 	if (func_name == NULL || cal_reg_param == NULL) {
-		utool_err_msg("Param is invalid, input is null;");
+		utool_err_msg("Param is invalid, func_name == NULL(%d), cal_reg_param == NULL(%d).\n",
+			      (func_name == NULL), (cal_reg_param == NULL));
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
@@ -150,8 +150,7 @@ int utool_cal_func_reg_len(const char *func_name, struct utool_cal_reg_func_para
 			continue;
 		}
 
-		ret = utool_cal_reg_cnt(reg_table[i].field_info,
-								reg_table[i].field_cnt, &func_reg_cnt);
+		ret = utool_cal_reg_cnt(reg_table[i].field_info, reg_table[i].field_cnt, &func_reg_cnt);
 		if (ret != UTOOL_OK) {
 			utool_err_msg("Failed to calculate reg cnt, func name = %s, ret = %d.\n",
 				      reg_table[i].func, ret);
@@ -202,8 +201,7 @@ static int utool_module_parse_input_check(struct fwctl_rpc_ub_out *out,
 	}
 
 	if (out->data_size == 0) {
-		utool_err_msg("Failed to split module, param is invalid data_size==0(%d).\n",
-			      (out->data_size == 0));
+		utool_err_msg("Failed to split module, out data size is 0.\n");
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
@@ -259,14 +257,14 @@ int utool_module_parse(struct fwctl_rpc_ub_out *out,
 		memcpy(func_pkt_out->data, pos_index, func_pkt_out->data_size);
 
 		if (func_table[i].execute == NULL) {
-			utool_err_msg("The func %s's excute is NULL.\n", func_table[i].func);
+			utool_err_msg("The func %s's callback is NULL.\n", func_table[i].func);
 			ret = UTOOL_ERR;
 			break;
 		}
 
 		ret = func_table[i].execute(func_pkt_out);
 		if (ret != UTOOL_OK) {
-			utool_err_msg("Failed to parse all pkt, %s parse is error, ret = %d.\n",
+			utool_err_msg("Failed to parse all pkt,func name: %s, ret = %d.\n",
 				      func_table[i].func, ret);
 			break;
 		}
@@ -352,7 +350,7 @@ static int utool_operation_param_check(struct utool_dev *dev, void *pkt_in,
 	}
 
 	if (pkt_exec->execute == NULL) {
-		utool_err_msg("Failed to build pkt, pkt_exec execute is NULL.\n");
+		utool_err_msg("Failed to build pkt, callback is NULL.\n");
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
@@ -444,7 +442,7 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 		pkt_out_len = (uint32_t)(sizeof(struct fwctl_rpc_ub_out) + pkt_exec->data_len);
 		pkt_out = (struct fwctl_rpc_ub_out *)UTOOL_MALLOC(pkt_out_len);
 		if (pkt_out == NULL) {
-			utool_err_msg("Failed to malloc space for pkt_out.\n");
+			utool_err_msg("Failed to malloc space for pkt out.\n");
 			ret = UTOOL_ERR_MALLOC;
 			break;
 		}
@@ -461,13 +459,13 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 		}
 
 		if (ret != UTOOL_OK) {
-			utool_err_msg("Failed to execute cmd, utool_cmd_exec, ret = %d\n", ret);
+			utool_err_msg("Failed to execute cmd, ret = %d\n", ret);
 			break;
 		}
 
 		if ((pkt_out->data_size != pkt_exec->data_len) &&
 		    (pkt_exec->rpc_cmd != UTOOL_CMD_QUERY_IO_DIE_PORT_INFO)) {
-			utool_err_msg("Failed to get pkt_out data, datasize is err, pkt out data_size = %u, data len = %u.\n",
+			utool_err_msg("Failed to get pkt out data. out data size = %ubytes, data len = %ubytes.\n",
 				      pkt_out->data_size, pkt_exec->data_len);
 			ret = UTOOL_ERR;
 			break;
