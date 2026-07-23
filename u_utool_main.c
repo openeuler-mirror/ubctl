@@ -13,10 +13,10 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "u_utool_error.h"
-#include "u_utool_common.h"
+#include "./common/u_utool_error.h"
+#include "./common/u_utool_common.h"
+#include "./feature/u_utool_io_die.h"
 #include "u_utool_dispatch.h"
-#include "u_utool_io_die.h"
 
 #define UTOOL_INVALID_FD (-1)
 
@@ -31,7 +31,7 @@ static void utool_help(void)
 {
 	utool_info_msg("Usage: ubctl <-c ${chip_id}> <-d ${ub_ctl_id}> <-m ${module}>\n"
 		       "       [-f ${function}] [-p ${port}] [-e ${value}] [-u ${ummu_id}] [-i ${index}]\n"
-		       "       [-t ${time}] [-dev ${device}] [-file ${file}] [-h] [ls]"
+		       "       [-t ${time}] [-dev ${device}] [-file ${file}] [-h] [ls]\n\n"
 		       "options:\n\n"
 		       "  -c $chip_id: chip id, chip id and ub ctl id  are used to find the valid device.\n\n"
 		       "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
@@ -373,7 +373,8 @@ static int utool_check_arg(int argc, char **argv)
 
 		argv_len = strlen(argv[i]);
 		if (argv_len > UBCTL_FILE_NAME_MAX_LEN) {
-			utool_err_msg("The input parameter length is too long.\n");
+			utool_err_msg("The input param length = %zubytes is bigger than maximum %ubytes.\n",
+				      argv_len, UBCTL_FILE_NAME_MAX_LEN);
 			return UTOOL_ERR;
 		}
 

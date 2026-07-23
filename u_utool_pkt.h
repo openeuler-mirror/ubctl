@@ -11,8 +11,8 @@
 
 #include <stdbool.h>
 
-#include "u_utool_fwctl.h"
-#include "u_utool_common.h"
+#include "./common/u_utool_fwctl.h"
+#include "./common/u_utool_common.h"
 
 #define UTOOL_FIELD_INDEX_START 0
 #define UTOOL_FIELD_INDEX_1 1
