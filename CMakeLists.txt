@@ -5,7 +5,10 @@ project(ubctl VERSION ${UB_TOOL_VERSION} LANGUAGES C CXX)
 
 include_directories(./)
 file(GLOB UTOOL_SRC
-    ./*.c)
+    ./*.c
+    ./common/*.c
+    ./feature/*.c
+    ./protocol_layer/*.c)
 
 add_executable(ubctl ${UTOOL_SRC})
 
