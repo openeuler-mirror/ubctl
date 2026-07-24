@@ -17,6 +17,7 @@
 #include "./common/u_utool_common.h"
 #include "./feature/u_utool_io_die.h"
 #include "u_utool_dispatch.h"
+#include "u_utool_pkt.h"
 
 #define UTOOL_INVALID_FD (-1)
 
@@ -143,7 +144,7 @@ static int utool_check_ubase_device(char *file_path, char *dev_name)
 		tmp_con = strtok(con, "\n");
 		if ((strcmp(token, UTOOL_DRIVER_STR) == 0) &&
 		    (strcmp(tmp_con, UTOOL_UBASE_DRIVER) != 0)) {
-			utool_warn_msg("Device is not ubase device, type = %s.\n", tmp_con);
+			utool_warn_msg("The device is not ubase device, type = %s.\n", tmp_con);
 			(void)fclose(fp);
 			return UTOOL_ERR;
 		}
@@ -162,63 +163,6 @@ static int utool_check_ubase_device(char *file_path, char *dev_name)
 
 	(void)fclose(fp);
 	utool_err_msg("Failed to find ubase device.\n");
-
-	return UTOOL_ERR;
-}
-
-static int utool_check_dev_chip_ctl_id(char *file_path, uint32_t chip_id, uint32_t die_id)
-{
-#define UTOOL_CHIP_ID_STR "chip_id"
-#define UTOOL_DIE_ID_STR "die_id"
-#define UTOOL_TAB_ASCII 9
-
-	uint32_t chip_id_tmp = UTOOL_DEV_CHIP_DIE_ID_MAX;
-	uint32_t die_id_tmp = UTOOL_DEV_CHIP_DIE_ID_MAX;
-	char *trimmed_str, *tmp_con, *token, *con;
-	char tab_char = UTOOL_TAB_ASCII;
-	char line[UTOOL_LINE_BUF_LEN];
-	int ret = UTOOL_OK;
-	FILE *fp;
-
-	fp = utool_open_file(file_path, "r");
-	if (fp == NULL) {
-		utool_err_msg("Failed to open the config file.\n");
-		return UTOOL_ERR;
-	}
-
-	while (fgets(line, UTOOL_LINE_BUF_LEN, fp) != NULL) {
-		token = strtok(line, ":");
-		if ((token == NULL) || ((con = strtok(NULL, "")) == NULL)) {
-			continue;
-		}
-
-		trimmed_str = token;
-		while (*trimmed_str == tab_char) {
-			trimmed_str++;
-		}
-		tmp_con = strtok(con, "\n");
-		if (strcmp(trimmed_str, UTOOL_CHIP_ID_STR) == 0) {
-			ret = utool_transform_str(tmp_con, &chip_id_tmp);
-			if (ret != UTOOL_OK) {
-				utool_err_msg("Failed to transform chip id.\n");
-				break;
-			}
-			continue;
-		}
-		if (strcmp(trimmed_str, UTOOL_DIE_ID_STR) == 0) {
-			ret = utool_transform_str(tmp_con, &die_id_tmp);
-			if (ret != UTOOL_OK) {
-				utool_err_msg("Failed to transform die id.\n");
-				break;
-			}
-			continue;
-		}
-	}
-	(void)fclose(fp);
-
-	if ((chip_id_tmp == chip_id) && (die_id_tmp == die_id)) {
-		return UTOOL_OK;
-	}
 
 	return UTOOL_ERR;
 }
@@ -280,13 +224,39 @@ static int utool_format_dev_path(struct utool_dev *dev, char *driver_path, struc
 	return UTOOL_OK;
 }
 
-static int utool_process_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id,
-			      enum utool_dev_step_flag step_flag, char *ub_entity_name)
+static int utool_process_device_info(struct fwctl_rpc_ub_out *out)
 {
-#define UTOOL_SYS_CAP_INFO_PATH "/sys/kernel/debug/ubase/%s/caps_info"
+	struct fwctl_pkt_dev_info_match *dev_info_match;
 
-	char sys_cap_path[UTOOL_DEV_NAME_LEN_MAX] = {};
-	int ret;
+	dev_info_match = (struct fwctl_pkt_dev_info_match *)out->data;
+	if (dev_info_match->is_matched) {
+		return UTOOL_OK;
+	}
+
+	return UTOOL_ERR;
+}
+
+static int utool_check_dev_info(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id)
+{
+	uint32_t pkt_in_len = sizeof(struct fwctl_pkt_dev_info_match);
+	struct utool_pkt_exec pkt_exec = {
+		.rpc_cmd = UTOOL_CMD_QUERY_DEV_INFO,
+		.data_len = sizeof(struct fwctl_pkt_dev_info_match),
+		.execute = utool_process_device_info
+	};
+	struct fwctl_pkt_dev_info_match pkt_in_match = {
+		.chip_id = chip_id,
+		.die_id = die_id,
+		.is_matched = false,
+	};
+
+	return utool_pkt_operation(dev, &pkt_in_match, pkt_in_len, &pkt_exec);
+}
+
+static int utool_process_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id,
+			      enum utool_dev_step_flag step_flag)
+{
+	int ret = UTOOL_OK;
 
 	if (step_flag == UTOOL_DEV_STEP_LS) {
 		if (utool_excute_io_die(dev) != UTOOL_OK) {
@@ -295,19 +265,18 @@ static int utool_process_step(struct utool_dev *dev, uint32_t chip_id, uint32_t 
 		return UTOOL_ERR;
 	}
 
-	if (step_flag == UTOOL_DEV_STEP_SCAN) {
-		ret = snprintf(sys_cap_path, UTOOL_DEV_NAME_LEN_MAX, UTOOL_SYS_CAP_INFO_PATH, ub_entity_name);
-		if (ret <= 0 || ret >= UTOOL_DEV_NAME_LEN_MAX) {
-			utool_err_msg("Failed to format sys cap path, errno = %d, ret = %d.\n", errno, ret);
-			return ret;
-		}
+	if (utool_open(dev) != UTOOL_OK) {
+		return UTOOL_ERR;
+	}
 
-		if (utool_check_dev_chip_ctl_id(sys_cap_path, chip_id, die_id) != UTOOL_OK) {
-			return UTOOL_ERR;
+	if (step_flag == UTOOL_DEV_STEP_SCAN) {
+		ret = utool_check_dev_info(dev, chip_id, die_id);
+		if (ret != UTOOL_OK) {
+			utool_close(dev);
 		}
 	}
 
-	return UTOOL_OK;
+	return ret;
 }
 
 static int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id,
@@ -341,15 +310,12 @@ static int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t
 			continue;
 		}
 
-		ret = utool_process_step(dev, chip_id, die_id, step_flag, ub_entity_name);
+		ret = utool_process_step(dev, chip_id, die_id, step_flag);
 		if (ret != UTOOL_OK) {
 			continue;
 		}
 
 		(void)closedir(class_dir);
-		if (utool_open(dev) != UTOOL_OK) {
-			return UTOOL_ERR;
-		}
 
 		return UTOOL_OK;
 	}
