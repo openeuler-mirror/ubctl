@@ -25,6 +25,7 @@
 #define UBCTL_DEBUGFS_PATH_LEN 30
 #define UBCTL_BUFFER_LEN_MAX 2048
 #define UBCTL_MATCH_NUM 2
+#define UBCTL_UDMA_DEV_PREFIX_LEN 5
 
 static bool g_utool_has_catted_file = false;
 
@@ -52,6 +53,62 @@ struct utool_traverse_params {
 	struct list_head dir_list;
 };
 
+static int utool_get_bus_num_from_udma_device(const char *device_name, char *bus_num)
+{
+	char ubcore_path[UBCTL_PATH_LEN_MAX];
+	char path[UBCTL_PATH_LEN_MAX];
+	struct dirent *entry;
+	DIR *dir;
+	int ret;
+
+	if (strncmp(device_name, "udmac", UBCTL_UDMA_DEV_PREFIX_LEN) != 0) {
+		return UTOOL_ERR;
+	}
+
+	dir = opendir("/sys/bus/ub/devices");
+	if (dir == NULL) {
+		utool_err_msg("Failed to open directory, error: %s\n", strerror(errno));
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	while ((entry = readdir(dir)) != NULL) {
+		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+			continue;
+		}
+
+		ret = snprintf(ubcore_path, sizeof(ubcore_path), "/sys/bus/ub/devices/%s/ubcore", entry->d_name);
+		if (ret <= 0 || (size_t)ret >= sizeof(ubcore_path)) {
+			utool_err_msg("Failed to format ubcore path, ret = %d.\n", ret);
+			goto printf_err;
+		}
+		if (access(ubcore_path, F_OK) != 0) {
+			continue;
+		}
+
+		ret = snprintf(path, sizeof(path), "/sys/bus/ub/devices/%s/ubcore/%s", entry->d_name, device_name);
+		if (ret <= 0 || (size_t)ret >= sizeof(path)) {
+			utool_err_msg("Failed to format path, ret = %d.\n", ret);
+			goto printf_err;
+		}
+		if (access(path, F_OK) != 0) {
+			continue;
+		}
+
+		ret = snprintf(bus_num, UBCTL_BUS_NUM_LEN, "%s", entry->d_name);
+		if (ret <= 0 || ret >= UBCTL_BUS_NUM_LEN) {
+			utool_err_msg("Failed to copy file name, ret = %d.\n", ret);
+			goto printf_err;
+		}
+		closedir(dir);
+		return UTOOL_OK;
+	}
+
+	utool_err_msg("Failed to get bus number from udma device %s.\n", device_name);
+printf_err:
+	closedir(dir);
+	return UTOOL_ERR;
+}
+
 static int utool_get_bus_num_by_device_name(char *device_name, char *bus_num)
 {
 	char search_file[UBCTL_PATH_LEN_MAX];
@@ -64,6 +121,11 @@ static int utool_get_bus_num_by_device_name(char *device_name, char *bus_num)
 
 	if (!device_name || !bus_num) {
 		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_get_bus_num_from_udma_device(device_name, bus_num);
+	if (ret == UTOOL_OK) {
+		return UTOOL_OK;
 	}
 
 	if (sscanf(device_name, "%[^0-9]%[0-9]", letters, digits) != UBCTL_MATCH_NUM) {
@@ -88,15 +150,17 @@ static int utool_get_bus_num_by_device_name(char *device_name, char *bus_num)
 			utool_err_msg("Failed to format path, ret = %d.\n", ret);
 			goto printf_err;
 		}
-		if (access(path, F_OK) != -1) {
-			ret = snprintf(bus_num, UBCTL_BUS_NUM_LEN, "%s", entry->d_name);
-			if (ret <= 0 || ret >= UBCTL_BUS_NUM_LEN) {
-				utool_err_msg("Failed to copy file name, ret = %d.\n", ret);
-				goto printf_err;
-			}
-			closedir(dir);
-			return UTOOL_OK;
+		if (access(path, F_OK) != 0) {
+			continue;
 		}
+
+		ret = snprintf(bus_num, UBCTL_BUS_NUM_LEN, "%s", entry->d_name);
+		if (ret <= 0 || ret >= UBCTL_BUS_NUM_LEN) {
+			utool_err_msg("Failed to copy file name, ret = %d.\n", ret);
+			goto printf_err;
+		}
+		closedir(dir);
+		return UTOOL_OK;
 	}
 
 	utool_err_msg("Failed to get bus number from %s.\n", device_name);
@@ -150,22 +214,24 @@ static int utool_get_device_info(void)
 {
 	const char *commands[] = {"lsub 2>/dev/null", "/var/lsub 2>/dev/null"};
 	char buffer[UBCTL_BUFFER_LEN_MAX];
-	bool success = false;
+	bool lsub_exec_success = false;
+	uint32_t i;
 	FILE *fp;
 
-	for (size_t i = 0; i < UTOOL_ARRAY_SIZE(commands); ++i) {
+	for (i = 0; i < UTOOL_ARRAY_SIZE(commands); ++i) {
 		fp = popen(commands[i], "r");
 		if (fp == NULL) {
 			continue;
 		}
 		if (fgets(buffer, sizeof(buffer), fp) != NULL) {
-			success = true;
+			lsub_exec_success = true;
 			break;
 		}
 		pclose(fp);
+		fp = NULL;
 	}
 
-	if (!success) {
+	if (!lsub_exec_success) {
 		if (fp) {
 			pclose(fp);
 		}
@@ -222,6 +288,55 @@ static int utool_get_port_names(void)
 	return UTOOL_OK;
 }
 
+static int utool_get_device_name_from_ubcore(const char *ubus_num, char *device_name)
+{
+	char ubcore_path[UBCTL_CMD_LEN_MAX];
+	char buffer[UBCTL_BUFFER_LEN_MAX];
+	char cmd[UBCTL_CMD_LEN_MAX];
+	FILE *fp;
+	int ret;
+
+	ret = snprintf(ubcore_path, sizeof(ubcore_path), "/sys/bus/ub/devices/%s/ubcore", ubus_num);
+	if (ret <= 0 || (size_t)ret >= sizeof(ubcore_path)) {
+		utool_err_msg("Failed to format ubcore path, ret = %d.\n", ret);
+		return UTOOL_ERR;
+	}
+	if (access(ubcore_path, F_OK) != 0) {
+		return UTOOL_ERR;
+	}
+
+	ret = snprintf(cmd, sizeof(cmd), "ls %s | grep '^udmac' | head -n 1", ubcore_path);
+	if (ret <= 0 || (size_t)ret >= sizeof(cmd)) {
+		utool_err_msg("Failed to format ls cmd for ubcore, ret = %d.\n", ret);
+		return UTOOL_ERR;
+	}
+
+	fp = popen(cmd, "r");
+	if (fp == NULL) {
+		utool_err_msg("Failed to popen for ubcore.\n");
+		return UTOOL_ERR;
+	}
+
+	if (fgets(buffer, sizeof(buffer), fp) == NULL) {
+		pclose(fp);
+		return UTOOL_ERR;
+	}
+
+	buffer[strcspn(buffer, "\n")] = '\0';
+	if (strncmp(buffer, "udmac", UBCTL_UDMA_DEV_PREFIX_LEN) != 0) {
+		pclose(fp);
+		return UTOOL_ERR;
+	}
+	ret = snprintf(device_name, UBCTL_ARG_MAX_LEN, "%s", buffer);
+	if (ret <= 0 || ret >= UBCTL_ARG_MAX_LEN) {
+		utool_err_msg("Failed to format device name from ubcore, ret = %d.\n", ret);
+		pclose(fp);
+		return UTOOL_ERR;
+	}
+	pclose(fp);
+	return UTOOL_OK;
+}
+
 static void utool_get_device_name_by_ubus_num(char *ubus_num, char *device_name)
 {
 	char buffer[UBCTL_BUFFER_LEN_MAX];
@@ -232,6 +347,11 @@ static void utool_get_device_name_by_ubus_num(char *ubus_num, char *device_name)
 	int ret;
 
 	if (!ubus_num || !device_name) {
+		return;
+	}
+
+	ret = utool_get_device_name_from_ubcore(ubus_num, device_name);
+	if (ret == UTOOL_OK) {
 		return;
 	}
 
