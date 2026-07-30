@@ -20,6 +20,8 @@
 
 #define UTOOL_VERSION 0
 
+#define UTOOL_INVALID_FD (-1)
+
 #define UTOOL_ENV_VER_UNKNOWN (0U)
 #define UTOOL_ENV_VER_A_0 (1000U)
 #define UTOOL_ENV_VER_A_1 (1001U)
@@ -153,6 +155,13 @@ enum utool_reg_location {
 	UTOOL_REG_LOC31 = 31,
 };
 
+enum utool_dev_step_flag {
+	UTOOL_DEV_STEP_SCAN = 0,
+	UTOOL_DEV_STEP_LS,
+	UTOOL_DEV_STEP_UMMU,
+	UTOOL_DEV_STEP_DEBUGFS,
+};
+
 struct utool_dev {
 	char devname[UTOOL_DEV_NAME_LEN_MAX];
 	int32_t fd;
@@ -202,5 +211,8 @@ struct utool_cmd_option_parse {
 	char option;
 	int (*cmd_select_func) (char *param);
 };
+
+void utool_close(struct utool_dev *dev);
+int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id, enum utool_dev_step_flag step_flag);
 
 #endif

@@ -1,14 +1,34 @@
 cmake_minimum_required(VERSION 3.5)
-set(UB_TOOL_VERSION 0.1.0)
 
-project(ubctl VERSION ${UB_TOOL_VERSION} LANGUAGES C CXX)
+project(ubctl_so VERSION ${PROJECT_VERSION} LANGUAGES C CXX)
 
 include_directories(./)
+include_directories(./common)
+include_directories(./feature)
+include_directories(./protocol_layer)
 file(GLOB UTOOL_SRC
     ./*.c
     ./common/*.c
     ./feature/*.c
     ./protocol_layer/*.c)
+
+set(UTOOL_SRC_LIB ${UTOOL_SRC})
+list(REMOVE_ITEM UTOOL_SRC_LIB
+    ${CMAKE_CURRENT_SOURCE_DIR}/u_utool_main.c
+)
+
+add_library(ubctl_so SHARED ${UTOOL_SRC_LIB})
+
+target_link_directories(ubctl_so PRIVATE ${CMAKE_INSTALL_PREFIX}/lib)
+
+set_target_properties(ubctl_so PROPERTIES
+    SOVERSION ${LIB_SOVERSION}
+    VERSION ${PROJECT_VERSION}
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME "ubctl"
+)
+
+install(TARGETS ubctl_so LIBRARY DESTINATION lib64 OPTIONAL)
 
 add_executable(ubctl ${UTOOL_SRC})
 
@@ -24,3 +44,4 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wuninitialized -Wno-error=format -Wun
     -Wreturn-local-addr -Wredundant-decls -Wfloat-conversion -Wmissing-prototypes -Wstrict-prototypes")
 
 install(TARGETS ubctl RUNTIME DESTINATION bin OPTIONAL)
+install(FILES include/u_utool_user_api.h DESTINATION include/)
