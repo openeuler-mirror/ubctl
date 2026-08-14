@@ -11,44 +11,112 @@
 #include "u_utool_ubommu.h"
 
 static struct utool_field_info g_utool_ubommu_field[] = {
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_aw_request_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_aw_request_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_aw_bresp_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_aw_bresp_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_aw_data_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_aw_data_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_aw_outstanding_num" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_aw_outstanding_num" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_ar_request_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_ar_request_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_ar_resp_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_ar_resp_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_ar_data_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_ar_data_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "axim_ar_outstanding_num" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "axim_ar_outstanding_num" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "ubommu_trans_request_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ubommu_trans_request_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "ubommu_trans_resp_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ubommu_trans_resp_cnt" },
 
-	{ false, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "ubommu_trans_outstanding_num" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ubommu_trans_outstanding_num" },
 
-	{ false, true, UTOOL_REG_LOC6, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC5, UTOOL_FIELD_INDEX_START, "ubommu_int_src" },
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_int_src" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	// opcode 0xA031
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ubommu_syn_req_cnt" },
+
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ubommu_syn_resp_cnt" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "mmio_base_addr0" },
+
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "mmio_base_addr1" },
+
+	{ false, true, UTOOL_LOC19, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC18, 0, UTOOL_CAP_ALL, "mmio_size_cfg" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "cmdq_size_cfg" },
+	{ false, true, UTOOL_LOC8, UTOOL_LOC11, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "eventq_size_cfg" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC12, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC11, 0, UTOOL_CAP_ALL, "eventq_size_use" },
+	{ false, true, UTOOL_LOC1, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "eventq_en" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "usi_idx" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ram_ecc_1b_int" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ram_ecc_2b_int" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_ce" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_nue" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_ue" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ram_ecc_1b_int_mask" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ram_ecc_2b_int_mask" },
+
+	{ false, true, UTOOL_LOC5, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "ubommu_int_src_nue" },
+
+	{ false, true, UTOOL_LOC5, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "ubommu_int_serverity_ue" },
+
+	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "ue0_trust_host_enable" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ue0_upi_supported" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ue0_upi" },
+	// V160
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V23, "ummu_stall_iopf_num" },
+	// reserved 88~95
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
 int utool_ubommu_cal_data_len(uint32_t *ubommu_data_len)
