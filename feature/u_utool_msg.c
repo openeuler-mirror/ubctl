@@ -15,89 +15,89 @@
 #define MSGQ_ENTRY "entry"
 
 static struct utool_field_info g_utool_msgq_que_stats_field_info[] = {
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "sq_pi" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "sq_pi" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "sq_ci" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "sq_ci" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "sq_depth" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "sq_depth" },
 
-	{ true, true, UTOOL_REG_LOC2, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC1, UTOOL_REG_LOC1, UTOOL_FIELD_INDEX_START, "sq_empty" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "sq_full" },
+	{ true, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "sq_empty" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "sq_full" },
 
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "sq_int_msk" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "sq_int_st" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "sq_int_ro" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "sq_int_msk" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "sq_int_st" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "sq_int_ro" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "rq_pi" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "rq_pi" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "rq_ci" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "rq_ci" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "rq_depth" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "rq_depth" },
 
-	{ true, true, UTOOL_REG_LOC3, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC2, UTOOL_FIELD_INDEX_START, "rq_entry_blk_size" },
+	{ true, true, UTOOL_LOC3, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC2, 0, UTOOL_CAP_ALL, "rq_entry_blk_size" },
 
-	{ true, true, UTOOL_REG_LOC2, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC1, UTOOL_REG_LOC1, UTOOL_FIELD_INDEX_START, "rq_empty" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "rq_full" },
+	{ true, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "rq_empty" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "rq_full" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "cq_pi" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "cq_pi" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "cq_ci" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "cq_ci" },
 
-	{ true, true, UTOOL_REG_LOC11, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "cq_depth" },
+	{ true, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "cq_depth" },
 
-	{ true, true, UTOOL_REG_LOC2, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC1, UTOOL_REG_LOC1, UTOOL_FIELD_INDEX_START, "cq_empty" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC0, UTOOL_FIELD_INDEX_START, "cq_full" },
+	{ true, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "cq_empty" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "cq_full" },
 
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "cq_int_msk" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "cq_int_st" },
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "cq_int_ro" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "cq_int_msk" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "cq_int_st" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "cq_int_ro" },
 
-	{ true, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
 static struct utool_field_info g_utool_msgq_entry_field_info[] = {
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC1, UTOOL_FIELD_INDEX_START, "sq_task_type" },
-	{ true, true, UTOOL_REG_LOC2, UTOOL_REG_LOC3, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC4, UTOOL_REG_LOC4, UTOOL_FIELD_INDEX_START, "sq_local" },
-	{ true, false, UTOOL_REG_LOC5, UTOOL_REG_LOC6, UTOOL_FIELD_INDEX_START, "sq_dev_type" },
-	{ true, false, UTOOL_REG_LOC7, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "sq_icrc" },
-	{ true, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "sq_op_code" },
-	{ true, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "sq_task_type" },
+	{ true, true, UTOOL_LOC2, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC4, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "sq_local" },
+	{ true, false, UTOOL_LOC5, UTOOL_LOC6, 0, UTOOL_CAP_ALL, "sq_dev_type" },
+	{ true, false, UTOOL_LOC7, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "sq_icrc" },
+	{ true, false, UTOOL_LOC8, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "sq_op_code" },
+	{ true, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "sq_msn" },
-	{ true, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "sq_msn" },
+	{ true, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC1, UTOOL_FIELD_INDEX_START, "cq_task_type" },
-	{ true, true, UTOOL_REG_LOC2, UTOOL_REG_LOC7, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC8, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "cq_op_code" },
-	{ true, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "cq_task_type" },
+	{ true, true, UTOOL_LOC2, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC8, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "cq_op_code" },
+	{ true, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "cq_msn" },
-	{ true, true, UTOOL_REG_LOC16, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "cq_msn" },
+	{ true, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ true, false, UTOOL_REG_LOC0, UTOOL_REG_LOC9, UTOOL_FIELD_INDEX_START, "rq_pi" },
-	{ true, true, UTOOL_REG_LOC10, UTOOL_REG_LOC15, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ true, false, UTOOL_REG_LOC16, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "cq_status" },
-	{ true, true, UTOOL_REG_LOC24, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC9, 0, UTOOL_CAP_ALL, "rq_pi" },
+	{ true, true, UTOOL_LOC10, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "reserved" },
+	{ true, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_ALL, "cq_status" },
+	{ true, true, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ true, true, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
 static struct utool_cal_reg_cnt_dp g_utool_msgq_cal_reg_table[] = {
@@ -145,7 +145,7 @@ static void utool_msg_print_help(void)
 static int utool_msgq_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
 			       struct utool_func_dispatch *func_table, uint32_t func_cnt)
 {
-	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_BUTT, 0, NULL };
+	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_MAX, 0, NULL };
 	struct utool_cal_reg_func_param msgq_cal_reg_param = {
 		NULL, 0, NULL, g_utool_msgq_cal_reg_table, UTOOL_ARRAY_SIZE(g_utool_msgq_cal_reg_table)
 	};
