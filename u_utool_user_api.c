@@ -176,3 +176,24 @@ close_dev:
 
 	return ret;
 }
+
+int ubctl_query_icrc_api(uint32_t chip_id, uint32_t die_id, uint32_t port_id, struct ubctl_icrc_info *data)
+{
+#define UBCTL_QUERY_BA_ICRC_DFX 0xA03C
+
+	struct ubctl_cmd_buf in = {
+		.opcode = UBCTL_QUERY_BA_ICRC_DFX,
+		.is_read = true,
+		.data_size = sizeof(uint32_t),
+		.data = &port_id
+	};
+
+	struct ubctl_cmd_buf out = {
+		.opcode = UBCTL_QUERY_BA_ICRC_DFX,
+		.is_read = true,
+		.data_size = sizeof(struct ubctl_icrc_info),
+		.data = data
+	};
+
+	return ubctl_user_comm_api(chip_id, die_id, UBCTL_USER_CMD_COMM, &in, &out);
+}
