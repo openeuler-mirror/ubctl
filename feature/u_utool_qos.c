@@ -11,261 +11,261 @@
 #include "u_utool_qos.h"
 
 static struct utool_field_info g_utool_qos_field[] = {
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "port_id" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp0)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp1)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp2)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp3)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp4)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp5)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp6)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp7)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp8)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp9)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp10)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp11)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp12)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp13)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp14)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "tp_axqos(grp15)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp0)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp1)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
-
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp2)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "port_id" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp0)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp1)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp2)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp3)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp4)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp5)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp6)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp7)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp8)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp9)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp10)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp11)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp12)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp13)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp14)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "tp_axqos(grp15)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp0)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp1)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp2)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp3)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp3)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp4)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp4)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp5)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp5)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp6)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp6)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp7)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp7)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp8)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp8)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp9)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp9)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ta_axqos(grp10)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ta_axqos(grp10)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp0)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp0)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp1)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp1)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp2)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp2)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp3)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp3)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp4)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp4)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp5)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp5)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp6)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp6)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp7)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp7)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp8)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp8)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp9)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp9)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp10)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp10)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp11)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp11)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp12)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp12)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp13)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp13)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp14)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp14)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "nl_axqos(grp15)" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "nl_axqos(grp15)" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp0)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp0)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp1)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp1)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp2)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp2)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp3)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp3)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp4)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp4)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp5)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp5)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp6)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp6)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp7)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp7)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp8)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp8)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp9)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp9)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp10)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp10)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp11)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp11)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp12)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp12)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp13)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp13)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp14)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp14)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_cmdq_axqos(grp15)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_cmdq_axqos(grp15)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win0)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win0)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win1)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win1)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win2)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win2)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win3)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win3)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win4)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win4)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win5)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win5)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win6)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win6)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "misc_8win_axqos(win7)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "misc_8win_axqos(win7)" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC23, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC24, UTOOL_REG_LOC27, UTOOL_FIELD_INDEX_START, "misc_msix_axqos" },
-	{ false, true, UTOOL_REG_LOC28, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC23, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC24, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "misc_msix_axqos" },
+	{ false, true, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, true, UTOOL_REG_LOC0, UTOOL_REG_LOC10, UTOOL_FIELD_INDEX_START, "reserved" },
-	{ false, false, UTOOL_REG_LOC11, UTOOL_REG_LOC14, UTOOL_FIELD_INDEX_START, "ub_memory_axqos" },
-	{ false, true, UTOOL_REG_LOC15, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "ub_memory_axqos" },
+	{ false, true, UTOOL_LOC15, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, false, UTOOL_REG_LOC0, UTOOL_REG_LOC31, UTOOL_FIELD_INDEX_START, "tp_lsa_req_qos_ctrl" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tp_lsa_req_qos_ctrl" },
 };
 
 int utool_qos_cal_data_len(uint32_t *qos_data_len)

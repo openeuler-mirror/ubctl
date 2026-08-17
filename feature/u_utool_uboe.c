@@ -85,7 +85,7 @@ static int utool_uboe_cmd_func(struct utool_dev *dev, struct utool_cmd_param *pa
 			       struct utool_func_dispatch *func_table, uint32_t func_cnt)
 {
 #define UBCTL_MAX_ENABLE_VAL 1U
-	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_BUTT, UBOE_DEFAULT_CNT, NULL };
+	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_MAX, UBOE_DEFAULT_CNT, NULL };
 	uint32_t pkt_in_len = 0;
 	void *pkt_in = NULL;
 	int ret = UTOOL_OK;

@@ -21,6 +21,7 @@
 #include "./protocol_layer/u_utool_ubommu.h"
 #include "./protocol_layer/u_utool_ummu.h"
 #include "./protocol_layer/u_utool_ecc_2b.h"
+#include "./protocol_layer/u_utool_upa.h"
 #include "./feature/u_utool_qos.h"
 #include "./feature/u_utool_port_info.h"
 #include "./feature/u_utool_uboe.h"
@@ -30,6 +31,7 @@
 #include "./feature/u_utool_port_link.h"
 #include "./feature/u_utool_fw_version.h"
 #include "./feature/u_utool_port_pkt.h"
+#include "./feature/u_utool_ue_info.h"
 #include "u_utool_dispatch.h"
 
 static struct utool_cmd_param g_utool_cmd_param = {};
@@ -58,7 +60,9 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_QUEUE, UTOOL_MODULE_NAME_QUEUE, utool_queue_cmd_dispatch },
 	{ UTOOL_MODULE_FIRMWARE_VERSION, UTOOL_MODULE_NAME_FIRMWARE_VERSION, utool_fw_version_cmd_dispatch },
 	{ UTOOL_MODULE_PORT_PKT_STATS, UTOOL_MODULE_NAME_PORT_PKT_STATS, utool_port_pkt_cmd_dispatch },
+	{ UTOOL_MODULE_UE, UTOOL_MODULE_NAME_UE, utool_ue_info_cmd_dispatch },
 	{ UTOOL_MODULE_PORT_LINK, UTOOL_MODULE_NAME_PORT_LINK, utool_port_link_cmd_dispatch },
+	{ UTOOL_MODULE_UPA, UTOOL_MODULE_NAME_UPA, utool_upa_cmd_dispatch },
 	{ UTOOL_MODULE_DUMP, UTOOL_MODULE_NAME_DUMP, utool_dump_cmd_dispatch },
 };
 
@@ -108,7 +112,6 @@ int utool_transform_str(char *param, uint32_t *value)
 		return UTOOL_ERR_INVALID_CMD;
 	}
 	if (conv_value > UINT32_MAX) {
-		utool_err_msg("Value is bigger than max u32 num");
 		return UTOOL_ERR_INVALID_CMD;
 	}
 	*value = (uint32_t)conv_value;
@@ -335,7 +338,7 @@ static int ubctl_check_multi_char_option(int i, int argc_new, char **argv_new)
 		}
 		return UTOOL_OK;
 	}
-	utool_err_msg("Invalid option '%s'.\n", option);
+	utool_err_msg("Invalid option: '%s'.\n", option);
 	return UTOOL_ERR_INVALID_PARAM;
 }
 
@@ -356,6 +359,10 @@ static int utool_process_double_options(int *argc, char **argv)
 		if (strcmp(argv_new[i], "ls") == 0) {
 			g_utool_cmd_param.flags |= UTOOL_FLAG_LS;
 			continue;
+		}
+		if (argv_new[i][0] == '-' && argv_new[i][1] >= '0' && argv_new[i][1] <= '9') {
+			utool_err_msg("Invalid value: '%s'.\n", argv_new[i]);
+			return UTOOL_ERR_INVALID_PARAM;
 		}
 		if (!(argv_new[i][0] == '-' && argv_new[i][1] != '\0' && argv_new[i][UBCTL_OPTIONS_INDEX2] != '\0')) {
 			continue;

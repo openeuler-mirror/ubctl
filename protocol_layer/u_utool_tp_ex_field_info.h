@@ -6,17 +6,17 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __U_UTOOL_TP_FIELD_INFO_H__
-#define __U_UTOOL_TP_FIELD_INFO_H__
+#ifndef __U_UTOOL_TP_EX_FIELD_INFO_H__
+#define __U_UTOOL_TP_EX_FIELD_INFO_H__
 
 #include "../u_utool_pkt.h"
 
-#define TP_PKT_STATS_FIELD_INFO "utool_tp_pkt_stats_field_info"
-#define TP_ABN_STATS_FIELD_INFO "utool_tp_abn_stats_field_info"
-#define TP_TX_ROUTE_FIELD_INFO "utool_tp_tx_route_field_info"
+#define FIELD_INFO_MAX_LEN 2000
 #define TP_RX_BANK_FIELD_INFO "utool_tp_rx_bank_field_info"
 #define TP_RX_BANK_FIELD_INFO_BANK1 "utool_tp_rx_bank_field_info_bank1"
 #define TP_RX_BANK_FIELD_INFO_BANK2 "utool_tp_rx_bank_field_info_bank2"
+#define TP_ABN_STATS_FIELD_INFO "utool_tp_abn_stats_field_info"
+#define TP_TX_ROUTE_FIELD_INFO "utool_tp_tx_route_field_info"
 
 struct utool_field_info_dp {
 	char field_name[UTOOL_REG_NAME_MAX_LEN];
@@ -24,6 +24,6 @@ struct utool_field_info_dp {
 	struct utool_field_info *field_info;
 };
 
-struct utool_field_info_dp *utool_tp_get_field_info_by_name(const char *field_name);
+struct utool_field_info_dp *utool_tp_get_ex_field_info_by_name(const char *field_name);
 
 #endif

@@ -10,6 +10,7 @@
 #include <errno.h>
 
 #include "./common/u_utool_error.h"
+#include "u_utool_diff_version.h"
 #include "u_utool_pkt.h"
 
 static void utool_delete_substr(char *str, const char *substr)
@@ -47,7 +48,7 @@ int utool_cal_reg_cnt(struct utool_field_info *field_info, uint32_t field_cnt, u
 	}
 
 	for (i = 0; i < field_cnt; i++) {
-		if (field_info[i].end == UTOOL_REG_LOC31) {
+		if (field_info[i].end == UTOOL_LOC31) {
 			count++;
 		}
 	}
@@ -55,6 +56,35 @@ int utool_cal_reg_cnt(struct utool_field_info *field_info, uint32_t field_cnt, u
 	*reg_cnt = count;
 
 	return UTOOL_OK;
+}
+
+static uint32_t utool_diff_ver_cal_reg_cnt(struct utool_field_info *field_info, uint32_t field_cnt, uint32_t reg_index)
+{
+	uint32_t end_index = 0, start_index = 0;
+	uint32_t end_count = 0, start_count = 0;
+	uint32_t i;
+
+	for (i = 0; i < field_cnt; i++) {
+		if (field_info[i].end == UTOOL_LOC31) {
+			end_index = i;
+			end_count++;
+		}
+
+		if (field_info[i].start == UTOOL_LOC0) {
+			start_index = i;
+			start_count++;
+		}
+
+		if (end_count == (reg_index + 1) && start_count == (reg_index + 1)) {
+			break;
+		}
+	}
+
+	if (end_count != (reg_index + 1) || start_count != (reg_index + 1)) {
+		return 0;
+	}
+
+	return (labs((long)start_index - (long)end_index) + 1);
 }
 
 static int utool_parse_param_check(struct fwctl_rpc_ub_out *out, struct utool_field_info *field_info,
@@ -102,9 +132,34 @@ static void utool_reg_name_deal(char *reg_name)
 	}
 }
 
-static inline void utool_pkt_print(bool is_reserved, const char *reg_name, uint64_t merge_data)
+void utool_pkt_print(bool is_reserved, const char *reg_name, uint64_t merge_data, uint8_t cap_bitmap, uint32_t env_ver)
 {
-	if (!is_reserved) {
+	uint8_t cap_flag;
+
+	if ((reg_name == NULL) || (reg_name[0] == '\0')) {
+		utool_err_msg("Failed to parse pkt, reg name is invalid.\n");
+		return;
+	}
+
+	switch (env_ver) {
+		case UTOOL_ENV_VER_A_0:
+			cap_flag = UTOOL_CAP_0;
+			break;
+		case UTOOL_ENV_VER_A_1:
+			cap_flag = UTOOL_CAP_2;
+			break;
+		case UTOOL_ENV_VER_K_0:
+			cap_flag = UTOOL_CAP_1;
+			break;
+		case UTOOL_ENV_VER_K_1:
+			cap_flag = UTOOL_CAP_3;
+			break;
+		default:
+			utool_err_msg("Unknown env info: %u.\n", env_ver);
+			return;
+	}
+
+	if (!is_reserved && (cap_flag & cap_bitmap)) {
 		utool_reg_msg("%s: 0x%llx\n", reg_name, merge_data);
 	}
 }
@@ -275,12 +330,38 @@ int utool_module_parse(struct fwctl_rpc_ub_out *out,
 	return ret;
 }
 
+static int utool_verify_field_info(struct utool_field_info *field_info, uint32_t *count,
+				   uint32_t *len, uint32_t field_index)
+{
+	if (*count >= UTOOL_REG_MAX_LEN) {
+		*count = 0;
+		return UTOOL_OK_CYCLE;
+	}
+
+	if (field_info[field_index].end < field_info[field_index].start) {
+		utool_err_msg("Failed to parse pkt, start value is bigger than end value.\n");
+		return UTOOL_ERR_PARSE;
+	}
+
+	*len = field_info[field_index].end - field_info[field_index].start + 1;
+
+	if (*len > UTOOL_REG_MAX_LEN) {
+		utool_err_msg("Field length = %ubytes is bigger than maximum %ubytes.\n", *len, UTOOL_REG_MAX_LEN);
+		return UTOOL_ERR_PARSE;
+	}
+
+	*count += *len;
+
+	return UTOOL_OK;
+}
+
 int utool_pkt_parse(struct fwctl_rpc_ub_out *out, uint32_t field_cnt, struct utool_field_info *field_info,
 		    const char *module_func_name)
 {
-	uint32_t field_count = 0, count = 0, reg_cnt = 0;
+	uint32_t field_count = 0, count = 0, reg_cnt = 0, diff_version_cnt = 0;
 	uint32_t data, len, i, j = 0;
 	uint64_t merge_data = 0;
+	int ret = UTOOL_OK;
 
 	if (utool_parse_param_check(out, field_info, module_func_name) != UTOOL_OK) {
 		return UTOOL_ERR_INVALID_PARAM;
@@ -292,52 +373,50 @@ int utool_pkt_parse(struct fwctl_rpc_ub_out *out, uint32_t field_cnt, struct uto
 
 	utool_reg_msg("-------------------------- %s --------------------------\n", module_func_name);
 	for (i = 0; i < reg_cnt; i++) {
-		for (; j < field_cnt; j++) {
-			if (count >= UTOOL_REG_MAX_LEN) {
-				count = 0;
+		if (out->env_version != UTOOL_ENV_VER_A_0 && out->env_version != UTOOL_ENV_VER_K_0) {
+			ret = utool_diff_version_pkt_parse(out, module_func_name, i);
+			if (ret == UTOOL_OK) {
+				diff_version_cnt = utool_diff_ver_cal_reg_cnt(field_info, field_cnt, i);
+				if (diff_version_cnt == 0) {
+					utool_err_msg("Failed to calculate diff version reg count.\n");
+					return UTOOL_ERR_INVALID_PARAM;
+				}
+				j += diff_version_cnt;
+				continue;
+			}
+			if (ret != UTOOL_OK_CYCLE) {
 				break;
 			}
+		}
 
-			if (field_info[j].end < field_info[j].start) {
-				utool_err_msg("Failed to parse pkt, start is bigger than end.\n");
-				return UTOOL_ERR_PARSE;
+		for (; j < field_cnt; j++) {
+			ret = utool_verify_field_info(field_info, &count, &len, j);
+			if (ret == UTOOL_OK_CYCLE) {
+				break;
+			} else if (ret != UTOOL_OK) {
+				return ret;
 			}
 
-			len = field_info[j].end - field_info[j].start + 1;
-
-			if (len > UTOOL_REG_MAX_LEN) {
-				utool_err_msg("Failed to parse pkt, length of field is bigger than 32.\n");
-				return UTOOL_ERR_PARSE;
-			} else if (len == UTOOL_REG_MAX_LEN) {
-				data = out->data[i];
-			} else {
-				data = UTOOL_EXTRACT_BITS(out->data[i], field_info[j].start, field_info[j].end);
-			}
-
-			count += len;
+			data = (len == UTOOL_REG_MAX_LEN) ? out->data[i] :
+				UTOOL_EXTRACT_BITS(out->data[i], field_info[j].start, field_info[j].end);
 
 			utool_data_merge(field_info[j].is_high_before, &merge_data, (uint64_t)data, field_count, len);
 			field_count += len;
 			utool_reg_name_deal(field_info[j].reg_name);
 
-			/* print the last data */
-			if ((j + 1) >= field_cnt) {
-				utool_pkt_print(field_info[j].is_reserved, field_info[j].reg_name, merge_data);
-				break;
+			if ((j + 1) >= field_cnt || field_info[j + 1].index == 0) {
+				utool_pkt_print(field_info[j].is_reserved, field_info[j].reg_name,
+					        merge_data, field_info[j].cap_bitmap, out->env_version);
+				if ((j + 1) >= field_cnt) {
+					break;
+				}
+				field_count = 0;
+				merge_data = 0;
 			}
-
-			if (field_info[j + 1].index != UTOOL_FIELD_INDEX_START) {
-				continue;
-			}
-
-			utool_pkt_print(field_info[j].is_reserved, field_info[j].reg_name, merge_data);
-
-			field_count = 0;
-			merge_data = 0;
 		}
 	}
 
-	return UTOOL_OK;
+	return ret == UTOOL_OK_CYCLE ? UTOOL_OK : ret;
 }
 
 static int utool_operation_param_check(struct utool_dev *dev, void *pkt_in,
@@ -371,32 +450,32 @@ static void utool_deal_sys_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
 {
 	if (rpc_cmd == UTOOL_CMD_CONF_LOOPBACK || rpc_cmd == UTOOL_CMD_QUERY_LOOPBACK) {
 		switch (retval) {
-		case -EACCES:
-			utool_err_msg("Operation prohibited: Port is non-UBOE.\n");
-			return;
-		case -EBUSY:
-			utool_err_msg("Current port has been enabled for another loopback mode.\n");
-			return;
-		case -EMLINK:
-			utool_err_msg("Another port has already been enabled.\n");
-			return;
-		default:
-			utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
-			return;
+			case -EACCES:
+				utool_err_msg("Operation prohibited: Port is non-UBOE.\n");
+				return;
+			case -EBUSY:
+				utool_err_msg("Current port has been enabled for another loopback mode.\n");
+				return;
+			case -EMLINK:
+				utool_err_msg("Another port has already been enabled.\n");
+				return;
+			default:
+				utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
+				return;
 		}
 	}
 
 	if (rpc_cmd == UTOOL_CMD_CONF_PRBS_EN || rpc_cmd == UTOOL_CMD_QUERY_PRBS_EN) {
 		switch (retval) {
-		case -EACCES:
-			utool_err_msg("Operation prohibited: Port is non-UBOE.\n");
-			return;
-		case -EMLINK:
-			utool_err_msg("Another port has already been enabled.\n");
-			return;
-		default:
-			utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
-			return;
+			case -EACCES:
+				utool_err_msg("Operation prohibited: Port is non-UBOE.\n");
+				return;
+			case -EMLINK:
+				utool_err_msg("Another port has already been enabled.\n");
+				return;
+			default:
+				utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
+				return;
 		}
 	}
 }
@@ -412,6 +491,11 @@ static int utool_deal_perf_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
 			return retval;
 		} else {
 			utool_err_msg("Failed to get out data, retval is err: %d.\n", retval);
+		}
+	}
+	if (retval == -EBUSY) {
+		if (rpc_cmd == UTOOL_CMD_QUERY_DL_RT_BANDWIDTH) {
+			return retval;
 		}
 	}
 	return UTOOL_OK;
@@ -483,228 +567,6 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 void utool_destroy_pkt_in(void **pkt_in)
 {
 	UTOOL_FREE(*pkt_in);
-}
-
-static int utool_create_param_check(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	if ((pkt_in_len == NULL) || (param == NULL)) {
-		utool_err_msg("Failed to create pkt in, pkt_in_len == NULL(%d), param == NULL(%d).\n",
-			      (pkt_in_len == NULL), (param == NULL));
-		return UTOOL_ERR_INVALID_PARAM;
-	}
-
-	return UTOOL_OK;
-}
-
-void *utool_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param, size_t struct_size)
-{
-	void *pkt_in = NULL;
-
-	if (utool_create_param_check(pkt_in_len, param) != UTOOL_OK) {
-		return NULL;
-	}
-
-	pkt_in = UTOOL_MALLOC(struct_size);
-	if (pkt_in == NULL) {
-		utool_err_msg("Failed to malloc pkt in.\n");
-		return NULL;
-	}
-	memset(pkt_in, 0x0, struct_size);
-	*pkt_in_len = struct_size;
-	return pkt_in;
-}
-
-void *utool_null_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	uint32_t *rsv;
-
-	rsv = (uint32_t *)utool_create_pkt_in(pkt_in_len, param, sizeof(uint32_t));
-	if (rsv == NULL) {
-		return NULL;
-	}
-
-	*rsv = 0;
-	return rsv;
-}
-
-void *utool_port_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_port_enable *pkt_in_port_enable;
-	uint32_t data_size = sizeof(struct fwctl_pkt_in_port_enable);
-
-	if (param->value > UINT8_MAX) {
-		utool_err_msg("The value parameter is out of range.\n");
-		return NULL;
-	}
-
-	pkt_in_port_enable = (struct fwctl_pkt_in_port_enable *)utool_create_pkt_in(pkt_in_len, param, data_size);
-	if (pkt_in_port_enable == NULL) {
-		return NULL;
-	}
-
-	pkt_in_port_enable->port_id = param->port;
-	pkt_in_port_enable->enable = (uint8_t)param->value;
-	return pkt_in_port_enable;
-}
-
-void *utool_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_enable *pkt_in_enable;
-
-	pkt_in_enable = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_enable));
-	if (pkt_in_enable == NULL) {
-		return NULL;
-	}
-
-	pkt_in_enable->enable = param->value;
-	return pkt_in_enable;
-}
-
-void *utool_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_index *pkt_in_index;
-
-	pkt_in_index = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_index));
-	if (pkt_in_index == NULL) {
-		return NULL;
-	}
-
-	pkt_in_index->index = param->index;
-	return pkt_in_index;
-}
-
-void *utool_port_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_port_time *pkt_in_port_time;
-
-	pkt_in_port_time = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_port_time));
-	if (pkt_in_port_time == NULL) {
-		return NULL;
-	}
-
-	pkt_in_port_time->port_id = param->port;
-	pkt_in_port_time->time = param->time;
-
-	return pkt_in_port_time;
-}
-
-void *utool_time_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_time *pkt_in_time;
-
-	pkt_in_time = (struct fwctl_pkt_in_time *)utool_create_pkt_in(pkt_in_len,
-								      param, sizeof(struct fwctl_pkt_in_time));
-	if (pkt_in_time == NULL) {
-		return NULL;
-	}
-
-	pkt_in_time->time = param->time;
-
-	return pkt_in_time;
-}
-
-void *utool_prbs_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-#define UBCTL_PRBS_ERR_CNT_VAL 1U
-
-	struct fwctl_pkt_in_prbs *pkt_in_prbs;
-	uint32_t data_size = sizeof(struct fwctl_pkt_in_prbs);
-
-	pkt_in_prbs = (struct fwctl_pkt_in_prbs *)utool_create_pkt_in(pkt_in_len, param, data_size);
-	if (pkt_in_prbs == NULL) {
-		return NULL;
-	}
-
-	pkt_in_prbs->port_id = param->port;
-	pkt_in_prbs->query_prbs_err_cnt = UBCTL_PRBS_ERR_CNT_VAL;
-
-	return pkt_in_prbs;
-}
-
-void *utool_loopback_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_loopback *pkt_in_loopback;
-
-	pkt_in_loopback = (struct fwctl_pkt_in_loopback *)utool_create_pkt_in(pkt_in_len, param,
-									      sizeof(struct fwctl_pkt_in_loopback));
-	if (pkt_in_loopback == NULL) {
-		return NULL;
-	}
-
-	if (strcmp(param->func, UBOE_LOOPBACK_PCS_INNER) == 0) {
-		pkt_in_loopback->loopback_mode = UTOOL_TXPCS2RXPCS;
-	} else if (strcmp(param->func, UBOE_LOOPBACK_MAC_INNER) == 0) {
-		pkt_in_loopback->loopback_mode = UTOOL_TXMAC2RXMAC;
-	} else {
-		pkt_in_loopback->loopback_mode = UTOOL_RXMAC2TXMAC;
-	}
-
-	pkt_in_loopback->port_id = param->port;
-	pkt_in_loopback->enable = param->value;
-
-	return pkt_in_loopback;
-}
-
-void *utool_ummu_value_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_ummuid_value *pkt_in_ummu_value;
-
-	pkt_in_ummu_value = utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_ummuid_value));
-	if (pkt_in_ummu_value == NULL) {
-		return NULL;
-	}
-
-	pkt_in_ummu_value->ummu_id = param->ummu_id;
-	pkt_in_ummu_value->value = param->value;
-
-	return pkt_in_ummu_value;
-}
-
-void *utool_port_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_port_index *pkt_in_port_index;
-
-	pkt_in_port_index = (struct fwctl_pkt_in_port_index *)utool_create_pkt_in(pkt_in_len, param,
-		sizeof(struct fwctl_pkt_in_port_index));
-	if (pkt_in_port_index == NULL) {
-		return NULL;
-	}
-
-	pkt_in_port_index->port_id = param->port;
-	pkt_in_port_index->index = param->index;
-
-	return pkt_in_port_index;
-}
-
-void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-	struct fwctl_pkt_in_port *pkt_in_port;
-
-	pkt_in_port = (struct fwctl_pkt_in_port *)utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_port));
-	if (pkt_in_port == NULL) {
-		return NULL;
-	}
-
-	pkt_in_port->port_id = param->port;
-	return pkt_in_port;
-}
-
-void *utool_vl_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
-{
-#define UBCTL_CONF_SSU_VL_FLAG 1U
-
-	struct fwctl_pkt_in_vl *pkt_in_vl;
-
-	pkt_in_vl = (struct fwctl_pkt_in_vl *)utool_create_pkt_in(pkt_in_len, param, sizeof(struct fwctl_pkt_in_vl));
-	if (pkt_in_vl == NULL) {
-		return NULL;
-	}
-
-	pkt_in_vl->port_id = param->port;
-	pkt_in_vl->enable = UBCTL_CONF_SSU_VL_FLAG;
-	pkt_in_vl->vl_num = param->value;
-
-	return pkt_in_vl;
 }
 
 int utool_pkt_operation_have_port(struct utool_dev *dev, struct utool_cmd_param *param, struct utool_pkt_exec *pkt_exec)
