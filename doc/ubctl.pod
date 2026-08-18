@@ -29,19 +29,19 @@ B<UB>
 B<BA>
     Bus Adapter
 
-B<DL> 
+B<DL>
     Data Link Layer
 
-B<TP> 
+B<TP>
     Transport Layer
 
-B<TA> 
+B<TA>
     Transaction Layer
 
-B<NL> 
+B<NL>
     Network Link Layer
 
-B<cmdq> 
+B<cmdq>
     Command Queue
 
 For details on related terms and abbreviations, please refer to L<UnifiedBus (UB) Base Specification|https://www.unifiedbus.com/zh/docs/UB-Base-Specification-2.0-preview-zh>
@@ -87,7 +87,7 @@ $function: function name, optional parameters, different processing functions ar
     dl: pkt_stats, bit_err, lane, link_status, link_trace, bist, bist_err, rt_bandwidth
 
     ba: pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout,
-        intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table, mar_cyc_en
+        intra_sp_rout, intra_mp_rout, port_scna, port_table, port_wb_table, mar_cyc_en, icrc
 
     ta: pkt_stats, abn_stats
 
@@ -162,6 +162,7 @@ B<Query BA Layer Information>:
  ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f port_scna -i $index
  ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f mar
  ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f mar_cyc_en
+ ubctl -m ba -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -f icrc
 
 B<Query DL Layer Information>:
 
