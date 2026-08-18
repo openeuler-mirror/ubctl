@@ -19,6 +19,7 @@
 #define BA_MAR "mar"
 #define BA_MAR_CYC_EN "mar_cyc_en"
 #define BA_MAR_PERF "mar_perf"
+#define BA_ICRC "icrc"
 
 #define BA_UB_MEM_DECODER_TABLE "ub_mem_decoder"
 #define BA_MAR_INTER_SP_ROUT_TABLE "inter_sp_rout"
@@ -952,6 +953,13 @@ static struct utool_field_info g_utool_mar_port_wb_field_info[] = {
 	{ false, true, UTOOL_LOC5, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
+static struct utool_field_info g_utool_ba_icrc_field_info[] = {
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id0)" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id1)" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id2)" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id3)" },
+};
+
 struct utool_cal_reg_cnt_dp g_utool_ba_cal_reg_table[] = {
 	{ true, true, BA_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_ba_pkt_stats_field_info),
 	  g_utool_ba_pkt_stats_field_info },
@@ -975,6 +983,8 @@ struct utool_cal_reg_cnt_dp g_utool_ba_cal_reg_table[] = {
 	  g_utool_ub_mem_decoder_field_info },
 	{ true, false, BA_MAR_PORT_WB_TABLE, UTOOL_ARRAY_SIZE(g_utool_ub_mem_decoder_field_info),
 	  g_utool_ub_mem_decoder_field_info },
+	{ true, false, BA_ICRC, UTOOL_ARRAY_SIZE(g_utool_ba_icrc_field_info),
+	  g_utool_ba_icrc_field_info },
 };
 
 int utool_ba_cal_data_len(uint32_t *ba_data_len)
@@ -1169,6 +1179,18 @@ static int utool_mar_port_wb_parse_rpc_pkt(struct fwctl_rpc_ub_out *mar_port_wb_
 	return ret;
 }
 
+static int utool_ba_icrc_parse_rpc_pkt(struct fwctl_rpc_ub_out *mar_port_wb_out)
+{
+	int ret = UTOOL_OK;
+
+	ret = utool_pkt_parse(mar_port_wb_out, UTOOL_ARRAY_SIZE(g_utool_ba_icrc_field_info),
+			      g_utool_ba_icrc_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_BA, BA_ICRC));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse ba icrc data.\n");
+	}
+
+	return ret;
+}
 
 static int utool_ub_mem_decoder_parse_rpc_pkt(struct fwctl_rpc_ub_out *ub_mem_decoder_out)
 {
@@ -1418,6 +1440,8 @@ struct utool_func_dispatch g_utool_ba_flag_mpf_table[] = {
 	  utool_ba_mar_parse_rpc_pkt, utool_port_create_pkt_in },
 	{ false, BA_MAR_CYC_EN, UTOOL_CMD_QUERY_BA_MAR_CYC_EN, UTOOL_REG_CNT_DEFAULT,
 	  utool_ba_mar_cyc_en_parse_rpc_pkt, utool_port_create_pkt_in },
+	{ false, BA_ICRC, UTOOL_CMD_QUERY_BA_ICRC, UTOOL_REG_CNT_DEFAULT,
+	  utool_ba_icrc_parse_rpc_pkt, utool_port_create_pkt_in },
 };
 
 int utool_ba_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_out)
@@ -1442,7 +1466,7 @@ static void utool_ba_print_help(void)
 {
 	utool_err_msg("The ubctl ba command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en\n"
+		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en/icrc\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_perf -t ${time}\n"
 		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f ub_mem_decoder/inter_sp_rout/inter_mp_rout"

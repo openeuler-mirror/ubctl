@@ -35,7 +35,7 @@ static const struct ubctl_module_info ubctl_modules[] = {
 	{"ta", "pkt_stats, abn_stats, wqe_processing_time"},
 	{"tp", "pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result"},
 	{"ba", "pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout, intra_sp_rout, intra_mp_rout,\n"
-		"                    port_scna, port_table, port_wb_table, mar_cyc_en"},
+		"                    port_scna, port_table, port_wb_table, mar_cyc_en, icrc"},
 	{"msgq", "que_stats, entry"},
 	{"ummu", "ummu_sync_query, ummu_sync_config"},
 	{"uboe", "rxmac2txmac, txmac2rxmac, txpcs2rxpcs, prbs, prbs_err_cnt"},
