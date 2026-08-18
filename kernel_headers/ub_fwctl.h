@@ -8,6 +8,8 @@
 
 #include <linux/types.h>
 
+#define UBCTL_MAX_DEV_NAME 64
+
 /**
  * struct fwctl_rpc_ub_in - ioctl(FWCTL_RPC) input
  * @rpc_cmd: user specified opcode
@@ -335,6 +337,31 @@ enum ub_fwctl_cmdrpc_type {
 	UBCTL_CMD_QUERY_CONF_USER_COMM = 0x0101,
 
 	/**
+	 * @UTOOL_CMD_QUERY_DSCP_INFO: Query DSCP-related information
+	 */
+	UTOOL_CMD_QUERY_DSCP_INFO = 0x0102,
+
+	/**
+	 * @UTOOL_CMD_QUERY_SL_VL_MAP_INFO: Query SL-to-VL mapping information
+	 */
+	UTOOL_CMD_QUERY_SL_VL_MAP_INFO = 0x0103,
+
+	/**
+	 * @UTOOL_CMD_QUERY_CAPS_INFO: Query device capability information
+	 */
+	UTOOL_CMD_QUERY_CAPS_INFO = 0x0104,
+
+	/**
+	 * @UTOOL_CMD_QUERY_AEQC_INFO: Query AEQC information
+	 */
+	UTOOL_CMD_QUERY_AEQC_INFO = 0x0105,
+
+	/**
+	 * @UTOOL_CMD_QUERY_CEQC_INFO: Query CEQC information
+	 */
+	UTOOL_CMD_QUERY_CEQC_INFO = 0x0106,
+
+	/**
 	 * @UTOOL_CMD_QUERY_UPA_PKT_STATS: Query UPA layer PKT_STATS related registers
 	 */
 	UTOOL_CMD_QUERY_UPA_PKT_STATS = 0x0111,
@@ -430,6 +457,14 @@ struct fwctl_pkt_in_port_time {
  */
 struct fwctl_pkt_in_time {
 	__u32 time;
+};
+
+/**
+ * struct fwctl_pkt_in_dev_name - ioctl(UBCTL_RPC) input header
+ * @dev_name: udma or unic device name
+ */
+struct fwctl_pkt_in_dev_name {
+	char dev_name[UBCTL_MAX_DEV_NAME];
 };
 
 /**

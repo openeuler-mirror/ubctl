@@ -177,6 +177,229 @@ close_dev:
 	return ret;
 }
 
+static int utool_query_ubase_info_check_cmd(uint32_t *ubctl_cmd, struct ubctl_cmd_map *map, uint32_t cmd_map_size)
+{
+	uint32_t i;
+
+	for (i = 0; i < cmd_map_size; i++) {
+		if (map[i].user_cmd == *ubctl_cmd) {
+			*ubctl_cmd = map[i].rpc_type;
+			return UTOOL_OK;
+		}
+	}
+
+	utool_err_msg("Invalid param: unknown ubctl_cmd = %u.\n", *ubctl_cmd);
+	return UTOOL_ERR_INVALID_CMD;
+}
+
+static void utool_fill_dev_name_in_data(const char *dev_name, uint32_t ubctl_cmd,
+					struct fwctl_rpc_ub_in *rpc_in)
+{
+	uint32_t pkt_in_len = (uint32_t)sizeof(struct fwctl_pkt_in_dev_name);
+	struct fwctl_pkt_in_dev_name pkt_in = {};
+
+	strncpy(pkt_in.dev_name, dev_name, sizeof(pkt_in.dev_name) - 1);
+	memcpy(rpc_in->data, &pkt_in, pkt_in_len);
+	rpc_in->data_size = pkt_in_len;
+	rpc_in->version = UTOOL_VERSION;
+	rpc_in->rpc_cmd = ubctl_cmd;
+}
+
+static struct fwctl_rpc_ub_in *utool_create_pkt_in_buf(uint32_t *rpc_in_len)
+{
+	uint32_t pkt_in_len = (uint32_t)sizeof(struct fwctl_pkt_in_dev_name);
+	struct fwctl_rpc_ub_in *rpc_in;
+
+	*rpc_in_len = (uint32_t)(sizeof(struct fwctl_rpc_ub_in) + pkt_in_len);
+	rpc_in = (struct fwctl_rpc_ub_in *)UTOOL_MALLOC(*rpc_in_len);
+	if (rpc_in == NULL) {
+		utool_err_msg("Failed to malloc space for rpc in.\n");
+		return NULL;
+	}
+
+	return rpc_in;
+}
+
+static struct fwctl_rpc_ub_out *utool_create_out_buf(uint32_t buf_size, uint32_t *rpc_out_len)
+{
+	struct fwctl_rpc_ub_out *rpc_out;
+
+	*rpc_out_len = (uint32_t)sizeof(struct fwctl_rpc_ub_out) + buf_size;
+	rpc_out = (struct fwctl_rpc_ub_out *)UTOOL_MALLOC(*rpc_out_len);
+	if (rpc_out == NULL) {
+		utool_err_msg("Failed to malloc space for rpc out.\n");
+		return NULL;
+	}
+	memset(rpc_out, 0x0, *rpc_out_len);
+
+	return rpc_out;
+}
+
+static int ubctl_query_ubase_comm_info(const char *dev_name, uint32_t ubctl_cmd,
+				       void *buf, uint32_t buf_size)
+{
+	uint32_t rpc_out_len = 0, rpc_in_len = 0;
+	struct fwctl_rpc_ub_out *rpc_out;
+	struct fwctl_rpc_ub_in *rpc_in;
+	struct utool_dev dev = {};
+	int ret;
+
+	ret = utool_open_dev_step(&dev, 0, 0, UTOOL_DEV_UBASE_INFO);
+	if (ret != UTOOL_OK) {
+		return ret;
+	}
+
+	rpc_in = utool_create_pkt_in_buf(&rpc_in_len);
+	if (rpc_in == NULL) {
+		ret = UTOOL_ERR_MALLOC;
+		goto close_dev;
+	}
+
+	rpc_out = utool_create_out_buf(buf_size, &rpc_out_len);
+	if (rpc_out == NULL) {
+		ret = UTOOL_ERR_MALLOC;
+		UTOOL_FREE(rpc_in);
+		goto close_dev;
+	}
+
+	utool_fill_dev_name_in_data(dev_name, ubctl_cmd, rpc_in);
+
+	ret = utool_cmd_exec(&dev, rpc_in, rpc_in_len, rpc_out, &rpc_out_len);
+	if (rpc_out->retval != 0) {
+		if (ret == UTOOL_OK) {
+			ret = UTOOL_ERR_IOCTL;
+		}
+		utool_err_msg("Command execution failed, retval = %d.\n", rpc_out->retval);
+		goto free_pkt_buf;
+	}
+
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute cmd, ret = %d.\n", ret);
+		goto free_pkt_buf;
+	}
+
+	if (buf_size < rpc_out->data_size) {
+		utool_err_msg("Buffer size %ubytes < required data %ubytes.\n", buf_size, rpc_out->data_size);
+		ret = UTOOL_ERR_INVALID_PARAM;
+		goto free_pkt_buf;
+	}
+
+	memcpy(buf, rpc_out->data, rpc_out->data_size);
+
+free_pkt_buf:
+	UTOOL_FREE(rpc_out);
+	UTOOL_FREE(rpc_in);
+close_dev:
+	utool_close(&dev);
+
+	return ret;
+}
+
+int ubctl_query_ubase_info_api(const char *dev_name, uint32_t ubctl_cmd,
+			       void *buf, uint32_t buf_size)
+{
+	struct ubctl_cmd_map map[] = {
+		{ UBCTL_QUERY_AEQC_CMD_COMM, UTOOL_CMD_QUERY_AEQC_INFO },
+		{ UBCTL_QUERY_CEQC_CMD_COMM, UTOOL_CMD_QUERY_CEQC_INFO},
+	};
+	int ret;
+
+	if (dev_name == NULL || buf == NULL) {
+		utool_err_msg("Invalid param: dev name or buf is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_query_ubase_info_check_cmd(&ubctl_cmd, map, UTOOL_ARRAY_SIZE(map));
+	if (ret) {
+		return ret;
+	}
+
+	ret = ubctl_query_ubase_comm_info(dev_name, ubctl_cmd, buf, buf_size);
+	if (ret) {
+		utool_err_msg("Failed to query dscp vl, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
+int ubctl_query_dscp_vl_api(const char *dev_name, uint32_t ubctl_cmd,
+			    struct ubctl_ubase_dbg_dscp_vl_map *data)
+{
+	struct ubctl_cmd_map map[] = {
+		{ UBCTL_QUERY_DSCP_CMD_COMM, UTOOL_CMD_QUERY_DSCP_INFO },
+	};
+	int ret;
+
+	if (dev_name == NULL || data == NULL) {
+		utool_err_msg("Invalid param: dev name or buf is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_query_ubase_info_check_cmd(&ubctl_cmd, map, UTOOL_ARRAY_SIZE(map));
+	if (ret) {
+		return ret;
+	}
+
+	ret = ubctl_query_ubase_comm_info(dev_name, ubctl_cmd, (void *)data, sizeof(struct ubctl_ubase_dbg_dscp_vl_map));
+	if (ret) {
+		utool_err_msg("Failed to query dscp vl, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
+int ubctl_query_sl_vl_map_api(const char *dev_name, uint32_t ubctl_cmd,
+			      struct ubctl_ubase_dbg_sl_vl_map *data)
+{
+	struct ubctl_cmd_map map[] = {
+		{ UBCTL_QUERY_SL_VL_MAP_CMD_COMM, UTOOL_CMD_QUERY_SL_VL_MAP_INFO },
+	};
+	int ret;
+
+	if (dev_name == NULL || data == NULL) {
+		utool_err_msg("Invalid param: dev name or buf is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_query_ubase_info_check_cmd(&ubctl_cmd, map, UTOOL_ARRAY_SIZE(map));
+	if (ret) {
+		return ret;
+	}
+
+	ret = ubctl_query_ubase_comm_info(dev_name, ubctl_cmd, (void *)data, sizeof(struct ubctl_ubase_dbg_sl_vl_map));
+	if (ret) {
+		utool_err_msg("Failed to query sl vl map, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
+int ubctl_query_caps_info_api(const char *dev_name, uint32_t ubctl_cmd,
+			      struct ubctl_ubase_dbg_caps_info *data)
+{
+	struct ubctl_cmd_map map[] = {
+		{ UBCTL_QUERY_CAPS_CMD_COMM, UTOOL_CMD_QUERY_CAPS_INFO },
+	};
+	int ret;
+
+	if (dev_name == NULL || data == NULL) {
+		utool_err_msg("Invalid param: dev name or buf is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_query_ubase_info_check_cmd(&ubctl_cmd, map, UTOOL_ARRAY_SIZE(map));
+	if (ret) {
+		return ret;
+	}
+
+	ret = ubctl_query_ubase_comm_info(dev_name, ubctl_cmd, (void *)data, sizeof(struct ubctl_ubase_dbg_caps_info));
+	if (ret) {
+		utool_err_msg("Failed to query caps info, ret = %d.\n", ret);
+	}
+
+	return ret;
+}
+
 int ubctl_query_icrc_api(uint32_t chip_id, uint32_t die_id, uint32_t port_id, struct ubctl_icrc_info *data)
 {
 #define UBCTL_QUERY_BA_ICRC_DFX 0xA03C
