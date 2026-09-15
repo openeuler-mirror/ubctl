@@ -42,7 +42,7 @@ static const struct ubctl_module_info ubctl_modules[] = {
 	{"upa", "pkt_stats\n"}};
 
 static const char *ubctl_parameters =
-	"  -p $port: port index, indicates the physical port index.\n"
+	"  -p $port: port index, indicates the port index.\n"
 	"            The port_bitmap represents each bit as a port, used in the dl-performance\n"
 	"            and rt_bandwidth command.\n"
 	"            It represents port_num in the function upa-pkt_stats.\n\n"

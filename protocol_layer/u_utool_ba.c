@@ -261,8 +261,8 @@ static struct utool_field_info g_utool_ba_pkt_stats_field_info[] = {
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "lsa_in_cnt_g" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "lsa_out_cnt_g" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pfa_out_cnt_g" },
-	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "mar_in_cnt_g" },
-	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "mar_out_cnt_g" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "mar_in_cnt_g" },
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "mar_out_cnt_g" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_out_cnt_err_g" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "memory_cnt_0" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "memory_cnt_1" },
@@ -347,8 +347,8 @@ static struct utool_field_info g_utool_ba_pkt_stats_field_info[] = {
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V012, "cpu_seq_dat_only(lsad_chn_num1)" },
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V012, "cpu_seq_dat_only_send" },
-	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "cpu_seq_dat_only_send" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V012, "cpu_seq_dat(lsad_chn_num0)" },
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V012, "cpu_seq_dat(lsad_chn_num1)" },
@@ -954,6 +954,7 @@ static struct utool_field_info g_utool_mar_port_wb_field_info[] = {
 };
 
 static struct utool_field_info g_utool_ba_icrc_field_info[] = {
+	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "port_id" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id0)" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id1)" },
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_0, "rxdma_icrc_err_cnt(queue_id2)" },

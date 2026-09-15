@@ -105,7 +105,7 @@ $function: function name, optional parameters, different processing functions ar
 
 =item B<-p> ${port}
 
-$port: port index, optional parameters, indicates the physical port index.
+$port: port index, optional parameters, indicates the port index.
        The port_bitmap represents each bit as a port, used in the rt_bandwidth.
        It represents port_num in the function upa-pkt_stats.
 

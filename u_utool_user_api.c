@@ -18,7 +18,7 @@ struct ubctl_cmd_map {
 };
 
 static struct ubctl_cmd_map g_cmd_map_table[] = {
-	{ UBCTL_USER_CMD_COMM, UBCTL_CMD_QUERY_CONF_USER_COMM },
+	{ UBCTL_USER_CMD_COMM, UTOOL_CMD_QUERY_CONF_USER_COMM },
 };
 
 static int utool_user_api_check_param(uint32_t *ubctl_cmd, const struct ubctl_cmd_buf *in,
@@ -298,14 +298,23 @@ close_dev:
 int ubctl_query_ubase_info_api(const char *dev_name, uint32_t ubctl_cmd,
 			       void *buf, uint32_t buf_size)
 {
+#define UBCTL_MAX_OUT_LEN 0x200000U
+#define UBCTL_MIN_OUT_LEN 64U
+	uint32_t ubctl_max_len = UBCTL_MAX_OUT_LEN - (uint32_t)(sizeof(struct fwctl_rpc_ub_out));
 	struct ubctl_cmd_map map[] = {
 		{ UBCTL_QUERY_AEQC_CMD_COMM, UTOOL_CMD_QUERY_AEQC_INFO },
-		{ UBCTL_QUERY_CEQC_CMD_COMM, UTOOL_CMD_QUERY_CEQC_INFO},
+		{ UBCTL_QUERY_CEQC_CMD_COMM, UTOOL_CMD_QUERY_CEQC_INFO },
 	};
 	int ret;
 
 	if (dev_name == NULL || buf == NULL) {
 		utool_err_msg("Invalid param: dev name or buf is null.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	if (buf_size < UBCTL_MIN_OUT_LEN || buf_size > ubctl_max_len) {
+		utool_err_msg("Invalid param: buf size = %u, it must be in [%u, %u].\n",
+			      buf_size, UBCTL_MIN_OUT_LEN, ubctl_max_len);
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
