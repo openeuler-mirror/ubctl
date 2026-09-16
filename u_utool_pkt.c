@@ -26,7 +26,7 @@ static void utool_delete_substr(char *str, const char *substr)
 		return;
 	}
 
-	while (strstr(str, substr) != NULL) {
+	if (strstr(str, substr) != NULL) {
 		pos = strstr(str, substr) - str;
 		for (i = pos; i < str_len - substr_len; ++i) {
 			str[i] = str[i + substr_len];
@@ -501,6 +501,21 @@ static int utool_deal_perf_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
 	return UTOOL_OK;
 }
 
+static int utool_deal_with_retval(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
+{
+	int ret;
+
+	ret = utool_deal_perf_ret(rpc_cmd, retval);
+	if (ret != UTOOL_OK)
+		return ret;
+	utool_deal_sys_ret(rpc_cmd, retval);
+
+	if ((retval == -ENODEV) && (rpc_cmd == UTOOL_CMD_QUERY_UE_INFO)) {
+		utool_err_msg("The index of ue is invalid, please check.\n");
+	}
+	return UTOOL_ERR_IOCTL;
+}
+
 int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len, struct utool_pkt_exec *pkt_exec)
 {
 	struct fwctl_rpc_ub_out *pkt_out = NULL;
@@ -534,11 +549,7 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 
 		ret = utool_cmd_exec(dev, in, in_len, pkt_out, &pkt_out_len);
 		if (pkt_out->retval != 0) {
-			ret = utool_deal_perf_ret(pkt_exec->rpc_cmd, pkt_out->retval);
-			if (ret != UTOOL_OK)
-				break;
-			utool_deal_sys_ret(pkt_exec->rpc_cmd, pkt_out->retval);
-			ret = UTOOL_ERR_IOCTL;
+			ret = utool_deal_with_retval(pkt_exec->rpc_cmd, pkt_out->retval);
 			break;
 		}
 

@@ -7,13 +7,13 @@
  */
 
 #include "u_utool_diff_version.h"
-#include "u_utool_error.h"
-#include "u_utool_ba_diff_version_field_info.h"
-#include "u_utool_dl.h"
-#include "u_utool_ecc_2b.h"
-#include "u_utool_ta_diff_version_field_info.h"
-#include "u_utool_tp.h"
-#include "u_utool_nl_diff_version_field_info.h"
+#include "./common/u_utool_error.h"
+#include "./protocol_layer/u_utool_ba_diff_version_field_info.h"
+#include "./protocol_layer/u_utool_dl.h"
+#include "./protocol_layer/u_utool_ecc_2b.h"
+#include "./protocol_layer/u_utool_ta_diff_version_field_info.h"
+#include "./protocol_layer/u_utool_tp.h"
+#include "./protocol_layer/u_utool_nl_diff_version_field_info.h"
 
 static struct utool_get_diff_version_field_info g_utool_diff_ver_reg_sum[] = {
 	{ "ta-pkt_stats", utool_ta_cmd_diff_ver_dispatch },
@@ -48,6 +48,11 @@ int utool_diff_version_pkt_parse(struct fwctl_rpc_ub_out *out, const char *modul
 
 	if (out->data_size == 0) {
 		utool_err_msg("Failed to parse pkt, out data size is 0.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	if (reg_index >= (out->data_size / sizeof(uint32_t))) {
+		utool_err_msg("Failed to parse pkt, register index overflow.\n");
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 

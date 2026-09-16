@@ -61,7 +61,7 @@ static int utool_main_parse_sub(int argc, char **argv, struct utool_dev *dev)
 	int ret = UTOOL_OK;
 
 	do {
-		if (argc < UBCTL_ARG_MIN_NUM) {
+		if (argc < UBCTL_ARG_MIN_NUM || argc > UBCTL_ARG_MAX_NUM) {
 			ret = UTOOL_ERR_INVALID_PARAM;
 			break;
 		}

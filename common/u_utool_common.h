@@ -35,13 +35,15 @@
 #define UTOOL_DEV_NAME_LEN_MAX 512
 #define UTOOL_DEV_CHIP_DIE_ID_MAX (1U << 16)
 #define UTOOL_REG_CNT_DEFAULT 0U
+#define UBCTL_ARG_MIN_NUM 2
+#define UBCTL_ARG_MAX_NUM 32
 
 #define UTOOL_BIT(shift) (1U << (shift))
 
 #define UTOOL_ARRAY_SIZE(arr) (uint32_t)(sizeof(arr) / sizeof((arr)[0]))
 
 #define UTOOL_CONCAT_STR(str1, str2) (str1 "-" str2)
-#define UTOOL_SET_USED(x) (void)(x)
+#define UTOOL_SET_USED(x) ((void)(x))
 
 #define UTOOL_FLAG_M UTOOL_BIT(0) /* -m */
 #define UTOOL_FLAG_P UTOOL_BIT(1) /* -p */
