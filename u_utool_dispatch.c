@@ -346,7 +346,7 @@ static int utool_process_double_options(int *argc, char **argv)
 {
 #define UBCTL_OPTIONS_PROCESSED_COUNT 2
 #define UBCTL_OPTIONS_INDEX2 2
-	char *argv_new[UBCTL_ARG_MAX_LEN];
+	char *argv_new[UBCTL_ARG_MAX_NUM];
 	int argc_new = *argc;
 	int ret = UTOOL_OK;
 	int i, j;

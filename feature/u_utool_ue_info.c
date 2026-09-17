@@ -12,39 +12,45 @@
 #include "../u_utool_pkt.h"
 #include "u_utool_ue_info.h"
 
-static struct utool_field_info g_utool_ue_info[] = {
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V13, "ue_id" },
-
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V13, "extq_pf_sta" },
-
-	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_V13, "reserved" },
-	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_V13, "tqs_extq_pf_tp_shift_cfg_en" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_V13, "tqs_extq_pf_tp_shift_cfg" },
-
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V13, "extq_pf_alm" },
-
-	{ false, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_V13, "reserved" },
-	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_V13, "hw_run" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V13, "mb_status" },
-
-	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V13, "reserved" },
+struct utool_ue_info {
+	uint32_t ue_id : 16,
+		 is_mue : 1,
+		 rsv0 : 15;
+	uint32_t extq_mue_sta;
+	uint32_t tqs_extq_mue_tp_shift_cfg : 5,
+		 tqs_extq_mue_tp_shift_cfg_en : 1,
+		 rsv1 : 26;
+	uint32_t extq_mue_alm;
+	uint32_t mb_status : 1,
+		 hw_run : 1,
+		 rsv2 : 30;
+	uint32_t rsv3;
 };
 
 static int utool_ue_info_parse_modules(struct fwctl_rpc_ub_out *pkt_out)
 {
-	int ret;
+	struct utool_ue_info *ue;
 
 	if (pkt_out == NULL) {
 		utool_err_msg("Failed to parse ue info rpc pkt, ue info out is NULL.\n");
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	ret = utool_pkt_parse(pkt_out, UTOOL_ARRAY_SIZE(g_utool_ue_info), g_utool_ue_info, UTOOL_MODULE_UE);
-	if (ret != UTOOL_OK) {
-		utool_err_msg("Failed to parse ue info data.\n");
+	ue = (struct utool_ue_info *)pkt_out->data;
+
+	utool_reg_msg("-------------------------- ue --------------------------\n");
+	utool_reg_msg("ue_id: %u\n", ue->ue_id);
+	if (ue->is_mue) {
+		utool_reg_msg("extq_mue_sta: 0x%x\n", ue->extq_mue_sta);
+		utool_reg_msg("tqs_extq_mue_tp_shift_cfg_en: 0x%x\n", (unsigned int)ue->tqs_extq_mue_tp_shift_cfg_en);
+		utool_reg_msg("tqs_extq_mue_tp_shift_cfg: 0x%x\n", (unsigned int)ue->tqs_extq_mue_tp_shift_cfg);
+		utool_reg_msg("extq_mue_alm: 0x%x\n", ue->extq_mue_alm);
 	}
 
-	return ret;
+	utool_reg_msg("hw_run: 0x%x\n", (unsigned int)ue->hw_run);
+	utool_reg_msg("mb_status: 0x%x\n", (unsigned int)ue->mb_status);
+
+	return 0;
 }
 
 static int utool_ue_info_cmd(struct utool_dev *dev, struct utool_cmd_param *param)
@@ -52,18 +58,10 @@ static int utool_ue_info_cmd(struct utool_dev *dev, struct utool_cmd_param *para
 	struct utool_pkt_exec pkt_exec = { UTOOL_CMD_QUERY_UE_INFO, 0, NULL };
 	struct fwctl_pkt_in_ue_info *pkt_in;
 	uint32_t pkt_in_len = 0;
-	uint32_t reg_cnt = 0;
 	int ret;
 
 	pkt_exec.execute = utool_ue_info_parse_modules;
-
-	ret = utool_cal_reg_cnt(g_utool_ue_info, UTOOL_ARRAY_SIZE(g_utool_ue_info), &reg_cnt);
-	if (ret != UTOOL_OK) {
-		utool_err_msg("Failed to calculate ue reg cnt.\n");
-		return ret;
-	}
-
-	pkt_exec.data_len = reg_cnt * sizeof(uint32_t);
+	pkt_exec.data_len = sizeof(struct utool_ue_info);
 
 	pkt_in = (struct fwctl_pkt_in_ue_info *)utool_create_pkt_in(&pkt_in_len, param,
 								    sizeof(struct fwctl_pkt_in_ue_info));
