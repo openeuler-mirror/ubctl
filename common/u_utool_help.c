@@ -25,7 +25,7 @@ static const char *ubctl_options = "Options:\n"
 				   "  -d $ub_ctl_id : ub ctl id, chip id and ub ctl id  are used to find the valid device.\n\n"
 				   "  -m $module: module name, current module include:\n"
 				   "             dl, nl, ta, tp, ba, qos, msgq, ummu, port_info, ubommu, upa,\n"
-				   "             ecc_2b, queue, uboe, dump, fw_version,\n"
+				   "             ecc_2b, queue, uboe, dump, cmdq, fw_version,\n"
 				   "             port_pkt_stats, port_link, ue, debugfs.\n\n"
 				   "  -f $function: function name, different processing functions are provided for each module:";
 

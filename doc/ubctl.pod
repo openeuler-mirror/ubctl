@@ -247,6 +247,10 @@ B<Query queue Information>:
 
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m queue
 
+B<Query cmdq Information>:
+
+ ubctl -c ${chip_id} -d ${ub_ctl_id} -m cmdq
+
 B<Query statistical indicators>:
 
  ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_pkt_stats -p ${port_id}

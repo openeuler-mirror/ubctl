@@ -9,7 +9,7 @@
 #include "u_utool_diff_version.h"
 #include "./common/u_utool_error.h"
 #include "./protocol_layer/u_utool_ba_diff_version_field_info.h"
-#include "./protocol_layer/u_utool_dl.h"
+#include "./protocol_layer/u_utool_dl_diff_version_field_info.h"
 #include "./protocol_layer/u_utool_ecc_2b.h"
 #include "./protocol_layer/u_utool_ta_diff_version_field_info.h"
 #include "./protocol_layer/u_utool_tp.h"

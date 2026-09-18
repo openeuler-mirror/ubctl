@@ -85,7 +85,7 @@ static struct utool_field_info g_utool_ubommu_field[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_ce" },
 
 	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_nue" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_nfe" },
 
 	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ecc_int_src_ue" },
@@ -97,7 +97,7 @@ static struct utool_field_info g_utool_ubommu_field[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ubommu_ram_ecc_2b_int_mask" },
 
 	{ false, true, UTOOL_LOC5, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "ubommu_int_src_nue" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "ubommu_int_src_nfe" },
 
 	{ false, true, UTOOL_LOC5, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "ubommu_int_serverity_ue" },

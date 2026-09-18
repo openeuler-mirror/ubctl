@@ -56,8 +56,6 @@ static int utool_check_arg(int argc, char **argv)
 
 static int utool_main_parse_sub(int argc, char **argv, struct utool_dev *dev)
 {
-#define UBCTL_ARG_MIN_NUM 2
-
 	int ret = UTOOL_OK;
 
 	do {

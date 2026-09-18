@@ -19,7 +19,7 @@
 #define NL_SSU_VL_PKT "ssu_vl_pkt"
 #define NL_P2P "p2p"
 
-static struct utool_field_info g_utool_pkt_stats_field_info[] = {
+static struct utool_field_info g_utool_nl_pkt_stats_field_info[] = {
 	{ true, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "port_id" },
 	{ true, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
@@ -368,8 +368,8 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_ecc_merr_int_en" },
 
-	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "link_credit_ageing_th" },
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V01, "link_credit_ageing_th" },
 
 	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC3, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ssu_tx_port_dfx_sel(NL_SSU_IO)" },
@@ -426,11 +426,11 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_add_th4" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "rxdma_bp_add_th5" },
 
-	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_add_th6" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "rxdma_bp_add_th7" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rxdma_bp_add_th6" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V01, "rxdma_bp_add_th7" },
 
-	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_add_th8" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "rxdma_bp_add_th9" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rxdma_bp_add_th8" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V01, "rxdma_bp_add_th9" },
 
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ssu_p2p_specu_more_th" },
@@ -438,19 +438,19 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, true, UTOOL_LOC4, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "master_p2p_credit_init(NL_SSU)" },
 
-	{ false, true, UTOOL_LOC12, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC11, UTOOL_LOC11, 0, UTOOL_CAP_ALL, "eg_hos_clk_gating_i" },
-	{ false, false, UTOOL_LOC10, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "eg_hos_clk_gating_e" },
-	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_ALL, "eg_mac_clk_gating_i" },
-	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_ALL, "eg_mac_clk_gating_e" },
-	{ false, false, UTOOL_LOC7, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "eg_clk_gating_i" },
-	{ false, false, UTOOL_LOC6, UTOOL_LOC6, 0, UTOOL_CAP_ALL, "eg_clk_gating_e" },
-	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ig_hosbuf_clk_gating_i" },
-	{ false, false, UTOOL_LOC4, UTOOL_LOC4, 0, UTOOL_CAP_ALL, "ig_hosbuf_clk_gating_e" },
-	{ false, false, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "ig_macbuf_clk_gating_i" },
-	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_ALL, "ig_macbuf_clk_gating_e" },
-	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "ig_clk_gating_i" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "ig_clk_gating_e" },
+	{ false, true, UTOOL_LOC12, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC11, 0, UTOOL_CAP_V01, "eg_hos_clk_gating_i" },
+	{ false, false, UTOOL_LOC10, UTOOL_LOC10, 0, UTOOL_CAP_V01, "eg_hos_clk_gating_e" },
+	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_V01, "eg_mac_clk_gating_i" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_V01, "eg_mac_clk_gating_e" },
+	{ false, false, UTOOL_LOC7, UTOOL_LOC7, 0, UTOOL_CAP_V01, "eg_clk_gating_i" },
+	{ false, false, UTOOL_LOC6, UTOOL_LOC6, 0, UTOOL_CAP_V01, "eg_clk_gating_e" },
+	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_V01, "ig_hosbuf_clk_gating_i" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC4, 0, UTOOL_CAP_V01, "ig_hosbuf_clk_gating_e" },
+	{ false, false, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_V01, "ig_macbuf_clk_gating_i" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_V01, "ig_macbuf_clk_gating_e" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_V01, "ig_clk_gating_i" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V01, "ig_clk_gating_e" },
 
 	{ false, true, UTOOL_LOC19, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC18, UTOOL_LOC18, 0, UTOOL_CAP_ALL, "bm_pre_sch_fifo_empty18" },
@@ -477,18 +477,18 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC14, 0, UTOOL_CAP_ALL, "queue_wait_retry_cnt" },
 
 	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ssu_macmux_fifo_cnt" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ssu_macmux_fifo_cnt" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_rlt_drop_num" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_rlt_drop_num" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_ram_ecc_1b_int" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_ram_ecc_1b_int" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_ram_ecc_2b_int" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_ram_ecc_2b_int" },
 
-	{ false, true, UTOOL_LOC3, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_ALL, "ppp_nl_eth_link_rlt_fifo_ovf" },
-	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "ppp_nl_int_rx_fifo_ovf" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "ppp_nl_int_rx_lpbk_fifo_ovf" },
+	{ false, true, UTOOL_LOC3, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_V012, "ppp_nl_eth_link_rlt_fifo_ovf" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_V012, "ppp_nl_int_rx_fifo_ovf" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V012, "ppp_nl_int_rx_lpbk_fifo_ovf" },
 
 	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC17, UTOOL_LOC17, 0, UTOOL_CAP_ALL, "p2p_bank1_ecc_serr_int" },
@@ -595,48 +595,48 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_rxnpi_drop0" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_rxnpi_drop1" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_txnpi_host_drop" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_mng_hit_drop_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_mng_hit_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_err_status" },
 
 	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "mac_tc_weight_cfg" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_TXPA_GLB)" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_RXPA_GLB)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_TXPA)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_TXPA)" },
 
-	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_ALL, "cfg_ubc_port_indx" },
-	{ false, true, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_ALL, "cfg_route_vl_sw_en" },
-	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_ALL, "cfg_route_sg_drop_en" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "cfg_p2p_port_indx" },
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_V01, "cfg_ubc_port_indx" },
+	{ false, true, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_V01, "cfg_route_vl_sw_en" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_V01, "cfg_route_sg_drop_en" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V01, "cfg_p2p_port_indx" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_umv_tbl_hit_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_lite_rss_err_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_umv_tbl_hit_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_lite_rss_err_cnt" },
 
-	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "ppp_nl_lite_rss_err_function" },
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V012, "ppp_nl_lite_rss_err_function" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_out_pkt_drop_total_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_out_b1_mc_drop_pkt_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_out_pkt_drop_total_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_out_b1_mc_drop_pkt_cnt" },
 
-	{ false, true, UTOOL_LOC14, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC4, UTOOL_LOC13, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_funid" },
-	{ false, true, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_rx_bcast_en" },
-	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_rx_mcast_en" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_rx_ucast_en" },
+	{ false, true, UTOOL_LOC14, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC13, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_funid" },
+	{ false, true, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_rx_bcast_en" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_rx_mcast_en" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_rx_ucast_en" },
 
-	{ false, true, UTOOL_LOC3, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC2, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_rdata" },
+	{ false, true, UTOOL_LOC3, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC2, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_rdata" },
 
-	{ false, true, UTOOL_LOC17, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC16, UTOOL_LOC16, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_rd_en" },
-	{ false, true, UTOOL_LOC1, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_wr_en" },
+	{ false, true, UTOOL_LOC17, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC16, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_rd_en" },
+	{ false, true, UTOOL_LOC1, UTOOL_LOC15, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_wr_en" },
 
-	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "ppp_nl_cfg_promis_nic_en" },
+	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V012, "ppp_nl_cfg_promis_nic_en" },
 
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "mac_tcg_maping_cfg_0" },
@@ -652,43 +652,71 @@ static struct utool_field_info g_utool_pkt_stats_field_info[] = {
 
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_port_vlan_filter_fail_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "ppp_nl_port_vlan_filter_fail_cnt" },
-	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_port_vlan_filter_fail_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_V012, "ppp_nl_port_vlan_filter_fail_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_port_vlan_filter_pass_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "ppp_nl_port_vlan_filter_pass_cnt" },
-	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_port_vlan_filter_pass_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_V012, "ppp_nl_port_vlan_filter_pass_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_mng_tbl_hit_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "ppp_nl_mng_tbl_hit_cnt" },
-	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_mng_tbl_hit_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_V012, "ppp_nl_mng_tbl_hit_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_umv_lkup_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "ppp_nl_umv_lkup_cnt" },
-	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_umv_lkup_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_V012, "ppp_nl_umv_lkup_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_nl_promis_lkup_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "ppp_nl_promis_lkup_cnt" },
-	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ppp_nl_promis_lkup_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_V012, "ppp_nl_promis_lkup_cnt" },
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V012, "reserved" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_cam_toport_drop_linkd" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_cam_drop" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_tab_miss_drop(NL_RXPA_ROUTE)" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_lpm_drop" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_lpm_drop(NL_RXPA_ROUTE)" },
 
 	{ false, true, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_ALL, "txdma_ssu_fastpath_reserve_wt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ssu_tx_ub_tc_pri_credit" },
+
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_3, "cfg_ubc_port_indx0" },
+	{ false, true, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_3, "cfg_route_vl_sw_en0" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_3, "cfg_route_sg_drop_en0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "cfg_p2p_port_indx0" },
+
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_3, "cfg_ubc_port_indx1" },
+	{ false, true, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_3, "cfg_route_vl_sw_en1" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_3, "cfg_route_sg_drop_en1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "cfg_p2p_port_indx1" },
+
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_3, "cfg_ubc_port_indx2" },
+	{ false, true, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_3, "cfg_route_vl_sw_en2" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_3, "cfg_route_sg_drop_en2" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "cfg_p2p_port_indx2" },
+
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_3, "cfg_ubc_port_indx3" },
+	{ false, true, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC9, UTOOL_LOC9, 0, UTOOL_CAP_3, "cfg_route_vl_sw_en3" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_3, "cfg_route_sg_drop_en3" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "cfg_p2p_port_indx3" },
 };
 
 static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "port_id" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_ppp_mac_key_num" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_ppp_host_key_num" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_ssu_mac_rlt_num" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_ssu_host_rlt_num" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ssu_ppp_mac_key_num" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ssu_ppp_host_key_num" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ppp_ssu_mac_rlt_num" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ppp_ssu_host_rlt_num" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "full_drop_num" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "part_drop_num" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_rlt_drop_num" },
@@ -705,31 +733,31 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_oq_drop_pkt_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_oq_drop_pkt_cnt" },
 
-	{ false, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_ALL, "multicast_buf_cur_cnt" },
+	{ false, true, UTOOL_LOC11, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC10, 0, UTOOL_CAP_V01, "multicast_buf_cur_cnt" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_ppp_multicast_rd_num" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_rd_rlt_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ppp_rd_rlt_drop_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ssu_ppp_multicast_rd_num" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ppp_rd_rlt_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ppp_rd_rlt_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_in_drop_ind_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_in_drop_ind_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_in_bypass_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_in_bypass_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_in_drop_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_in_drop_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_in_bypass_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_in_bypass_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx2rx_packet_in_bypass_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx2tx_packet_in_bypass_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_ub_packet_in_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_ub_packet_in_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rx_packet_in_bypass_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "tx_packet_in_bypass_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rx2rx_packet_in_bypass_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rx2tx_packet_in_bypass_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rx_ub_packet_in_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "tx_ub_packet_in_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_ub_packet_out_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_in_err_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_in_err_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_out_err_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_out_err_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_nic_packet_in_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_nic_packet_in_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "rx_nic_packet_in_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V01, "tx_nic_packet_in_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_nic_packet_out_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_nic_packet_out_cnt" },
 
@@ -743,22 +771,22 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt3" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt4" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt5" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt6" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt7" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt8" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rxdma_bp_timeout_cnt9" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rxdma_bp_timeout_cnt6" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rxdma_bp_timeout_cnt7" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rxdma_bp_timeout_cnt8" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rxdma_bp_timeout_cnt9" },
 
-	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt7" },
-	{ false, false, UTOOL_LOC24, UTOOL_LOC27, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt6" },
-	{ false, false, UTOOL_LOC20, UTOOL_LOC23, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt5" },
-	{ false, false, UTOOL_LOC16, UTOOL_LOC19, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt4" },
-	{ false, false, UTOOL_LOC12, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt3" },
-	{ false, false, UTOOL_LOC8, UTOOL_LOC11, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt2" },
-	{ false, false, UTOOL_LOC4, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt1" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "ssu_eg_rxdma_fifo_cnt0" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt7" },
+	{ false, false, UTOOL_LOC24, UTOOL_LOC27, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt6" },
+	{ false, false, UTOOL_LOC20, UTOOL_LOC23, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt5" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC19, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt4" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC15, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt3" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC11, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt2" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC7, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_V01, "ssu_eg_rxdma_fifo_cnt0" },
 
 	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC4, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "ssu_eg_p2p_fifo_cnt1" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC7, 0, UTOOL_CAP_V01, "ssu_eg_p2p_fifo_cnt1" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "ssu_eg_p2p_fifo_cnt0" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt0" },
@@ -769,20 +797,20 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt5" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt6" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt7" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt8" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt9" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt10" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt11" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt12" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt13" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_queue_out_cnt14" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt8" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt9" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt10" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt11" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt12" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt13" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_queue_out_cnt14" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_p2p_bypass_out_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_eg_rsv_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_ig_rsv_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ssu_eg_rsv_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "ssu_ig_rsv_cnt" },
 
-	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_rsv_cnt_1" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "ssu_rsv_cnt_0" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V01, "ssu_rsv_cnt_1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V01, "ssu_rsv_cnt_0" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_in_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_in_cnt" },
@@ -794,20 +822,22 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_ALL, "ssu_macmux_fifo_cnt" },
 
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_in_vl_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_in_vl_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_out_vl_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_in_vl_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "tx_packet_in_vl_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "tx_packet_out_vl_cnt" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_full_drop_num" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_part_drop_num" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ub_rx_bypass_drop_num" },
 
-	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "rxdma_ssu_bp_status" },
-	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "ssu_rxpa_pfc_status" },
-	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "rxpa_ssu_pfc_status" },
+	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_V01, "rxdma_ssu_bp_status" },
+
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V01, "ssu_rxpa_pfc_status" },
+
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V01, "rxpa_ssu_pfc_status" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_tomac_pkt_len_cnt_1_160" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "ssu_tomac_pkt_len_cnt_161_320" },
@@ -824,6 +854,34 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_ALL, "link_credit_vl_ageing_en" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_ub_packet_out_cnt" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "tx_packet_out_vl_cnt0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "tx_packet_out_vl_cnt1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "tx_packet_out_vl_cnt2" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rx_packet_out_vl_cnt0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rx_packet_out_vl_cnt1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rx_packet_out_vl_cnt2" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "tx_packet_in_vl_cnt0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "tx_packet_in_vl_cnt1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "tx_packet_in_vl_cnt2" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rx_packet_in_vl_cnt0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rx_packet_in_vl_cnt1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rx_packet_in_vl_cnt2" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "ssu_eg_rsv_cnt(SSU_EG_RSV_CNT_00)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "ssu_eg_rsv_cnt(SSU_EG_RSV_CNT_01)" },
+
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT0)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT1)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT2)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT3)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT4)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT5)" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT6)" },
+
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
@@ -939,10 +997,11 @@ static struct utool_field_info g_utool_ssu_vl_pkt_field_info[] = {
 	{ false, false, UTOOL_LOC8, UTOOL_LOC11, 0, UTOOL_CAP_ALL, "ssu_rx_out_dfx_vl_sel" },
 	{ false, false, UTOOL_LOC4, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "ssu_tx_in_dfx_vl_sel" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_ALL, "ssu_rx_in_dfx_vl_sel" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_in_vl_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_in_vl_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "rx_packet_out_vl_cnt" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "tx_packet_out_vl_cnt" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_in_vl_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "tx_packet_in_vl_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "rx_packet_out_vl_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V012, "tx_packet_out_vl_cnt" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_2, "tx_packet_in_sf_vl_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_2, "rx_packet_in_sf_vl_cnt" },
@@ -975,9 +1034,11 @@ static struct utool_field_info g_utool_p2p_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "port_id" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "p2p_port_id" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_txnpi_drop" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_ALL, "p2p_port_shap_cfg" },
-	{ false, false, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_ALL, "p2p_port_shap_en" },
-	{ false, true, UTOOL_LOC27, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_V01, "p2p_port_shap_cfg" },
+	{ false, false, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_V01, "p2p_port_shap_en" },
+	{ false, true, UTOOL_LOC27, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
+
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "p2p_tc_weight_cfg0" },
 	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "p2p_tc_weight_cfg1" },
@@ -1010,10 +1071,58 @@ static struct utool_field_info g_utool_p2p_field_info[] = {
 	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "p2p_tc_weight_cfg15" },
 	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num0)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num0)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num0)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num0)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num0)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num1)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num1)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num1)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num1)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num1)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num2)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num2)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num2)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num2)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num2)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num3)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num3)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num3)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num3)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num3)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num4)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num4)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num4)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num4)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num4)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num5)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num5)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num5)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num5)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num5)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num6)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num6)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num6)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num6)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num6)" },
+
+	{ false, true, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(p2p_shap_num7)" },
+	{ false, false, UTOOL_LOC28, UTOOL_LOC28, 0, UTOOL_CAP_3, "p2p_port_shap_en(p2p_shap_num7)" },
+	{ false, false, UTOOL_LOC27, UTOOL_LOC27, 0, UTOOL_CAP_3, "p2p_port_shap_init(p2p_shap_num7)" },
+	{ false, true, UTOOL_LOC26, UTOOL_LOC26, 0, UTOOL_CAP_3, "reserved(p2p_shap_num7)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC25, 0, UTOOL_CAP_3, "p2p_port_shap_cfg(p2p_shap_num7)" },
 };
 
 struct utool_cal_reg_cnt_dp g_utool_nl_cal_reg_table[] = {
-	{ true, true, NL_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_pkt_stats_field_info), g_utool_pkt_stats_field_info },
+	{ true, true, NL_PKT_STATS, UTOOL_ARRAY_SIZE(g_utool_nl_pkt_stats_field_info), g_utool_nl_pkt_stats_field_info },
 	{ true, true, NL_SSU_STATS, UTOOL_ARRAY_SIZE(g_utool_ssu_stats_field_info), g_utool_ssu_stats_field_info },
 	{ true, true, NL_ABN_STATS, UTOOL_ARRAY_SIZE(g_utool_nl_abn_field_info), g_utool_nl_abn_field_info },
 	{ true, false, NL_SSU_SW, UTOOL_ARRAY_SIZE(g_utool_ssu_sw_field_info), g_utool_ssu_sw_field_info },
@@ -1059,8 +1168,8 @@ static int utool_nl_pkt_stats_parse_rpc_pkt(struct fwctl_rpc_ub_out *nl_pkt_stat
 {
 	int ret = UTOOL_OK;
 
-	ret = utool_pkt_parse(nl_pkt_stats_out, UTOOL_ARRAY_SIZE(g_utool_pkt_stats_field_info),
-			      g_utool_pkt_stats_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_NL, NL_PKT_STATS));
+	ret = utool_pkt_parse(nl_pkt_stats_out, UTOOL_ARRAY_SIZE(g_utool_nl_pkt_stats_field_info),
+			      g_utool_nl_pkt_stats_field_info, UTOOL_CONCAT_STR(UTOOL_MODULE_NL, NL_PKT_STATS));
 	if (ret != UTOOL_OK) {
 		utool_err_msg("Failed to parse nl pkt stats data.\n");
 	}
