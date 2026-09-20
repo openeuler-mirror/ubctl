@@ -15,8 +15,5 @@
 int utool_dl_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param);
 int utool_dl_cal_data_len(uint32_t *dl_data_len);
 int utool_dl_parse_rpc_pkt(struct fwctl_rpc_ub_out *dl_out);
-struct utool_field_info *utool_dl_cmd_diff_ver_dispatch(const char *module_func_name,
-							uint32_t reg_version, uint32_t reg_info_index,
-							uint32_t *replace_field_cnt);
 
 #endif

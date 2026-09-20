@@ -68,6 +68,9 @@ do {					\
 #define UTOOL_EXTRACT_BITS(value, start, end) \
 	(((value) >> (start)) & ((1UL << ((end) - (start) + 1)) - 1))
 
+#define UTOOL_EXTRACT_ONE_BIT_32(value, location) \
+	((value) >> (location) & (1UL))
+
 #define utool_err_msg(fmt, ...) \
 	fprintf(stderr, "ERROR : " fmt, ##__VA_ARGS__)
 
@@ -95,6 +98,7 @@ do {					\
 #define UTOOL_MODULE_DEBUGFS "debugfs"
 #define UTOOL_MODULE_MSGQ "msgq"
 #define UTOOL_MODULE_QUEUE "queue"
+#define UTOOL_MODULE_CMDQ "cmdq"
 #define UTOOL_MODULE_DUMP "dump"
 #define UTOOL_MODULE_FIRMWARE_VERSION "fw_version"
 #define UTOOL_MODULE_PORT_PKT_STATS "port_pkt_stats"
@@ -129,6 +133,7 @@ enum utool_module_name {
 	UTOOL_MODULE_NAME_DEBUGFS,
 	UTOOL_MODULE_NAME_MSGQ,
 	UTOOL_MODULE_NAME_QUEUE,
+	UTOOL_MODULE_NAME_CMDQ,
 	UTOOL_MODULE_NAME_FIRMWARE_VERSION,
 	UTOOL_MODULE_NAME_PORT_PKT_STATS,
 	UTOOL_MODULE_NAME_PORT_LINK,

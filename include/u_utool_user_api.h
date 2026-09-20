@@ -30,6 +30,7 @@ struct ubctl_cmd_buf {
 };
 
 struct ubctl_icrc_info {
+	uint32_t port_id;
 	uint32_t data[UBCTL_RXDMA_QUEUE_NUM];
 };
 
