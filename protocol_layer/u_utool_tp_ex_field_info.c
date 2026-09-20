@@ -581,12 +581,12 @@ struct utool_field_info g_utool_tp_abn_stats_field_info[] = {
 };
 
 struct utool_field_info g_utool_tp_tx_route_field_info[] = {
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_tab_miss_drop(tp_ppp_glb)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_tab_miss_drop(tp_ppp)" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_lpm_hit" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "dfx_route_lpm_hit" },
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_lpm_drop" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_lpm_drop(tp_ppp)" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "dfx_route_seg_tab_hit_a" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, UTOOL_INDEX_1, UTOOL_CAP_ALL, "dfx_route_seg_tab_hit_a" },

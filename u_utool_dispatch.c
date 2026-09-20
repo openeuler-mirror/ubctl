@@ -31,6 +31,7 @@
 #include "./feature/u_utool_port_link.h"
 #include "./feature/u_utool_fw_version.h"
 #include "./feature/u_utool_port_pkt.h"
+#include "./feature/u_utool_cmdq.h"
 #include "./feature/u_utool_ue_info.h"
 #include "u_utool_dispatch.h"
 
@@ -58,6 +59,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_DEBUGFS, UTOOL_MODULE_NAME_DEBUGFS, utool_debugfs_cmd_dispatch },
 	{ UTOOL_MODULE_MSGQ, UTOOL_MODULE_NAME_MSGQ, utool_msgq_cmd_dispatch },
 	{ UTOOL_MODULE_QUEUE, UTOOL_MODULE_NAME_QUEUE, utool_queue_cmd_dispatch },
+	{ UTOOL_MODULE_CMDQ, UTOOL_MODULE_NAME_CMDQ, utool_cmdq_cmd_dispatch },
 	{ UTOOL_MODULE_FIRMWARE_VERSION, UTOOL_MODULE_NAME_FIRMWARE_VERSION, utool_fw_version_cmd_dispatch },
 	{ UTOOL_MODULE_PORT_PKT_STATS, UTOOL_MODULE_NAME_PORT_PKT_STATS, utool_port_pkt_cmd_dispatch },
 	{ UTOOL_MODULE_UE, UTOOL_MODULE_NAME_UE, utool_ue_info_cmd_dispatch },
