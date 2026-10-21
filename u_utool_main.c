@@ -29,11 +29,6 @@ static int utool_check_arg(int argc, char **argv)
 	int i = 0;
 
 	for (i = 1; i < argc; i++) {
-		if (strchr(argv[i], '\0') == NULL) {
-			utool_err_msg("The input parameter is not string.\n");
-			return UTOOL_ERR;
-		}
-
 		argv_len = strlen(argv[i]);
 		if (argv_len > UBCTL_FILE_NAME_MAX_LEN) {
 			utool_err_msg("The input param length = %zubytes is bigger than maximum %ubytes.\n",
