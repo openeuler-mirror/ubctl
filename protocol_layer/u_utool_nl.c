@@ -1135,11 +1135,11 @@ struct utool_cal_reg_cnt_dp g_utool_nl_cal_reg_table[] = {
 static void utool_nl_print_help(void)
 {
 	utool_err_msg("The ubctl nl command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f pkt_stats/abn_stats/ssu_stats/ssu_vl_pkt -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f p2p -p ${port} -i ${p2p_port_id}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f ssu_sw/ssu_oq/ssu_p2p -p ${port} -i ${index}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m nl -f ssu_vl_pkt -p ${port} -e ${value}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m nl -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m nl -f pkt_stats/abn_stats/ssu_stats/ssu_vl_pkt -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m nl -f p2p -p ${port} -i ${p2p_port_id}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m nl -f ssu_sw/ssu_oq/ssu_p2p -p ${port} -i ${index}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m nl -f ssu_vl_pkt -p ${port} -e ${value}\n");
 }
 
 int utool_nl_cal_data_len(uint32_t *nl_data_len)

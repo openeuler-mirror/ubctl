@@ -208,7 +208,7 @@ int utool_ubommu_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *par
 		}
 	}
 	utool_err_msg("The ubctl ubommu command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ubommu\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ubommu\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }
