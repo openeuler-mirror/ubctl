@@ -27,6 +27,8 @@
 #define UTOOL_MAX_PORT 64U
 #define UBCTL_MAX_QUERY_NUM 2U
 #define UTOOL_EBUSY (-16)
+#define UBCTL_BYTE_TO_BIT 8
+#define UTOOL_BANDWIDTH_MAX_NUM 448000000U
 
 struct utool_rt_bandwidth_info {
 	uint32_t port_id;
@@ -1536,14 +1538,26 @@ static void utool_rt_bandwidth_data_print(const char *reg_name, uint64_t bandwid
 	utool_reg_msg("%s: %lu.%s Mbps\n", reg_name, integer_part, frac_str);
 }
 
-static void utool_rt_bandwidth_parse(uint32_t time)
+static int utool_check_result_data_invalid(struct utool_rt_bandwidth_info *count_result)
+{
+	uint64_t tx_bandwidth = count_result->tx_bandwidth;
+	uint64_t rx_bandwidth = count_result->rx_bandwidth;
+
+	if (tx_bandwidth > UTOOL_BANDWIDTH_MAX_NUM || rx_bandwidth > UTOOL_BANDWIDTH_MAX_NUM) {
+		return UTOOL_ERR;
+	}
+
+	return UTOOL_OK;
+}
+
+static int utool_rt_bandwidth_parse(uint32_t time, struct utool_dev *dev)
 {
 #define UBCTL_IS_VALID 1
-#define UBCTL_BYTE_TO_BIT 8
 
 	struct utool_rt_bandwidth_info *first_result_data = g_rt_bw_result_data[0];
 	struct utool_rt_bandwidth_info *second_result_data = g_rt_bw_result_data[1];
 	struct utool_rt_bandwidth_info count_result;
+	int ret = UTOOL_OK;
 	uint32_t i = 0;
 
 	for (; i < UTOOL_MAX_PORT; i++) {
@@ -1560,13 +1574,21 @@ static void utool_rt_bandwidth_parse(uint32_t time)
 						    first_result_data[i].tx_bandwidth;
 			count_result.rx_bandwidth = second_result_data[i].rx_bandwidth -
 						    first_result_data[i].rx_bandwidth;
+			count_result.tx_bandwidth = (count_result.tx_bandwidth * UBCTL_BYTE_TO_BIT) / time;
+			count_result.rx_bandwidth = (count_result.rx_bandwidth * UBCTL_BYTE_TO_BIT) / time;
+
 			utool_reg_msg("port_id : %u\n", count_result.port_id);
-			utool_rt_bandwidth_data_print("real_time_bandwidth_tx",
-						      (count_result.tx_bandwidth * UBCTL_BYTE_TO_BIT) / time);
-			utool_rt_bandwidth_data_print("real_time_bandwidth_rx",
-						      (count_result.rx_bandwidth * UBCTL_BYTE_TO_BIT) / time);
+			if (utool_check_result_data_invalid(&count_result) != 0) {
+				utool_rt_bandwidth_data_print("real_time_bandwidth_tx", UTOOL_BANDWIDTH_MAX_NUM);
+				utool_rt_bandwidth_data_print("real_time_bandwidth_rx", UTOOL_BANDWIDTH_MAX_NUM);
+			} else {
+				utool_rt_bandwidth_data_print("real_time_bandwidth_tx", count_result.tx_bandwidth);
+				utool_rt_bandwidth_data_print("real_time_bandwidth_rx", count_result.rx_bandwidth);
+			}
 		}
 	}
+
+	return ret;
 }
 
 static int utool_rt_bandwidth_pkt_operation(struct utool_dev *dev, struct utool_cmd_param *param)
@@ -1794,7 +1816,7 @@ static int utool_dl_bandwidth_cmd(struct utool_dev *dev, struct utool_cmd_param 
 		}
 		break;
 	}
-	utool_rt_bandwidth_parse(sleep_time);
+	utool_rt_bandwidth_parse(sleep_time, dev);
 
 query_err:
 	for (i = 0; i < UBCTL_MAX_QUERY_NUM; i++) {

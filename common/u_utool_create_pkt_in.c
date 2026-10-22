@@ -57,6 +57,11 @@ void *utool_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *p
 {
 	struct fwctl_pkt_in_enable *pkt_in_enable;
 
+	if (param->value > UINT8_MAX) {
+		utool_err_msg("The value parameter is out of range.\n");
+		return NULL;
+	}
+
 	pkt_in_enable = (struct fwctl_pkt_in_enable *)utool_create_pkt_in(pkt_in_len, param,
 									  sizeof(struct fwctl_pkt_in_enable));
 	if (pkt_in_enable == NULL) {
