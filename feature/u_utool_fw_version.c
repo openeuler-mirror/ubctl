@@ -90,9 +90,9 @@ int utool_fw_version_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param 
 				return UTOOL_ERR_INVALID_PARAM;
 			}
 
-		return utool_cmd_fw_version_table[i].execute(dev, param,
-							     utool_cmd_fw_version_table[i].func_table,
-							     utool_cmd_fw_version_table[i].func_cnt);
+			return utool_cmd_fw_version_table[i].execute(dev, param,
+								     utool_cmd_fw_version_table[i].func_table,
+								     utool_cmd_fw_version_table[i].func_cnt);
 		}
 	}
 	utool_err_msg("The ubctl firmware version command must be in the following formats:\n"

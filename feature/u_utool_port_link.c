@@ -64,6 +64,7 @@ static int utool_port_link_print(struct ubctl_port_link_stats *data, uint32_t da
 #define LINK_UP "LINK_UP"
 #define LINK_DOWN_FLAG 1
 
+	struct tm tm_buf;
 	time_t ker_time;
 	uint32_t i;
 	int ret;
@@ -75,7 +76,12 @@ static int utool_port_link_print(struct ubctl_port_link_stats *data, uint32_t da
 
 	for (i = 0; i < data_num; i++) {
 		ker_time = (time_t)data->link_info[i].time;
-		ret = utool_time_parse(buf, *(localtime(&ker_time)));
+		if (localtime_r(&ker_time, &tm_buf) == NULL) {
+			utool_err_msg("Failed to obtain the current time in the time zone.\n");
+			return UTOOL_ERR;
+		}
+
+		ret = utool_time_parse(buf, tm_buf);
 		if (ret) {
 			return ret;
 		}

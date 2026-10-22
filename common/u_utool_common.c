@@ -130,7 +130,7 @@ static int utool_excute_io_die(struct utool_dev *dev)
 
 	if (utool_io_die_cmd(dev, &cmd_param) != UTOOL_OK) {
 		utool_close(dev);
-		utool_err_msg("Failed to query port info , errno = %d.\n", errno);
+		utool_err_msg("Failed to query port info, errno = %d.\n", errno);
 		return UTOOL_ERR;
 	}
 	utool_close(dev);
@@ -197,11 +197,17 @@ static int utool_check_dev_info(struct utool_dev *dev, uint32_t chip_id, uint32_
 		.data_len = sizeof(struct fwctl_pkt_dev_info_match),
 		.execute = utool_process_device_info
 	};
-	struct fwctl_pkt_dev_info_match pkt_in_match = {
-		.chip_id = chip_id,
-		.die_id = die_id,
-		.is_matched = false,
-	};
+	struct fwctl_pkt_dev_info_match pkt_in_match = {};
+
+	if ((chip_id >= UTOOL_DEV_CHIP_DIE_ID_MAX) || (die_id >= UTOOL_DEV_CHIP_DIE_ID_MAX)) {
+		utool_err_msg("Chip id or die id is out of range, must be less than %u.\n",
+			      UTOOL_DEV_CHIP_DIE_ID_MAX);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	pkt_in_match.chip_id = chip_id;
+	pkt_in_match.die_id = die_id;
+	pkt_in_match.is_matched = false;
 
 	return utool_pkt_operation(dev, &pkt_in_match, pkt_in_len, &pkt_exec);
 }
@@ -264,7 +270,7 @@ int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id
 		}
 
 		if (utool_check_ubase_device(driver_path, ub_entity_name) != UTOOL_OK) {
-			utool_warn_msg("Ubctl device: %s not ubase device\n", entry->d_name);
+			utool_warn_msg("Ubctl device: %s not ubase device.\n", entry->d_name);
 			continue;
 		}
 

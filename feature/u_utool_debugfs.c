@@ -171,12 +171,19 @@ printf_err:
 
 static int utool_get_bus_num_by_port_name(char *port_name, char *bus_num)
 {
+#define UBCTL_PORT_NAME_VALID_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
+
 	char buffer[UBCTL_BUFFER_LEN_MAX];
 	char cmd[UBCTL_CMD_LEN_MAX];
 	FILE *ethtool_fp;
 	int ret;
 
 	if (!port_name || !bus_num) {
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	if (port_name[strspn(port_name, UBCTL_PORT_NAME_VALID_CHARS)] != '\0') {
+		utool_err_msg("Invalid port name: %s.\n", port_name);
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
