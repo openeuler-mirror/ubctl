@@ -109,7 +109,7 @@ Function Implementation Scheme:
 
 # 📝 Example command
 
-    ubctl <-c ${chip_id}> <-d ${ub_ctl_id}> <-m ${module}> [-f ${function}]
+    ubctl <-c ${chip_id}> <-d ${udie_id}> <-m ${module}> [-f ${function}]
     [-p ${port}] [-e ${value}] [-u ${ummu_id}] [-i ${index}] [-t ${time}]
     [-h] [ls]
 
@@ -119,7 +119,7 @@ Function Implementation Scheme:
 
 2.Query ba layer packet statistics:
 
-    ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -f pkt_stats
+    ubctl -c ${chip_id} -d ${udie_id} -m ba -f pkt_stats
 
 3.Query the help information for ubctl:
 

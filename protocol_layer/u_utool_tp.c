@@ -696,11 +696,11 @@ int utool_tp_parse_rpc_pkt(struct fwctl_rpc_ub_out *tp_out)
 static void utool_tp_print_help(void)
 {
 	utool_err_msg("The ubctl tp command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f pkt_stats/route_result/rx_bank/"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f pkt_stats/route_result/rx_bank/"
 		      "scc_version/scc_log/scc_debug_en\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f abn_stats -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m tp -f scc_debug_en -e ${value}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f abn_stats -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f scc_debug_en -e ${value}\n");
 }
 
 static int utool_handle_matched_func(struct utool_dev *dev, struct utool_cmd_param *param,

@@ -358,7 +358,7 @@ int utool_ecc_2b_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *par
 
 	if (param->flags != (UTOOL_FLAG_M | UTOOL_FLAG_P)) {
 		utool_err_msg("The ubctl ecc_2b command must be in the following formats:\n"
-			      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ecc_2b -p ${port}\n");
+			      "ubctl -c ${chip_id} -d ${udie_id} -m ecc_2b -p ${port}\n");
 		return UTOOL_ERR_CMD_NOT_FOUND;
 	}
 

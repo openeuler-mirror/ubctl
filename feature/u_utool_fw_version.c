@@ -96,7 +96,7 @@ int utool_fw_version_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param 
 		}
 	}
 	utool_err_msg("The ubctl firmware version command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m fw_version\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m fw_version\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }

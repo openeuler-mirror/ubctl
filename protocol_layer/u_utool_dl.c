@@ -1675,16 +1675,16 @@ static struct utool_func_dispatch g_utool_dl_perf_start_table[] = {
 static void utool_dl_print_help(void)
 {
 	utool_err_msg("The ubctl dl command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane/bit_err"
+		      "ubctl -c ${chip_id} -d ${udie_id} -p ${port_id} -m dl -f pkt_stats/link_status/lane/bit_err"
 		      "/bist/bist_err/link_trace\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port} -f bist -e ${value}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f performance\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -t ${period} -f performance\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f perf -e 1\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -f perf\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -f perf -e 0\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port} -f bist -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_bitmap} -t ${period} -f performance\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -t ${period} -f performance\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_bitmap} -t ${period} -f perf -e 1\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_bitmap} -f perf\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_bitmap} -f perf -e 0\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_bitmap} -t ${period} -f rt_bandwidth\n");
 }
 
 static int utool_dl_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,

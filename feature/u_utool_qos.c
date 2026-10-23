@@ -355,7 +355,7 @@ int utool_qos_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		}
 	}
 	utool_err_msg("The ubctl qos command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m qos -p ${port}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m qos -p ${port}\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }
