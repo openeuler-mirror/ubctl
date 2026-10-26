@@ -1466,11 +1466,11 @@ int utool_ba_parse_rpc_pkt(struct fwctl_rpc_ub_out *ba_out)
 static void utool_ba_print_help(void)
 {
 	utool_err_msg("The ubctl ba command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en/icrc\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f mar_perf -t ${time}\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ba -p ${port} -f ub_mem_decoder/inter_sp_rout/inter_mp_rout"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ba -p ${port}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ba -p ${port} -f pkt_stats/mar/mar_cyc_en/icrc\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ba -p ${port} -f mar_cyc_en -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ba -p ${port} -f mar_perf -t ${time}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ba -p ${port} -f ub_mem_decoder/inter_sp_rout/inter_mp_rout"
 		      "/intra_sp_rout/intra_mp_rout/port_scna/port_table/port_wb_table -i ${index}\n");
 }
 

@@ -874,7 +874,7 @@ int utool_port_info_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *
 
 	if (param->flags != (UTOOL_FLAG_M | UTOOL_FLAG_P)) {
 		utool_err_msg("The ubctl port_info command must be in the following formats:\n"
-			      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_info -p ${port}\n");
+			      "ubctl -c ${chip_id} -d ${udie_id} -m port_info -p ${port}\n");
 		return UTOOL_ERR_CMD_NOT_FOUND;
 	}
 

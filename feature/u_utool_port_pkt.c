@@ -231,7 +231,7 @@ int utool_port_pkt_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *p
 	}
 
 	utool_err_msg("The ubctl port_pkt_stats command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_pkt_stats -p ${port}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m port_pkt_stats -p ${port}\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }

@@ -434,7 +434,7 @@ static struct utool_func_dispatch g_utool_upa_func_table[] = {
 static void utool_upa_print_help(void)
 {
 	utool_err_msg("The ubctl upa command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m upa -f pkt_stats -u ${upa_num} -p ${port_num}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m upa -f pkt_stats -u ${upa_num} -p ${port_num}\n");
 }
 
 static int utool_upa_check_param(struct utool_cmd_param *param)

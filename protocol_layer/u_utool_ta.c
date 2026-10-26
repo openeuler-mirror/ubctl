@@ -1279,8 +1279,8 @@ int utool_ta_parse_rpc_pkt(struct fwctl_rpc_ub_out *ta_out)
 static void utool_ta_print_help(void)
 {
 	utool_err_msg("The ubctl ta command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m ta -f pkt_stats/abn_stats/wqe_processing_time\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ta\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m ta -f pkt_stats/abn_stats/wqe_processing_time\n");
 }
 
 static int utool_ta_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,

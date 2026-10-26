@@ -138,8 +138,8 @@ static int utool_msgq_entry_parse_rpc_pkt(struct fwctl_rpc_ub_out *msgq_entry_ou
 static void utool_msg_print_help(void)
 {
 	utool_err_msg("The ubctl msgq command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m msgq -f que_stats\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m msgq -f entry -i ${index}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m msgq -f que_stats\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m msgq -f entry -i ${index}\n");
 }
 
 static int utool_msgq_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,

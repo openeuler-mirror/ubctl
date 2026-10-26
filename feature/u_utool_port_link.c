@@ -179,7 +179,7 @@ int utool_port_link_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *
 		}
 	}
 	utool_err_msg("The ubctl query port link status command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m port_link -p {port_id}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m port_link -p {port_id}\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }

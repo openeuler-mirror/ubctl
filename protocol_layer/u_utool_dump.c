@@ -197,7 +197,7 @@ int utool_dump_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param
 	}
 
 	utool_err_msg("The ubctl dump command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m dump -p ${port}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m dump -p ${port}\n");
 
 	return UTOOL_ERR_CMD_NOT_FOUND;
 }

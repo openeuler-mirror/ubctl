@@ -75,9 +75,9 @@ static struct utool_func_dispatch g_utool_uboe_mfp_table[] = {
 static void utool_uboe_print_help(void)
 {
 	utool_err_msg("The ubctl uboe command must be in the following formats:\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m uboe -p ${port} -f rxmac2txmac/txmac2rxmac/"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m uboe -p ${port} -f rxmac2txmac/txmac2rxmac/"
 		      "txpcs2rxpcs/prbs/prbs_err_cnt\n"
-		      "ubctl -c ${chip_id} -d ${ub_ctl_id} -m uboe -p ${port} -f rxmac2txmac/txmac2rxmac/"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m uboe -p ${port} -f rxmac2txmac/txmac2rxmac/"
 		      "txpcs2rxpcs/prbs/prbs_err_cnt -e ${value}\n");
 }
 
