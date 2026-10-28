@@ -21,8 +21,8 @@ static const char *ubctl_usage = "Usage:\n"
 				 "        [-t ${time}] [-dev${device}] [-file ${file}] [-h] [ls]\n";
 
 static const char *ubctl_options = "Options:\n"
-				   "  -c $chip_id: chip id, chip id and udie id  are used to find the valid device.\n\n"
-				   "  -d $udie_id : udie id, chip id and udie id  are used to find the valid device.\n\n"
+				   "  -c $chip_id: chip id, chip id and udie id are used to find the valid device.\n\n"
+				   "  -d $udie_id : udie id, chip id and udie id are used to find the valid device.\n\n"
 				   "  -m $module: module name, current module include:\n"
 				   "             dl, nl, ta, tp, ba, qos, msgq, ummu, port_info, ubommu, upa,\n"
 				   "             ecc_2b, queue, uboe, dump, cmdq, fw_version,\n"

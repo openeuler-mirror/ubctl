@@ -9,6 +9,7 @@
 #include "../common/u_utool_error.h"
 #include "../u_utool_pkt.h"
 #include "u_utool_ummu.h"
+#include "u_utool_ummu_diff_version_field_info.h"
 
 #define UMMU_FUNC_REG_COUNT 4U
 
@@ -748,6 +749,65 @@ static struct utool_field_info g_utool_ummu_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_ALL, "OTHER:\n\tsync_timeout_open" },
 };
 
+static struct utool_field_info *g_utool_ummu_k1_field_info;
+static uint32_t g_utool_ummu_k1_field_count;
+
+static void utool_ummu_insert_additional_fields(void)
+{
+	const struct utool_insert_positions *insert_positions = utool_ummu_get_insert_positions();
+	const struct utool_field_info *k1_only_fields = utool_ummu_get_k1_only_field_info();
+	uint32_t insert_positions_count = utool_ummu_get_insert_positions_count();
+	uint32_t original_count = UTOOL_ARRAY_SIZE(g_utool_ummu_field_info);
+	uint32_t k1_only_count = utool_ummu_get_k1_only_field_count();
+	uint32_t src_index = 0, dest_index = 0, k1_only_index = 0;
+	uint32_t insert_pos = 0, field_count = 0, copy_count = 0;
+	uint32_t i, j;
+
+	for (i = 0; i < insert_positions_count; i++) {
+		insert_pos = insert_positions[i].insert_position;
+		field_count = insert_positions[i].field_count;
+
+		if (src_index < insert_pos && src_index < original_count) {
+			copy_count = (insert_pos < original_count) ? (insert_pos - src_index) :
+								     (original_count - src_index);
+			if (dest_index + copy_count <= g_utool_ummu_k1_field_count) {
+				memcpy(&g_utool_ummu_k1_field_info[dest_index], &g_utool_ummu_field_info[src_index],
+				       sizeof(struct utool_field_info) * copy_count);
+				dest_index += copy_count;
+				src_index += copy_count;
+			}
+		}
+
+		for (j = 0; j < field_count && k1_only_index < k1_only_count; j++) {
+			if (dest_index < g_utool_ummu_k1_field_count) {
+				g_utool_ummu_k1_field_info[dest_index] = k1_only_fields[k1_only_index];
+				dest_index++;
+				k1_only_index++;
+			}
+		}
+	}
+
+	if (src_index < original_count) {
+		copy_count = original_count - src_index;
+		if (dest_index + copy_count <= g_utool_ummu_k1_field_count) {
+			memcpy(&g_utool_ummu_k1_field_info[dest_index], &g_utool_ummu_field_info[src_index],
+			       sizeof(struct utool_field_info) * copy_count);
+		}
+	}
+}
+
+static struct utool_field_info *utool_ummu_get_diff_version_field_info(uint32_t reg_version,
+								       uint32_t *replace_field_cnt)
+{
+	if (reg_version == UTOOL_ENV_VER_K_1) {
+		*replace_field_cnt = g_utool_ummu_k1_field_count;
+		return g_utool_ummu_k1_field_info;
+	} else {
+		*replace_field_cnt = UTOOL_ARRAY_SIZE(g_utool_ummu_field_info);
+		return g_utool_ummu_field_info;
+	}
+}
+
 static int utool_ummu_func_query_config_parse_rpc_pkt(struct fwctl_rpc_ub_out *ummu_out)
 {
 	uint32_t *data = NULL;
@@ -817,6 +877,8 @@ static int utool_ummu_cmd_func(struct utool_dev *dev, struct utool_cmd_param *pa
 
 int utool_ummu_parse_rpc_pkt(struct fwctl_rpc_ub_out *ummu_out)
 {
+	struct utool_field_info *utool_ummu_field_info;
+	uint32_t replace_field_cnt = 0;
 	int ret = UTOOL_OK;
 
 	if (ummu_out == NULL) {
@@ -824,8 +886,8 @@ int utool_ummu_parse_rpc_pkt(struct fwctl_rpc_ub_out *ummu_out)
 		return UTOOL_ERR_INVALID_PARAM;
 	}
 
-	ret = utool_pkt_parse(ummu_out, UTOOL_ARRAY_SIZE(g_utool_ummu_field_info),
-			      g_utool_ummu_field_info, UTOOL_MODULE_UMMU);
+	utool_ummu_field_info = utool_ummu_get_diff_version_field_info(ummu_out->env_version, &replace_field_cnt);
+	ret = utool_pkt_parse(ummu_out, replace_field_cnt, utool_ummu_field_info, UTOOL_MODULE_UMMU);
 	if (ret != UTOOL_OK) {
 		utool_err_msg("Failed to parse ummu register data.\n");
 	}
@@ -835,10 +897,13 @@ int utool_ummu_parse_rpc_pkt(struct fwctl_rpc_ub_out *ummu_out)
 
 static int utool_ummu_cal_data_len(uint32_t *data_len)
 {
+	struct utool_field_info *utool_ummu_field_info;
+	uint32_t replace_field_cnt = 0;
 	uint32_t reg_cnt = 0;
 	int ret = UTOOL_OK;
 
-	ret = utool_cal_reg_cnt(g_utool_ummu_field_info, UTOOL_ARRAY_SIZE(g_utool_ummu_field_info), &reg_cnt);
+	utool_ummu_field_info = utool_ummu_get_diff_version_field_info(UTOOL_ENV_VER_K_1, &replace_field_cnt);
+	ret = utool_cal_reg_cnt(utool_ummu_field_info, replace_field_cnt, &reg_cnt);
 	if (ret != UTOOL_OK) {
 		utool_err_msg("Failed to calculate ummu reg cnt.\n");
 		return ret;
@@ -859,17 +924,30 @@ static int utool_ummu_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 	UTOOL_SET_USED(func_table);
 	UTOOL_SET_USED(func_cnt);
 
+	g_utool_ummu_k1_field_count = UTOOL_ARRAY_SIZE(g_utool_ummu_field_info) + utool_ummu_get_k1_only_field_count();
+	g_utool_ummu_k1_field_info =
+		(struct utool_field_info *)UTOOL_MALLOC(sizeof(struct utool_field_info) * g_utool_ummu_k1_field_count);
+	if (g_utool_ummu_k1_field_info == NULL) {
+		utool_err_msg("Failed to malloc space for k1 field info.\n");
+		g_utool_ummu_k1_field_count = 0;
+		return UTOOL_ERR_MALLOC;
+	}
+
+	utool_ummu_insert_additional_fields();
+
 	func_pkt_exec.execute = utool_ummu_parse_rpc_pkt;
 
 	ret = utool_ummu_cal_data_len(&func_pkt_exec.data_len);
 	if (ret != UTOOL_OK) {
 		utool_err_msg("Ummu cmd failed to calculate ummu reg cnt, ret = %d.\n", ret);
+		UTOOL_FREE(g_utool_ummu_k1_field_info);
 		return ret;
 	}
 
 	pkt_in = utool_ummu_value_create_pkt_in(&pkt_in_len, param);
 	if (pkt_in == NULL) {
 		utool_err_msg("Failed to create pkt in.\n");
+		UTOOL_FREE(g_utool_ummu_k1_field_info);
 		return UTOOL_ERR_MALLOC;
 	}
 
@@ -878,6 +956,7 @@ static int utool_ummu_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
 	}
 	utool_destroy_pkt_in(&pkt_in);
+	UTOOL_FREE(g_utool_ummu_k1_field_info);
 
 	return ret;
 }
