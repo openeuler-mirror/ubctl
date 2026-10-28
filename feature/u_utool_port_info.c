@@ -747,7 +747,7 @@ static int utool_eth_port_info_parse_dlphy_info(struct fwctl_rpc_ub_out *port_in
 	utool_print_eth_dlphy_mode_info(dlphy_info.phy_mode_ctrl);
 	utool_print_eth_sds_rate(dlphy_info.sds_rate);
 	utool_print_eth_lane_num_info(dlphy_info.cur_tx_lane_num, "cur_tx_lane_num");
-	utool_print_eth_lane_num_info(dlphy_info.cur_tx_lane_num, "cur_rx_lane_num");
+	utool_print_eth_lane_num_info(dlphy_info.cur_rx_lane_num, "cur_rx_lane_num");
 	utool_print_two_type_info("port_en", dlphy_info.port_en, "enable", "disable");
 	utool_print_two_type_info("port_mode", dlphy_info.port_mode, "X2 2port", "X4 1port");
 	utool_print_eth_lpbk_en(&dlphy_info);
