@@ -494,9 +494,7 @@ static int utool_deal_perf_ret(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
 		}
 	}
 	if (retval == -EBUSY) {
-		if (rpc_cmd == UTOOL_CMD_QUERY_DL_RT_BANDWIDTH) {
-			return retval;
-		}
+		return retval;
 	}
 	return UTOOL_OK;
 }
@@ -516,12 +514,28 @@ static int utool_deal_with_retval(enum ub_fwctl_cmdrpc_type rpc_cmd, int retval)
 	return UTOOL_ERR_IOCTL;
 }
 
+static int utool_validate_pkt_exec_result(struct fwctl_rpc_ub_out *pkt_out, struct utool_pkt_exec *pkt_exec,
+					  int cmd_exec_ret)
+{
+	if (cmd_exec_ret != UTOOL_OK) {
+		utool_err_msg("Failed to execute cmd, ret = %d.\n", cmd_exec_ret);
+		return cmd_exec_ret;
+	}
+
+	if ((pkt_out->data_size != pkt_exec->data_len) && (pkt_exec->rpc_cmd != UTOOL_CMD_QUERY_IO_DIE_PORT_INFO)) {
+		utool_err_msg("Failed to get pkt out data. out data size = %u bytes, data len = %u bytes.\n",
+			      pkt_out->data_size, pkt_exec->data_len);
+		return UTOOL_ERR;
+	}
+
+	return UTOOL_OK;
+}
+
 int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len, struct utool_pkt_exec *pkt_exec)
 {
 	struct fwctl_rpc_ub_out *pkt_out = NULL;
+	uint32_t pkt_out_len = 0, in_len = 0;
 	struct fwctl_rpc_ub_in *in = NULL;
-	uint32_t pkt_out_len = 0;
-	uint32_t in_len = 0;
 	int ret = UTOOL_OK;
 
 	if (utool_operation_param_check(dev, pkt_in, pkt_exec) != UTOOL_OK) {
@@ -553,16 +567,19 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 			break;
 		}
 
+		ret = utool_validate_pkt_exec_result(pkt_out, pkt_exec, ret);
 		if (ret != UTOOL_OK) {
-			utool_err_msg("Failed to execute cmd, ret = %d\n", ret);
 			break;
 		}
 
-		if ((pkt_out->data_size != pkt_exec->data_len) &&
-		    (pkt_exec->rpc_cmd != UTOOL_CMD_QUERY_IO_DIE_PORT_INFO)) {
-			utool_err_msg("Failed to get pkt out data. out data size = %ubytes, data len = %ubytes.\n",
-				      pkt_out->data_size, pkt_exec->data_len);
-			ret = UTOOL_ERR;
+		if (dev->dev_data != NULL && dev->dev_data->is_api_query &&
+		    pkt_exec->rpc_cmd != UTOOL_CMD_QUERY_DL_RT_BANDWIDTH) {
+			if (dev->dev_data->execute == NULL) {
+				utool_err_msg("The callback function of the API is NULL.\n");
+				ret = UTOOL_ERR_INVALID_PARAM;
+				break;
+			}
+			ret = dev->dev_data->execute(pkt_out, dev->dev_data->api_param);
 			break;
 		}
 

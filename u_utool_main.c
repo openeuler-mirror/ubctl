@@ -90,7 +90,7 @@ static int utool_main_parse_sub(int argc, char **argv, struct utool_dev *dev)
 
 int main(int argc, char *argv[])
 {
-	const struct utool_cmd_param *cmd_param = NULL;
+	struct utool_cmd_param *cmd_param = NULL;
 	struct utool_dev dev = {};
 	int ret = UTOOL_OK;
 
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 		return ret;
 	}
 
-	ret = utool_cmd_select(&dev);
+	ret = utool_cmd_select(&dev, cmd_param);
 
 	utool_close(&dev);
 

@@ -18,13 +18,9 @@
 #define DL_BIST "bist"
 #define DL_BIST_ERR "bist_err"
 #define DL_LINK_TRACE "link_trace"
-#define DL_PERFORMANCE "performance"
-#define DL_RT_BANDWIDTH "rt_bandwidth"
-#define DL_PERF "perf"
 
 #define UTOOL_TRACE_4K 0x0001000
 #define UTOOL_PERF_DATA_LEN 9472U
-#define UTOOL_MAX_PORT 64U
 #define UBCTL_MAX_QUERY_NUM 2U
 #define UTOOL_EBUSY (-16)
 #define UBCTL_BYTE_TO_BIT 8
