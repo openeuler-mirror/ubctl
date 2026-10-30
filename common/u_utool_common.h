@@ -147,14 +147,28 @@ enum utool_module_name {
 enum utool_dev_step_flag {
 	UTOOL_DEV_STEP_SCAN = 0,
 	UTOOL_DEV_STEP_LS,
+	UTOOL_DEV_STEP_LS_API,
 	UTOOL_DEV_STEP_UMMU,
 	UTOOL_DEV_UBASE_INFO,
 	UTOOL_DEV_STEP_DEBUGFS,
 };
 
+struct ubctl_api_param {
+	uint32_t user_data_size;
+	uint32_t user_used_size;
+	void *user_data;
+};
+
+struct dev_data {
+	bool is_api_query;
+	struct ubctl_api_param *api_param;
+	int (*execute)(struct fwctl_rpc_ub_out *out, struct ubctl_api_param *api_param);
+};
+
 struct utool_dev {
 	char devname[UTOOL_DEV_NAME_LEN_MAX];
 	int32_t fd;
+	struct dev_data *dev_data;
 };
 
 struct utool_cmd_param {
@@ -204,5 +218,6 @@ struct utool_cmd_option_parse {
 
 void utool_close(struct utool_dev *dev);
 int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id, enum utool_dev_step_flag step_flag);
+int utool_api_common_copy(struct fwctl_rpc_ub_out *rpc_out, struct ubctl_api_param *api_param);
 
 #endif

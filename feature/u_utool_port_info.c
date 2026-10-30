@@ -770,6 +770,24 @@ static int utool_port_info_parse_modules(struct fwctl_rpc_ub_out *port_info_out)
 	return UTOOL_OK;
 }
 
+static int utool_port_info_get_module_type(struct fwctl_rpc_ub_out *port_info_out, struct ubctl_api_param *api_param)
+{
+	uint32_t user_data_size = api_param->user_data_size;
+	struct utool_port_data *port_info_out_data;
+	uint16_t module_type;
+
+	if (user_data_size < port_info_out->data_size) {
+		utool_err_msg("User data is invalid, user data size = %u bytes, current need = %u bytes.\n",
+			      user_data_size, port_info_out->data_size);
+		return UTOOL_ERR_PARSE;
+	}
+	port_info_out_data = (struct utool_port_data *)(port_info_out->data);
+	module_type = port_info_out_data->head.module_type;
+	memcpy(api_param->user_data, &module_type, sizeof(uint16_t));
+
+	return UTOOL_OK;
+}
+
 static int utool_port_info_cmd_get_modules(struct utool_dev *dev, struct utool_cmd_param *param)
 {
 	struct utool_pkt_exec pkt_exec = { UTOOL_CMD_QUERY_PORT_INFO, 0, NULL };
@@ -779,6 +797,9 @@ static int utool_port_info_cmd_get_modules(struct utool_dev *dev, struct utool_c
 
 	pkt_exec.data_len = sizeof(struct utool_port_data);
 	pkt_exec.execute = utool_port_info_parse_modules;
+	if (dev->dev_data != NULL && dev->dev_data->is_api_query) {
+		dev->dev_data->execute = utool_port_info_get_module_type;
+	}
 
 	pkt_in = utool_create_pkt_in(&pkt_in_len, param, sizeof(struct fwctl_pkt_in_port_info));
 	if (pkt_in == NULL) {
@@ -811,14 +832,21 @@ static int utool_port_info_cmd_get_data(struct utool_dev *dev, struct utool_cmd_
 	struct utool_pkt_exec pkt_exec = { UTOOL_CMD_QUERY_PORT_INFO, 0, NULL };
 	uint32_t module_type_cnt = UTOOL_ARRAY_SIZE(data_parse_table);
 	struct fwctl_pkt_in_port_info *pkt_in = NULL;
-	uint32_t pkt_in_len = 0;
+	uint32_t pkt_in_len = 0, i;
+	uint16_t module_type;
 	int ret = UTOOL_OK;
-	uint32_t i;
+
+	if (dev->dev_data != NULL && dev->dev_data->is_api_query) {
+		memcpy(&module_type, dev->dev_data->api_param->user_data, sizeof(uint16_t));
+		dev->dev_data->execute = utool_api_common_copy;
+	} else {
+		module_type = g_utool_module_type;
+	}
 
 	pkt_exec.data_len = sizeof(struct utool_port_data);
 
 	for (i = 0; i < module_type_cnt; i++) {
-		if ((g_utool_module_type & data_parse_table[i].module_type) == 0) {
+		if ((module_type & data_parse_table[i].module_type) == 0) {
 			continue;
 		}
 

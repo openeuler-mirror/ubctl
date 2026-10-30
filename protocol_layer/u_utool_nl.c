@@ -16,7 +16,6 @@
 #define NL_SSU_SW "ssu_sw"
 #define NL_SSU_OQ "ssu_oq"
 #define NL_SSU_P2P "ssu_p2p"
-#define NL_SSU_VL_PKT "ssu_vl_pkt"
 #define NL_P2P "p2p"
 
 static struct utool_field_info g_utool_nl_pkt_stats_field_info[] = {

@@ -12,8 +12,8 @@
 #include "./common/u_utool_common.h"
 
 int utool_transform_str(char *param, uint32_t *value);
-int utool_cmd_select(struct utool_dev *dev);
+int utool_cmd_select(struct utool_dev *dev, struct utool_cmd_param *cmd_param);
 int utool_parse_command(int argc, char **argv);
-const struct utool_cmd_param *utool_get_cmd_param(void);
+struct utool_cmd_param *utool_get_cmd_param(void);
 
 #endif

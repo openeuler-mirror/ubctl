@@ -68,7 +68,7 @@ static struct utool_module_dispatch g_utool_cmd_table[] = {
 	{ UTOOL_MODULE_DUMP, UTOOL_MODULE_NAME_DUMP, utool_dump_cmd_dispatch },
 };
 
-const struct utool_cmd_param *utool_get_cmd_param(void)
+struct utool_cmd_param *utool_get_cmd_param(void)
 {
 	return &g_utool_cmd_param;
 }
@@ -463,7 +463,7 @@ int utool_parse_command(int argc, char **argv)
 	return utool_check_param();
 }
 
-int utool_cmd_select(struct utool_dev *dev)
+int utool_cmd_select(struct utool_dev *dev, struct utool_cmd_param *cmd_param)
 {
 	struct utool_module_dispatch *dispatch = NULL;
 	uint32_t table_cnt = 0;
@@ -478,8 +478,8 @@ int utool_cmd_select(struct utool_dev *dev)
 
 	for (i = 0; i < table_cnt; i++) {
 		dispatch = &g_utool_cmd_table[i];
-		if ((g_utool_cmd_param.module_id == dispatch->module_flags) && (dispatch->execute != NULL)) {
-			return dispatch->execute(dev, &g_utool_cmd_param);
+		if ((cmd_param->module_id == dispatch->module_flags) && (dispatch->execute != NULL)) {
+			return dispatch->execute(dev, cmd_param);
 		}
 	}
 
