@@ -145,6 +145,10 @@ static int utool_proc_excption_dev(uint32_t chip_id, uint32_t die_id, enum utool
 		return UTOOL_OK_LS;
 	}
 
+	if (step_flag == UTOOL_DEV_STEP_LS_API) {
+		return UTOOL_OK_LS;
+	}
+
 	if (step_flag == UTOOL_DEV_STEP_SCAN) {
 		utool_err_msg("Ubctl device not found. chip_id = %u, die_id = %u\n", chip_id, die_id);
 	} else {
@@ -217,9 +221,9 @@ static int utool_process_step(struct utool_dev *dev, uint32_t chip_id, uint32_t 
 {
 	int ret = UTOOL_OK;
 
-	if (step_flag == UTOOL_DEV_STEP_LS) {
+	if (step_flag == UTOOL_DEV_STEP_LS || step_flag == UTOOL_DEV_STEP_LS_API) {
 		if (utool_excute_io_die(dev) != UTOOL_OK) {
-			utool_err_msg("Failed to query port bitmap.\n");
+			utool_err_msg("Failed to query port bitmap, step_flag = %u.\n", step_flag);
 		}
 		return UTOOL_ERR;
 	}
@@ -285,4 +289,34 @@ int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id
 	}
 	(void)closedir(class_dir);
 	return utool_proc_excption_dev(chip_id, die_id, step_flag);
+}
+
+int utool_api_common_copy(struct fwctl_rpc_ub_out *rpc_out, struct ubctl_api_param *api_param)
+{
+	void *current_user_data_ptr;
+	uint32_t user_data_size;
+	uint32_t used_size;
+
+	if (rpc_out == NULL || rpc_out->data_size == 0) {
+		utool_err_msg("Rpc out is invalid.\n");
+		return UTOOL_ERR_PARSE;
+	}
+
+	if (api_param == NULL || api_param->user_data == NULL) {
+		utool_err_msg("Api param is invalid.\n");
+		return UTOOL_ERR_PARSE;
+	}
+
+	user_data_size = api_param->user_data_size;
+	used_size = api_param->user_used_size;
+	if ((user_data_size < used_size) || ((user_data_size - used_size) < rpc_out->data_size)) {
+		utool_err_msg("User data is invalid, user data size = %u bytes, user used size = %u bytes, next copy size = %u bytes.\n",
+			      user_data_size, used_size, rpc_out->data_size);
+		return UTOOL_ERR_PARSE;
+	}
+	current_user_data_ptr = (void *)((uint8_t *)(api_param->user_data) + used_size);
+	memcpy(current_user_data_ptr, rpc_out->data, rpc_out->data_size);
+	api_param->user_used_size += rpc_out->data_size;
+
+	return UTOOL_OK;
 }
