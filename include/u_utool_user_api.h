@@ -36,6 +36,7 @@
 #define UBCTL_QUERY_TXPCS2RXPCS_COMM 0x0016
 #define UBCTL_CONFIG_SSU_VL_PKT_COMM 0x0017
 #define UBCTL_QUERY_SSU_VL_PKT_COMM 0x0018
+#define UBCTL_QUERY_PRE_BER_COMM 0x0019
 
 #define UBCTL_UBASE_MAX_DSCP 64
 #define UBCTL_UBASE_MAX_SL_NUM 16
@@ -434,6 +435,19 @@ union ssu_vl_pkt_info_CAP_VERSION {
 struct ssu_vl_pkt_info {
 	uint32_t env_version;
 	union ssu_vl_pkt_info_CAP_VERSION ssu_vl_pkt_info_CAP;
+};
+
+struct ubctl_pre_ber_port_info {
+	uint32_t port_id;
+	uint32_t reserved;
+	uint64_t decoded_fail_block_num;
+	uint64_t fec_err;
+};
+
+struct ubctl_pre_ber_info {
+	uint32_t port_num;
+	uint32_t reserved;
+	struct ubctl_pre_ber_port_info port_info[];
 };
 
 int ubctl_user_comm_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_cmd,
