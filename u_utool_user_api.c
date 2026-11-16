@@ -7,6 +7,7 @@
  */
 #include <pthread.h>
 #include <inttypes.h>
+#include <errno.h>
 
 #include "./common/u_utool_error.h"
 #include "./common/u_utool_fwctl.h"
@@ -220,10 +221,16 @@ int ubctl_user_comm_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_cmd,
 	}
 
 	ret = utool_cmd_exec(&dev, rpc_in, rpc_in_len, rpc_out, &rpc_out_len);
+	if (ret == EUSERS) {
+		utool_err_msg("Failed to access user_comm_api, the frequency exceeds the limit, ret = %d.\n", ret);
+		goto free_pkt_out;
+	}
+
 	if (rpc_out->retval != 0) {
 		if (ret == UTOOL_OK) {
 			ret = UTOOL_ERR_IOCTL;
 		}
+
 		utool_err_msg("Command execution failed, retval = %d.\n", rpc_out->retval);
 		goto free_pkt_out;
 	}
@@ -337,10 +344,15 @@ static int ubctl_query_ubase_comm_info(const char *dev_name, uint32_t ubctl_cmd,
 	utool_fill_dev_name_in_data(dev_name, ubctl_cmd, rpc_in);
 
 	ret = utool_cmd_exec(&dev, rpc_in, rpc_in_len, rpc_out, &rpc_out_len);
+	if (ret == EUSERS) {
+		utool_err_msg("Exceeding frequency limits, ret = %d.\n", ret);
+		goto free_pkt_buf;
+	}
 	if (rpc_out->retval != 0) {
 		if (ret == UTOOL_OK) {
 			ret = UTOOL_ERR_IOCTL;
 		}
+
 		utool_err_msg("Command execution failed, retval = %d.\n", rpc_out->retval);
 		goto free_pkt_buf;
 	}
@@ -506,7 +518,7 @@ static int ubctl_api_common_get_data(struct utool_cmd_param *cmd_param, struct u
 				     struct utool_dev *dev, enum utool_dev_step_flag step_flag)
 {
 	struct ubctl_api_param api_param = {};
-	struct dev_data *dev_data = {};
+	struct dev_data *dev_data;
 	int ret;
 
 	ret = utool_open_dev_step(dev, cmd_param->chip_id, cmd_param->die_id, step_flag);
@@ -862,6 +874,34 @@ static int ubctl_check_fw_version(struct ubctl_cmd_buf *in, struct ubctl_cmd_buf
 	return UTOOL_OK;
 }
 
+static int utool_api_port_link_copy(struct fwctl_rpc_ub_out *port_link_out, struct ubctl_api_param *api_param)
+{
+	struct fwctl_rpc_ub_out *local_time;
+	struct timespec ts;
+	size_t total_size;
+	time_t time;
+	int ret;
+
+	total_size = sizeof(struct fwctl_rpc_ub_out) + sizeof(time_t);
+	local_time = (struct fwctl_rpc_ub_out *)UTOOL_MALLOC(total_size);
+	if (!local_time) {
+		return UTOOL_ERR_MALLOC;
+	}
+
+	clock_gettime(CLOCK_REALTIME, &ts);
+	time = ts.tv_sec;
+	local_time->data_size = sizeof(time_t);
+	memcpy(local_time->data, &time, sizeof(time_t));
+	ret = utool_api_common_copy(local_time, api_param);
+	if (ret) {
+		UTOOL_FREE(local_time);
+		return ret;
+	}
+	UTOOL_FREE(local_time);
+
+	return utool_api_common_copy(port_link_out, api_param);
+}
+
 static int ubctl_port_link_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_cmd,
 			       struct ubctl_cmd_buf *in, struct ubctl_cmd_buf *out)
 {
@@ -879,13 +919,13 @@ static int ubctl_port_link_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl
 	cmd_param.chip_id = chip_id;
 	cmd_param.die_id = die_id;
 
-	dev_data.execute = utool_api_common_copy;
+	dev_data.execute = utool_api_port_link_copy;
 	dev.dev_data = &dev_data;
 	step_flag = UTOOL_DEV_STEP_SCAN;
 
 	ret = ubctl_api_common_get_data(&cmd_param, out, &dev, step_flag);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("Faild to get port_link data, ret = %d.\n", ret);
+		utool_err_msg("Failed to get port_link data, ret = %d.\n", ret);
 	}
 
 	return ret;
@@ -964,7 +1004,7 @@ static int ubctl_perf_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_cmd,
 
 	ret = ubctl_api_common_get_data(&cmd_param, out, &dev, step_flag);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("Faild to execute perf api, ret = %d, ubctl_cmd = %u.\n", ret, ubctl_cmd);
+		utool_err_msg("Failed to execute perf api, ret = %d, ubctl_cmd = %u.\n", ret, ubctl_cmd);
 	}
 
 	return ret;
@@ -1047,7 +1087,7 @@ static int ubctl_loopback_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_
 
 	ret = ubctl_loopback_api_parse_input(ubctl_cmd, in, &cmd_param);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("Faild to parse input, ret = %d.\n", ret);
+		utool_err_msg("Failed to parse input, ret = %d.\n", ret);
 		return ret;
 	}
 	cmd_param.module_id = UTOOL_MODULE_NAME_UBOE;
@@ -1060,7 +1100,7 @@ static int ubctl_loopback_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_
 
 	ret = ubctl_api_common_get_data(&cmd_param, out, &dev, step_flag);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("Faild to get port_link data, ret = %d.\n", ret);
+		utool_err_msg("Failed to get loopback data, ret = %d.\n", ret);
 	}
 
 	return ret;
@@ -1183,7 +1223,6 @@ static void utool_fill_ssu_vl_pkt_CAP_3(uint32_t *ssu_vl_pkt_out_data,
 	CAP_3->reserved_3 = UTOOL_EXTRACT_BITS(reg, RESERVED_CH_START, RESERVED_CH_END);
 }
 
-
 static int utool_fill_ssu_vl_pkt(uint32_t *ssu_vl_pkt_out_data, uint32_t env_version,
 				 union ssu_vl_pkt_info_CAP_VERSION *ssu_vl_pkt_info)
 {
@@ -1224,7 +1263,7 @@ static int utool_api_query_ssu_vl_pkt_copy(struct fwctl_rpc_ub_out *ssu_vl_pkt_o
 	}
 
 	if (user_data_size < sizeof(struct ssu_vl_pkt_info)) {
-		utool_err_msg("User data is invalid, user data size = %u bytes, current need = %zu bytes.\n",
+		utool_err_msg("User data of ssu_vl_pkt API is invalid, user data size = %u bytes, need = %zu bytes.\n",
 			      user_data_size, sizeof(struct ssu_vl_pkt_info));
 		return UTOOL_ERR_PARSE;
 	}
@@ -1267,14 +1306,106 @@ static int ubctl_ssu_vl_pkt_api(uint32_t chip_id, uint32_t die_id, uint32_t ubct
 
 	ret = ubctl_api_common_get_data(&cmd_param, out, &dev, step_flag);
 	if (ret != UTOOL_OK) {
-		utool_err_msg("Failed to get port_link data, ret = %d.\n", ret);
+		utool_err_msg("Failed to get ssu_vl_pkt data, ret = %d.\n", ret);
 	}
 
 	return ret;
 }
 
+static int ubctl_check_is_read(struct ubctl_cmd_buf *in, struct ubctl_cmd_buf *out)
+{
+	UTOOL_SET_USED(out);
+	if (in->is_read == false) {
+		utool_err_msg("The parameter 'in' is invalid, the 'is_read' parameter must be set to 'true'.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	return UTOOL_OK;
+}
+
+static int ubctl_pre_ber_data_deal(struct ubctl_cmd_buf *usr_buf, struct ubctl_cmd_buf *raw_buf)
+{
+#define UTOOL_PRE_BER_MAX_PORT_NUM 42U
+
+	struct ubctl_pre_ber_info *raw_info, *out_info;
+	uint32_t total_info_num;
+	size_t total_info_size;
+
+	if (raw_buf == NULL || usr_buf == NULL || raw_buf->data == NULL || usr_buf->data == NULL) {
+		utool_err_msg("Invalid buffer pointers.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	raw_info = (struct ubctl_pre_ber_info *)raw_buf->data;
+	out_info = (struct ubctl_pre_ber_info *)usr_buf->data;
+	total_info_num = raw_info->port_num;
+	if (total_info_num > UTOOL_PRE_BER_MAX_PORT_NUM) {
+		utool_err_msg("The port num = %u is larger than max port num = %u.\n",
+			      total_info_num, UTOOL_PRE_BER_MAX_PORT_NUM);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	total_info_size = sizeof(*raw_info) + total_info_num * sizeof(struct ubctl_pre_ber_port_info);
+	if (raw_buf->data_size < total_info_size) {
+		utool_err_msg("Raw buf size = %u bytes, it must be bigger than the total size %zu bytes.\n",
+			      raw_buf->data_size, total_info_size);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	if (usr_buf->data_size < total_info_size) {
+		utool_err_msg("Usr buf size = %u bytes, it must be bigger than the total size %zu bytes.\n",
+			      usr_buf->data_size, total_info_size);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	memcpy(out_info, raw_info, total_info_size);
+	usr_buf->data_size = total_info_size;
+
+	return UTOOL_OK;
+}
+
+static int ubctl_pre_ber_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_cmd,
+			     struct ubctl_cmd_buf *in, struct ubctl_cmd_buf *out)
+{
+#define UBCTL_QUERY_TP_PRE_BER_DFX 0xA03E
+	UTOOL_SET_USED(ubctl_cmd);
+
+	struct ubctl_cmd_buf tmp_in, tmp_out;
+	uint32_t in_data_buf = 0;
+	void *out_data_buf;
+	int ret;
+
+	out_data_buf = UTOOL_MALLOC(UBCTL_OPCODE_MAX_LEN);
+	if (out_data_buf == NULL) {
+		utool_err_msg("Failed to malloc space for tmp out.\n");
+		return UTOOL_ERR_MALLOC;
+	}
+
+	tmp_in.opcode = UBCTL_QUERY_TP_PRE_BER_DFX;
+	tmp_in.is_read = in->is_read;
+	tmp_in.data_size = sizeof(uint32_t);
+	tmp_in.data = &in_data_buf;
+
+	tmp_out.opcode = UBCTL_QUERY_TP_PRE_BER_DFX;
+	tmp_out.is_read = in->is_read;
+	tmp_out.data_size = UBCTL_OPCODE_MAX_LEN;
+	tmp_out.data = out_data_buf;
+
+	ret = ubctl_user_comm_api(chip_id, die_id, UBCTL_USER_CMD_COMM, &tmp_in, &tmp_out);
+	if (ret != UTOOL_OK) {
+		goto free_out;
+	}
+
+	ret = ubctl_pre_ber_data_deal(out, &tmp_out);
+
+free_out:
+	UTOOL_FREE(out_data_buf);
+
+	return ret;
+}
+
 static struct ubctl_query_comm g_query_comm_table[] = {
-	{ UBCTL_LS_CMD_COMM, NULL, ubctl_ls_api },
+	{ UBCTL_LS_CMD_COMM, ubctl_check_is_read, ubctl_ls_api },
 	{ UBCTL_QUERY_PORT_INFO_CMD_COMM, ubctl_check_port, ubctl_port_info_api },
 	{ UBCTL_QUERY_PERFORMANCE_CMD_COMM, ubctl_check_port_time, ubctl_performance_api },
 	{ UBCTL_QUERY_RT_BANDWIDTH_CMD_COMM, ubctl_check_port_time, ubctl_rt_bandwidth_api },
@@ -1292,6 +1423,7 @@ static struct ubctl_query_comm g_query_comm_table[] = {
 	{ UBCTL_QUERY_TXPCS2RXPCS_COMM, ubctl_check_port, ubctl_loopback_api },
 	{ UBCTL_CONFIG_SSU_VL_PKT_COMM, ubctl_check_port_value, ubctl_ssu_vl_pkt_api },
 	{ UBCTL_QUERY_SSU_VL_PKT_COMM, ubctl_check_port, ubctl_ssu_vl_pkt_api },
+	{ UBCTL_QUERY_PRE_BER_COMM, ubctl_check_is_read, ubctl_pre_ber_api },
 };
 
 int ubctl_query_comm_api(uint32_t chip_id, uint32_t die_id, uint32_t ubctl_cmd,

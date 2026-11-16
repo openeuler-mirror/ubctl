@@ -78,7 +78,7 @@ static void utool_uboe_print_help(void)
 		      "ubctl -c ${chip_id} -d ${udie_id} -m uboe -p ${port} -f rxmac2txmac/txmac2rxmac/"
 		      "txpcs2rxpcs/prbs/prbs_err_cnt\n"
 		      "ubctl -c ${chip_id} -d ${udie_id} -m uboe -p ${port} -f rxmac2txmac/txmac2rxmac/"
-		      "txpcs2rxpcs/prbs/prbs_err_cnt -e ${value}\n");
+		      "txpcs2rxpcs/prbs -e ${value}\n");
 }
 
 static int utool_uboe_cmd_func(struct utool_dev *dev, struct utool_cmd_param *param,
