@@ -601,7 +601,7 @@ static struct utool_field_info g_utool_nl_pkt_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_ALL, "mac_tc_weight_cfg" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_TXPA)" },
-	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_TXPA)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "pa_dfx_mode_cfg(NL_RXPA)" },
 
 	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_V01, "reserved" },
 	{ false, false, UTOOL_LOC12, UTOOL_LOC17, 0, UTOOL_CAP_V01, "cfg_ubc_port_indx" },
@@ -873,6 +873,9 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "ssu_eg_rsv_cnt(SSU_EG_RSV_CNT_00)" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "ssu_eg_rsv_cnt(SSU_EG_RSV_CNT_01)" },
 
+	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_3, "ssu_tx_oversize_drop_num_1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_3, "ssu_rx_oversize_drop_num_1" },
+
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT0)" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT1)" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT2)" },
@@ -880,8 +883,6 @@ static struct utool_field_info g_utool_ssu_stats_field_info[] = {
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT4)" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT5)" },
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(SSU_RSV_CNT6)" },
-
-	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
 static struct utool_field_info g_utool_nl_abn_field_info[] = {
