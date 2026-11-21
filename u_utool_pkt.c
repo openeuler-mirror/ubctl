@@ -562,6 +562,10 @@ int utool_pkt_operation(struct utool_dev *dev, void *pkt_in, uint32_t pkt_in_len
 		memset(pkt_out, 0x0, pkt_out_len);
 
 		ret = utool_cmd_exec(dev, in, in_len, pkt_out, &pkt_out_len);
+		if (ret == EUSERS) {
+			break;
+		}
+
 		if (pkt_out->retval != 0) {
 			ret = utool_deal_with_retval(pkt_exec->rpc_cmd, pkt_out->retval);
 			break;

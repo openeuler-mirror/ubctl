@@ -222,10 +222,12 @@ static int utool_process_step(struct utool_dev *dev, uint32_t chip_id, uint32_t 
 	int ret = UTOOL_OK;
 
 	if (step_flag == UTOOL_DEV_STEP_LS || step_flag == UTOOL_DEV_STEP_LS_API) {
-		if (utool_excute_io_die(dev) != UTOOL_OK) {
+		ret = utool_excute_io_die(dev);
+		if (ret != UTOOL_OK) {
 			utool_err_msg("Failed to query port bitmap, step_flag = %u.\n", step_flag);
+			return ret;
 		}
-		return UTOOL_ERR;
+		return UTOOL_OK_CYCLE;
 	}
 
 	if (utool_open(dev) != UTOOL_OK) {
@@ -248,8 +250,8 @@ int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id
 	char driver_path[UTOOL_DEV_NAME_LEN_MAX] = {};
 	char ub_entity_name[UTOOL_DEV_NAME_LEN_MAX] = {};
 	struct dirent *entry = NULL;
+	int ret = UTOOL_OK_CYCLE;
 	DIR *class_dir = NULL;
-	int ret = UTOOL_OK;
 
 	if (dev == NULL) {
 		utool_err_msg("Dev is NULL.\n");
@@ -288,6 +290,15 @@ int utool_open_dev_step(struct utool_dev *dev, uint32_t chip_id, uint32_t die_id
 		return UTOOL_OK;
 	}
 	(void)closedir(class_dir);
+	if (ret == EUSERS) {
+		utool_err_msg("Failed to open dev, kernel access exceeds frequency limit, ret = %d.\n", ret);
+		return ret;
+	}
+
+	if ((step_flag == UTOOL_DEV_STEP_LS || step_flag == UTOOL_DEV_STEP_LS_API) && ret != UTOOL_OK_CYCLE) {
+		return ret;
+	}
+
 	return utool_proc_excption_dev(chip_id, die_id, step_flag);
 }
 

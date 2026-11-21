@@ -11,6 +11,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "u_utool_user_api_port_info.h"
 
 #define UBCTL_USER_CMD_COMM 0x0001
 #define UBCTL_QUERY_DSCP_CMD_COMM 0x0002
@@ -41,7 +42,6 @@
 #define UBCTL_UBASE_MAX_DSCP 64
 #define UBCTL_UBASE_MAX_SL_NUM 16
 #define UBCTL_RXDMA_QUEUE_NUM 4
-#define UTOOL_LINK_PROC_ERR_STATE_SIZE 15
 #define UTOOL_API_MAX_PORT_LINK_STATUS 10U
 
 struct ubctl_cmd_buf {
@@ -89,88 +89,11 @@ struct fwctl_io_die_info_api_struct {
 	struct fwctl_port_info_api_struct port_info[];
 };
 
-struct utool_port_head {
-	uint32_t port_id;
-	uint16_t query_type;
-	uint16_t module_type;
-};
-
-struct utool_mac_dfx_link_state {
-	uint16_t cur_state;
-	uint16_t err_state[UTOOL_LINK_PROC_ERR_STATE_SIZE];
-};
-
-struct utool_port_link_info {
-	uint8_t target_speed;
-	uint8_t speed_ability_old;
-	uint8_t lane_num;
-	uint8_t fec;
-	uint8_t sds_rate;
-	uint8_t port_usage : 1;
-	uint8_t port_enable : 1;
-	uint8_t port_link : 1;
-	uint8_t reserved_0 : 5;
-	uint8_t driver_type;
-	uint8_t port_mode;
-	uint32_t link_down_err;
-	struct utool_mac_dfx_link_state mac_link_state;
-	uint32_t speed_ability;
-};
-
-struct utool_port_dlphy_info {
-	uint8_t fec;
-	uint8_t phy_mode_ctrl;
-	uint8_t sds_rate;
-	uint8_t cur_speed;
-	uint8_t cur_tx_lane_num : 4;
-	uint8_t cur_rx_lane_num : 4;
-	uint8_t init_succ_tx_lane_num : 4;
-	uint8_t init_succ_rx_lane_num : 4;
-	uint8_t port_en : 1;
-	uint8_t port_mode : 2;
-	uint8_t port_mode_en : 1;
-	uint8_t dl_link : 1;
-	uint8_t phy_link : 1;
-	uint8_t cur_port_type : 1;
-	uint8_t reserved_0 : 1;
-	uint8_t mac_lstm;
-	uint32_t decoded_fail_block_num;
-	uint32_t fec_err_low;
-	uint32_t retry_cnt;
-	uint32_t dl_link_fsm;
-	uint32_t fec_err_high;
-	uint16_t port_cna;
-	uint16_t sds_lpbk_en_bitmap;
-	uint32_t clock_freq;
-	uint8_t opposite_valid;
-	uint8_t opposite;
-	uint8_t media_type_valid;
-	uint8_t media_type;
-};
-
 struct utool_api_rt_bandwidth_info {
 	uint32_t port_id;
 	uint32_t is_valid;
 	uint64_t tx_bandwidth;
 	uint64_t rx_bandwidth;
-};
-
-union utool_port_info {
-	struct utool_port_link_info link_info;
-	struct utool_port_dlphy_info dlphy_info;
-};
-
-struct utool_port_data {
-	struct utool_port_head head;
-	union utool_port_info info;
-};
-
-enum {
-	UTOOL_MODULE_TYPE_NOT_SET = 0,
-	UTOOL_MODULE_TYPE_LINK_INFO_ETH = 1,
-	UTOOL_MODULE_TYPE_MAC_INFO_ETH = 2,
-	UTOOL_MODULE_TYPE_LINK_INFO_UB = 4,
-	UTOOL_MODULE_TYPE_MAC_INFO_UB = 8,
 };
 
 struct ubctl_port_pkt_stats_data {
