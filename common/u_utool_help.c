@@ -64,6 +64,12 @@ static const char *ubctl_examples = "Examples:\n"
 				    "  ubctl -m dl -p 0 -f bit_err -d 0 -c 0       query the number of bit errors by port\n\n"
 				    "  ubctl -m ba -p 0 -f pkt_stats -d 0 -c 0     query BA packet statistics\n";
 
+static const char *ubctl_dangerous_operation = "Dangerous Operation:\n"
+				    "  ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_id} -f bist -e ${value}\n"
+				    "  This operation will start the BIST test. Enabling this function will affect service running. The services can be restored only after the environment is restarted.\n\n"
+				    "  ubctl -c ${chip_id} -d ${udie_id} -m uboe -p ${port_id} -f prbs_err_cnt\n"
+				    "  This operation will cause the UBOE port to go down and cannot be recovered.\n";
+
 void utool_print_help(void)
 {
 	utool_reg_msg("%s\n", ubctl_usage);
@@ -77,4 +83,6 @@ void utool_print_help(void)
 	utool_reg_msg("%s\n", ubctl_parameters);
 
 	utool_reg_msg("%s\n", ubctl_examples);
+
+	utool_reg_msg("%s\n", ubctl_dangerous_operation);
 }

@@ -879,7 +879,7 @@ static int utool_api_port_link_copy(struct fwctl_rpc_ub_out *port_link_out, stru
 	struct fwctl_rpc_ub_out *local_time;
 	struct timespec ts;
 	size_t total_size;
-	time_t time;
+	time_t current_time;
 	int ret;
 
 	total_size = sizeof(struct fwctl_rpc_ub_out) + sizeof(time_t);
@@ -887,11 +887,17 @@ static int utool_api_port_link_copy(struct fwctl_rpc_ub_out *port_link_out, stru
 	if (!local_time) {
 		return UTOOL_ERR_MALLOC;
 	}
+	memset(local_time, 0x0, total_size);
 
-	clock_gettime(CLOCK_REALTIME, &ts);
-	time = ts.tv_sec;
+	ret = clock_gettime(CLOCK_REALTIME, &ts);
+	if (ret) {
+		utool_err_msg("Failed to get local time, ret = %d.\n", ret);
+		UTOOL_FREE(local_time);
+		return ret;
+	}
+	current_time = ts.tv_sec;
 	local_time->data_size = sizeof(time_t);
-	memcpy(local_time->data, &time, sizeof(time_t));
+	memcpy(local_time->data, &current_time, sizeof(time_t));
 	ret = utool_api_common_copy(local_time, api_param);
 	if (ret) {
 		UTOOL_FREE(local_time);

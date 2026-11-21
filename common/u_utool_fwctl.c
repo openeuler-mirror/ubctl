@@ -80,6 +80,10 @@ int utool_cmd_exec(struct utool_dev *dev, struct fwctl_rpc_ub_in *in, uint32_t i
 
 	ret = ioctl(dev->fd, FWCTL_RPC, &rpc);
 	if (ret != 0) {
+		if (errno == EUSERS) {
+			utool_warn_msg("Kernel access exceeds frequency limit, errno = %d.\n", errno);
+			return errno;
+		}
 		utool_handle_ioctl_errors(errno, in->rpc_cmd);
 		utool_err_msg("Failed to interaction with the kernel, ret = %d, errno = %d.\n", ret, errno);
 		return UTOOL_ERR_IOCTL;
