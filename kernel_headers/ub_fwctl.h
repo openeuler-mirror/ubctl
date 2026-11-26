@@ -30,11 +30,14 @@ struct fwctl_rpc_ub_in {
  * struct fwctl_rpc_ub_out - ioctl(FWCTL_RPC) output
  * @retval: The value returned when querying data with an error message
  * @env_version: Different environmental versions
+ * @contain_dlphy: Indicates whether the data contains DLPHY information
  * @data_size: Length of @data
  * @data: data transmitted to users
  */
 struct fwctl_rpc_ub_out {
 	int retval;
+	__u8 contain_dlphy;
+	__u8 reserved[3];
 	__u32 env_version;
 	__u32 data_size;
 	__u32 data[];
@@ -107,6 +110,14 @@ enum ub_fwctl_cmdrpc_type {
 	 * @UTOOL_CMD_QUERY_TP_RX_BANK: Query TP layer RX_BANK related registers
 	 */
 	UTOOL_CMD_QUERY_TP_RX_BANK = 0x0025,
+	/**
+	 * @UTOOL_CMD_CONF_TP_RRP_ERR: Config TP layer RRP_ERR related registers
+	 */
+	UTOOL_CMD_CONF_TP_RRP_ERR = 0x0026,
+	/**
+	 * @UTOOL_CMD_QUERY_TP_RRP_ERR: Query TP layer RRP_ERR related registers
+	 */
+	UTOOL_CMD_QUERY_TP_RRP_ERR = 0x0027,
 
 	/**
 	 * @UTOOL_CMD_QUERY_DL: Query all registers at the DL layer

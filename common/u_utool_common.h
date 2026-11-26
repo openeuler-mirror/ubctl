@@ -18,6 +18,7 @@
 
 #include "../kernel_headers/ub_fwctl.h"
 #include "u_utool_reg_location.h"
+#include "../include/u_utool_user_api.h"
 
 #define UTOOL_VERSION 0
 
@@ -37,8 +38,6 @@
 #define UTOOL_REG_CNT_DEFAULT 0U
 #define UBCTL_ARG_MIN_NUM 2
 #define UBCTL_ARG_MAX_NUM 32
-
-#define UTOOL_BIT(shift) (1U << (shift))
 
 #define UTOOL_ARRAY_SIZE(arr) (uint32_t)(sizeof(arr) / sizeof((arr)[0]))
 

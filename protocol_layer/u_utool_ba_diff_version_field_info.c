@@ -278,6 +278,22 @@ static struct utool_field_info g_utool_ba_K1_pkt_178th_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_3, "tx_abnormal10" },
 };
 
+static struct utool_field_info g_utool_ba_K1_pkt_207th_field_info[] = {
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rxdma_pkt_rx_cnt_3_0(0)" },
+};
+
+static struct utool_field_info g_utool_ba_K1_pkt_208th_field_info[] = {
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rxdma_pkt_rx_cnt_3_0(1)" },
+};
+
+static struct utool_field_info g_utool_ba_K1_pkt_209th_field_info[] = {
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rxdma_pkt_rx_cnt_3_0(2)" },
+};
+
+static struct utool_field_info g_utool_ba_K1_pkt_210th_field_info[] = {
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "rxdma_pkt_rx_cnt_3_0(3)" },
+};
+
 static struct utool_field_info g_utool_ba_K1_pkt_211th_field_info[] = {
 	{ false, true, UTOOL_LOC9, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved(0)" },
 	{ false, false, UTOOL_LOC8, UTOOL_LOC8, 0, UTOOL_CAP_3, "pkt_align_err_3_0(0)" },
@@ -330,10 +346,6 @@ static struct utool_field_info g_utool_ba_K1_pkt_214th_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "rxdma_icrc_err_3_0(3)" },
 };
 
-static struct utool_field_info g_utool_ba_rsv_field_info[] = {
-	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
-};
-
 static struct utool_diff_version_field_info g_utool_ba_diff_version_field_info[] = {
 	{ "ba-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC14,
 	  g_utool_ba_A1_K1_pkt_14th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_A1_K1_pkt_14th_field_info) },
@@ -375,26 +387,6 @@ static struct utool_diff_version_field_info g_utool_ba_diff_version_field_info[]
 	  g_utool_ba_A1_K1_pkt_15th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_A1_K1_pkt_15th_field_info) },
 	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC16,
 	  g_utool_ba_A1_K1_pkt_16th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_A1_K1_pkt_16th_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC78,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC83,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC84,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC85,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC86,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC128,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC129,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC130,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC131,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
-	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC132,
-	  g_utool_ba_rsv_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_rsv_field_info) },
 	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC139,
 	  g_utool_ba_A1_K1_pkt_139th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_A1_K1_pkt_139th_field_info) },
 	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC140,
@@ -463,6 +455,14 @@ static struct utool_diff_version_field_info g_utool_ba_diff_version_field_info[]
 	  g_utool_ba_A1_K1_pkt_183rd_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_A1_K1_pkt_183rd_field_info) },
 	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC185,
 	  g_utool_ba_A1_K1_pkt_185th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_A1_K1_pkt_185th_field_info) },
+	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC207,
+	  g_utool_ba_K1_pkt_207th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_K1_pkt_207th_field_info) },
+	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC208,
+	  g_utool_ba_K1_pkt_208th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_K1_pkt_208th_field_info) },
+	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC209,
+	  g_utool_ba_K1_pkt_209th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_K1_pkt_209th_field_info) },
+	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC210,
+	  g_utool_ba_K1_pkt_210th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_K1_pkt_210th_field_info) },
 	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC211,
 	  g_utool_ba_K1_pkt_211th_field_info, UTOOL_ARRAY_SIZE(g_utool_ba_K1_pkt_211th_field_info) },
 	{ "ba-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC212,

@@ -238,3 +238,19 @@ void *utool_upa_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param 
 
 	return pkt_in_upa_port;
 }
+
+void *utool_index_value_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param)
+{
+	struct fwctl_pkt_in_index_value *pkt_in_index_value;
+
+	pkt_in_index_value = (struct fwctl_pkt_in_index_value *)utool_create_pkt_in(
+		pkt_in_len, param, sizeof(struct fwctl_pkt_in_index_value));
+	if (pkt_in_index_value == NULL) {
+		return NULL;
+	}
+
+	pkt_in_index_value->index = param->index;
+	pkt_in_index_value->value = param->value;
+
+	return pkt_in_index_value;
+}

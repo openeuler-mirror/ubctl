@@ -60,6 +60,11 @@ struct fwctl_pkt_in_upa_port {
 	uint32_t port_num;
 };
 
+struct fwctl_pkt_in_index_value {
+	uint32_t index;
+	uint32_t value;
+};
+
 void *utool_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param, size_t struct_size);
 void *utool_null_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_port_enable_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
@@ -74,5 +79,6 @@ void *utool_port_index_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_para
 void *utool_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_vl_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 void *utool_upa_port_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
+void *utool_index_value_create_pkt_in(uint32_t *pkt_in_len, struct utool_cmd_param *param);
 
 #endif /* __UTOOL_CREATE_PKT_IN_H__ */

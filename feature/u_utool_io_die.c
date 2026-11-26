@@ -78,7 +78,7 @@ int utool_io_die_parse_rpc_pkt(struct fwctl_rpc_ub_out *out)
 	struct fwctl_io_die_info *data = NULL;
 
 	if ((out == NULL) || (out->data_size < sizeof(struct fwctl_io_die_info))) {
-		utool_err_msg("Param is invalid, out==null(%d) or data size = %ubytes is less than the struct size %zubytes(%d).\n",
+		utool_err_msg("Param is invalid, out==null(%d) or data size = %u bytes is less than the struct size %zu bytes(%d).\n",
 			      (out == NULL), out == NULL ? 0 : out->data_size,
 			      sizeof(struct fwctl_io_die_info), out == NULL ? 0 : 1);
 		return UTOOL_ERR_INVALID_PARAM;
@@ -87,7 +87,7 @@ int utool_io_die_parse_rpc_pkt(struct fwctl_rpc_ub_out *out)
 	data = (struct fwctl_io_die_info *)out->data;
 
 	if (out->data_size != sizeof(struct fwctl_io_die_info) + data->port_count * sizeof(struct fwctl_port_info)) {
-		utool_err_msg("Out data is invalid, data size = %ubytes, port count = %u.\n", out->data_size, data->port_count);
+		utool_err_msg("Out data is invalid, data size = %u bytes, port count = %u.\n", out->data_size, data->port_count);
 		return UTOOL_ERR_PARSE;
 	}
 

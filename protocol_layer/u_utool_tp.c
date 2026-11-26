@@ -25,6 +25,7 @@
 #define TP_SCC_VERSION "scc_version"
 #define TP_SCC_LOG "scc_log"
 #define TP_SCC_DEBUG "scc_debug_en"
+#define TP_RRP_ERR "rrp_err"
 
 #define UTOOL_SCC_LOG_DIR_PATH "/var/log/ubtool/operation_logs/"
 #define UTOOL_SCC_LOG_FILE_PATH_MAX_LEN 256U
@@ -56,6 +57,13 @@ static struct utool_field_info g_utool_tp_A1_K1_pkt_195th_field_info[] = {
 	{ false, true, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
 	{ false, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_V23, "flush_cqe_collect_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_V23, "flush_collect_cnt" },
+};
+
+static struct utool_field_info g_utool_tp_K1_pkt_204th_field_info[] = {
+	{ false, false, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_3, "tpp2eum_rd_cnt" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_3, "eum2tpp_back_rdata_cnt" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC15, 0, UTOOL_CAP_3, "tpcm2tpp_srh_idx_cnt" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "tpcm2tpp_rdata_vld_cnt" },
 };
 
 static struct utool_field_info g_utool_tp_A1_K1_pkt_225th_field_info[] = {
@@ -94,32 +102,42 @@ static struct utool_field_info g_utool_tp_A1_K1_pkt_456th_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V23, "dfx_tp_lsa_req_err_status0" },
 };
 
-static struct utool_field_info g_utool_tp_A1_K1_pkt_563th_field_info[] = {
+static struct utool_field_info g_utool_tp_A1_K1_pkt_466th_field_info[] = {
+	{ false, false, UTOOL_LOC29, UTOOL_LOC31, 0, UTOOL_CAP_V23, "retry_max_bb_num" },
+	{ false, true, UTOOL_LOC24, UTOOL_LOC28, 0, UTOOL_CAP_V23, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_V23, "bb_num_thd" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC15, 0, UTOOL_CAP_V23, "scc_wl_cfg" },
+	{ false, false, UTOOL_LOC11, UTOOL_LOC11, 0, UTOOL_CAP_V23, "scc_sch_en" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC10, 0, UTOOL_CAP_V23, "scc_unit_value" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_V23, "scc_token_value" },
+};
+
+static struct utool_field_info g_utool_tp_A1_K1_pkt_626th_field_info[] = {
 	{ false, false, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_V23, "scc_token_retry_cnt" },
 	{ false, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_V23, "ppp_bonding_rsp_cnt" },
 	{ false, false, UTOOL_LOC8, UTOOL_LOC15, 0, UTOOL_CAP_V23, "ppp_bonding_req_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V23, "twp_cnp_rls_sge_cnt_bk0" },
 };
 
-static struct utool_field_info g_utool_tp_A1_K1_pkt_564th_field_info[] = {
+static struct utool_field_info g_utool_tp_A1_K1_pkt_627th_field_info[] = {
 	{ false, false, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_V23, "tpp_rls_sge_cnt" },
 	{ false, false, UTOOL_LOC16, UTOOL_LOC23, 0, UTOOL_CAP_V23, "tpp_alloc_sge_rslt_cnt" },
 	{ false, false, UTOOL_LOC8, UTOOL_LOC15, 0, UTOOL_CAP_V23, "tqs_alloc_sge_req_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V23, "twp_cnp_rls_sge_cnt_bk1" },
 };
 
-static struct utool_field_info g_utool_tp_A1_K1_pkt_595th_field_info[] = {
+static struct utool_field_info g_utool_tp_A1_K1_pkt_658th_field_info[] = {
 	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
 	{ false, false, UTOOL_LOC8, UTOOL_LOC15, 0, UTOOL_CAP_V23, "cfg_abnormal_data_rsp_en" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_V23, "cfg_abnormal_rsp_en" },
 };
 
-static struct utool_field_info g_utool_tp_A1_K1_pkt_664th_field_info[] = {
+static struct utool_field_info g_utool_tp_A1_K1_pkt_727th_field_info[] = {
 	{ false, true, UTOOL_LOC10, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC9, 0, UTOOL_CAP_V23, "rxdma_head_srh_tpc_cnt" },
 };
 
-static struct utool_field_info g_utool_tp_A1_K1_pkt_665th_field_info[] = {
+static struct utool_field_info g_utool_tp_A1_K1_pkt_728th_field_info[] = {
 	{ false, true, UTOOL_LOC20, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
 	{ false, false, UTOOL_LOC10, UTOOL_LOC19, 0, UTOOL_CAP_V23, "rxdma_head_srh_jfs_cnt" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC9, 0, UTOOL_CAP_V23, "rxdma_head_srh_jetty_cnt" },
@@ -135,7 +153,7 @@ static struct utool_field_info g_utool_tp_K1_pkt_438th_field_info[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "get_jfr_clk_icg_en" },
 };
 
-static struct utool_field_info g_utool_tp_K1_pkt_536th_field_info[] = {
+static struct utool_field_info g_utool_tp_K1_pkt_599th_field_info[] = {
 	{ false, false, UTOOL_LOC27, UTOOL_LOC31, 0, UTOOL_CAP_3, "sxc_ctrl_cfg" },
 	{ false, false, UTOOL_LOC24, UTOOL_LOC26, 0, UTOOL_CAP_3, "scc_idx_fifo_wl" },
 	{ false, false, UTOOL_LOC21, UTOOL_LOC23, 0, UTOOL_CAP_3, "scc_core_byp_ctrl" },
@@ -149,6 +167,16 @@ static struct utool_field_info g_utool_tp_K1_pkt_536th_field_info[] = {
 	{ false, false, UTOOL_LOC6, UTOOL_LOC6, 0, UTOOL_CAP_3, "mcu_sel_mode" },
 	{ false, false, UTOOL_LOC1, UTOOL_LOC5, 0, UTOOL_CAP_3, "hash_sel_bit" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "hash_sel_mode" },
+};
+
+static struct utool_field_info g_utool_tp_K1_pkt_957th_field_info[] = {
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_3, "tqs_inner_sq_ept_h1" },
+};
+
+static struct utool_field_info g_utool_tp_K1_pkt_960th_field_info[] = {
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_3, "tqs_inner_rq_ept_h1" },
 };
 
 static struct utool_diff_version_field_info g_utool_tp_diff_version_field_info[] = {
@@ -172,21 +200,25 @@ static struct utool_diff_version_field_info g_utool_tp_diff_version_field_info[]
 	  g_utool_tp_A1_K1_pkt_386th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_386th_field_info) },
 	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC456,
 	  g_utool_tp_A1_K1_pkt_456th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_456th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC563,
-	  g_utool_tp_A1_K1_pkt_563th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_563th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC564,
-	  g_utool_tp_A1_K1_pkt_564th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_564th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC595,
-	  g_utool_tp_A1_K1_pkt_595th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_595th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC664,
-	  g_utool_tp_A1_K1_pkt_664th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_664th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC665,
-	  g_utool_tp_A1_K1_pkt_665th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_665th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC466,
+	  g_utool_tp_A1_K1_pkt_466th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_466th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC626,
+	  g_utool_tp_A1_K1_pkt_626th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_626th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC627,
+	  g_utool_tp_A1_K1_pkt_627th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_627th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC658,
+	  g_utool_tp_A1_K1_pkt_658th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_658th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC727,
+	  g_utool_tp_A1_K1_pkt_727th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_727th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_A_1, UTOOL_LOC728,
+	  g_utool_tp_A1_K1_pkt_728th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_728th_field_info) },
 
 	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC33,
 	  g_utool_tp_A1_K1_pkt_33rd_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_33rd_field_info) },
 	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC195,
 	  g_utool_tp_A1_K1_pkt_195th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_195th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC204,
+	  g_utool_tp_K1_pkt_204th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_K1_pkt_204th_field_info) },
 	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC225,
 	  g_utool_tp_A1_K1_pkt_225th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_225th_field_info) },
 	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC236,
@@ -205,18 +237,24 @@ static struct utool_diff_version_field_info g_utool_tp_diff_version_field_info[]
 	  g_utool_tp_K1_pkt_438th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_K1_pkt_438th_field_info) },
 	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC456,
 	  g_utool_tp_A1_K1_pkt_456th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_456th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC536,
-	  g_utool_tp_K1_pkt_536th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_K1_pkt_536th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC563,
-	  g_utool_tp_A1_K1_pkt_563th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_563th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC564,
-	  g_utool_tp_A1_K1_pkt_564th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_564th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC595,
-	  g_utool_tp_A1_K1_pkt_595th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_595th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC664,
-	  g_utool_tp_A1_K1_pkt_664th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_664th_field_info) },
-	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC665,
-	  g_utool_tp_A1_K1_pkt_665th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_665th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC466,
+	  g_utool_tp_A1_K1_pkt_466th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_466th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC599,
+	  g_utool_tp_K1_pkt_599th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_K1_pkt_599th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC626,
+	  g_utool_tp_A1_K1_pkt_626th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_626th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC627,
+	  g_utool_tp_A1_K1_pkt_627th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_627th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC658,
+	  g_utool_tp_A1_K1_pkt_658th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_658th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC727,
+	  g_utool_tp_A1_K1_pkt_727th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_727th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC728,
+	  g_utool_tp_A1_K1_pkt_728th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_A1_K1_pkt_728th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC957,
+	  g_utool_tp_K1_pkt_957th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_K1_pkt_957th_field_info) },
+	{ "tp-pkt_stats", UTOOL_ENV_VER_K_1, UTOOL_LOC960,
+	  g_utool_tp_K1_pkt_960th_field_info, UTOOL_ARRAY_SIZE(g_utool_tp_K1_pkt_960th_field_info) },
 };
 
 static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
@@ -225,6 +263,7 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 #define INDEX1 1
 #define INDEX2 2
 #define INDEX3 3
+#define INDEX7 7
 
 	static struct utool_cal_reg_cnt_dp utool_tp_cal_reg_table[] = {
 		{ true, true, TP_PKT_STATS, 0, NULL },
@@ -234,6 +273,7 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 		{ false, false, TP_SCC_VERSION, 0, NULL },
 		{ false, false, TP_SCC_LOG, 0, NULL },
 		{ false, false, TP_SCC_DEBUG, 0, NULL },
+		{ true, false, TP_RRP_ERR, 0, NULL },
 	};
 	static struct utool_cal_reg_table_dp cal_reg_table_dp = {};
 
@@ -241,13 +281,15 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 	struct utool_field_info_dp *abn_stats_field_info = NULL;
 	struct utool_field_info_dp *route_result_field_info = NULL;
 	struct utool_field_info_dp *rx_bank_field_info = NULL;
+	struct utool_field_info_dp *rrp_err_field_info = NULL;
 
 	pkt_stats_field_info = utool_tp_get_field_info_by_name(TP_PKT_STATS_FIELD_INFO);
 	abn_stats_field_info = utool_tp_get_ex_field_info_by_name(TP_ABN_STATS_FIELD_INFO);
 	route_result_field_info = utool_tp_get_ex_field_info_by_name(TP_TX_ROUTE_FIELD_INFO);
 	rx_bank_field_info = utool_tp_get_ex_field_info_by_name(TP_RX_BANK_FIELD_INFO);
+	rrp_err_field_info = utool_tp_get_ex_field_info_by_name(TP_RRP_ERR_FIELD_INFO);
 	if ((pkt_stats_field_info == NULL) || (abn_stats_field_info == NULL) || (route_result_field_info == NULL) ||
-	    (rx_bank_field_info == NULL)) {
+	    (rx_bank_field_info == NULL) || (rrp_err_field_info == NULL)) {
 		utool_err_msg("Failed to get field info.\n");
 		return NULL;
 	}
@@ -260,6 +302,8 @@ static struct utool_cal_reg_table_dp *utool_tp_get_cal_reg_table(void)
 	utool_tp_cal_reg_table[INDEX2].field_info = rx_bank_field_info->field_info;
 	utool_tp_cal_reg_table[INDEX3].field_cnt = abn_stats_field_info->field_cnt;
 	utool_tp_cal_reg_table[INDEX3].field_info = abn_stats_field_info->field_info;
+	utool_tp_cal_reg_table[INDEX7].field_cnt = rrp_err_field_info->field_cnt;
+	utool_tp_cal_reg_table[INDEX7].field_info = rrp_err_field_info->field_info;
 
 	cal_reg_table_dp.func_cnt = UTOOL_ARRAY_SIZE(utool_tp_cal_reg_table);
 	cal_reg_table_dp.reg_table = utool_tp_cal_reg_table;
@@ -636,6 +680,43 @@ static int utool_scc_loop_call(struct utool_dev *dev, void *pkt_in, uint32_t pkt
 	return ret;
 }
 
+static int utool_tp_parse_rrp_err(struct fwctl_rpc_ub_out *tp_rrp_err_out)
+{
+	struct utool_field_info_dp *rrp_err_field_info = NULL;
+	int ret = UTOOL_OK;
+
+	rrp_err_field_info = utool_tp_get_ex_field_info_by_name(TP_RRP_ERR_FIELD_INFO);
+	if (rrp_err_field_info == NULL) {
+		utool_err_msg("Failed to get rrp err field info.\n");
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_pkt_parse(tp_rrp_err_out, rrp_err_field_info->field_cnt, rrp_err_field_info->field_info,
+			      UTOOL_CONCAT_STR(UTOOL_MODULE_TP, TP_RRP_ERR));
+	if (ret != UTOOL_OK) {
+		utool_err_msg("Failed to parse tp rrp err data.\n");
+	}
+
+	return ret;
+}
+
+static int utool_tp_parse_conf_rrp_err(struct fwctl_rpc_ub_out *tp_conf_rrp_err_out)
+{
+#define UTOOL_RRP_ERR_HEAD_LEN 2U
+#define UTOOL_RRP_ERR_DATA_SIZE 4U
+
+	uint32_t index = tp_conf_rrp_err_out->data[0] + UTOOL_RRP_ERR_HEAD_LEN;
+
+	if (tp_conf_rrp_err_out->data_size / UTOOL_RRP_ERR_DATA_SIZE <= index) {
+		utool_err_msg("Index %u out of bounds.\n", index);
+		return UTOOL_ERR_INVALID_PARAM;
+	}
+	utool_reg_msg("Clear the RRP alarm at index %u by setting value to 0x%x.\n",
+		      tp_conf_rrp_err_out->data[0], *((uint32_t *)tp_conf_rrp_err_out->data + index));
+
+	return UTOOL_OK;
+}
+
 static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	{ true, TP_PKT_STATS, UTOOL_CMD_QUERY_TP_PKT_STATS, UTOOL_REG_CNT_DEFAULT,
 	  utool_tp_parse_pkt_stats, utool_null_create_pkt_in },
@@ -649,6 +730,8 @@ static struct utool_func_dispatch g_utool_tp_mf_table[] = {
 	  utool_tp_parse_scc_log, utool_index_create_pkt_in },
 	{ false, TP_SCC_DEBUG, UTOOL_CMD_QUERY_SCC_DEBUG_EN, UTOOL_SCC_CNT,
 	  utool_tp_parse_scc_debug, utool_null_create_pkt_in },
+	{ false, TP_RRP_ERR, UTOOL_CMD_QUERY_TP_RRP_ERR, UTOOL_REG_CNT_DEFAULT,
+	  utool_tp_parse_rrp_err, utool_null_create_pkt_in },
 };
 
 static struct utool_func_dispatch g_utool_tp_func_table[] = {
@@ -698,9 +781,10 @@ static void utool_tp_print_help(void)
 	utool_err_msg("The ubctl tp command must be in the following formats:\n"
 		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -p ${port}\n"
 		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f pkt_stats/route_result/rx_bank/"
-		      "scc_version/scc_log/scc_debug_en\n"
+		      "scc_version/scc_log/scc_debug_en/rrp_err\n"
 		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f abn_stats -p ${port}\n"
-		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f scc_debug_en -e ${value}\n");
+		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f scc_debug_en -e ${value}\n"
+		      "ubctl -c ${chip_id} -d ${udie_id} -m tp -f rrp_err -i ${index} -e ${value}\n");
 }
 
 static int utool_handle_matched_func(struct utool_dev *dev, struct utool_cmd_param *param,
@@ -821,6 +905,10 @@ int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		{ true, TP_ABN_STATS, UTOOL_CMD_QUERY_TP_ABN_STATS, UTOOL_REG_CNT_DEFAULT,
 		  utool_tp_parse_abn_stats, utool_port_create_pkt_in },
 	};
+	static struct utool_func_dispatch utool_tp_flag_mfie_table[] = {
+		{ false, TP_RRP_ERR, UTOOL_CMD_CONF_TP_RRP_ERR, UTOOL_REG_CNT_DEFAULT,
+		  utool_tp_parse_conf_rrp_err, utool_index_value_create_pkt_in },
+	};
 	struct utool_cmd_dispatch utool_tp_cmd_table[] = {
 		{ UTOOL_FLAG_M | UTOOL_FLAG_F, utool_tp_cmd_func,
 		  g_utool_tp_mf_table, UTOOL_ARRAY_SIZE(g_utool_tp_mf_table) },
@@ -828,6 +916,8 @@ int utool_tp_cmd_dispatch(struct utool_dev *dev, struct utool_cmd_param *param)
 		  utool_tp_flag_mfp_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfp_table) },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_E, utool_tp_cmd_func,
 		  utool_tp_flag_mfe_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfe_table) },
+		{ UTOOL_FLAG_M | UTOOL_FLAG_F | UTOOL_FLAG_I | UTOOL_FLAG_E, utool_tp_cmd_func,
+		  utool_tp_flag_mfie_table, UTOOL_ARRAY_SIZE(utool_tp_flag_mfie_table) },
 		{ UTOOL_FLAG_M | UTOOL_FLAG_P, utool_tp_cmd, NULL, 0 },
 	};
 	uint32_t tp_cmd_cnt = UTOOL_ARRAY_SIZE(utool_tp_cmd_table);

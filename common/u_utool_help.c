@@ -33,7 +33,7 @@ static const struct ubctl_module_info ubctl_modules[] = {
 	{"dl", "pkt_stats, lane, link_status, bit_err, bist, bist_err, link_trace, performance, rt_bandwidth, perf"},
 	{"nl", "pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p, ssu_vl_pkt, p2p"},
 	{"ta", "pkt_stats, abn_stats, wqe_processing_time"},
-	{"tp", "pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result"},
+	{"tp", "pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result, rrp_err"},
 	{"ba", "pkt_stats, mar, mar_perf, ub_mem_decoder, inter_sp_rout, inter_mp_rout, intra_sp_rout, intra_mp_rout,\n"
 		"                    port_scna, port_table, port_wb_table, mar_cyc_en, icrc"},
 	{"msgq", "que_stats, entry"},
@@ -66,7 +66,9 @@ static const char *ubctl_examples = "Examples:\n"
 
 static const char *ubctl_dangerous_operation = "Dangerous Operation:\n"
 				    "  ubctl -c ${chip_id} -d ${udie_id} -m dl -p ${port_id} -f bist -e ${value}\n"
-				    "  This operation will start the BIST test. Enabling this function will affect service running. The services can be restored only after the environment is restarted.\n\n"
+				    "  This operation will start the BIST test. Enabling this function will affect"
+				    " service running. The services can be restored only after the environment is"
+				    " restarted.\n\n"
 				    "  ubctl -c ${chip_id} -d ${udie_id} -m uboe -p ${port_id} -f prbs_err_cnt\n"
 				    "  This operation will cause the UBOE port to go down and cannot be recovered.\n";
 

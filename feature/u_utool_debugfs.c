@@ -109,6 +109,40 @@ printf_err:
 	return UTOOL_ERR;
 }
 
+static int utool_check_udma_name(const char *device_name)
+{
+	char buffer[UBCTL_BUFFER_LEN_MAX];
+	char cmd[UBCTL_CMD_LEN_MAX];
+	FILE *fp;
+	int ret;
+
+	if (strncmp(device_name, "udma", UBCTL_UDMA_DEV_PREFIX_LEN - 1) != 0) {
+		return UTOOL_OK;
+	}
+
+	ret = snprintf(cmd, sizeof(cmd), "urma_admin show 2>/dev/null | awk '{print $2}' | grep -w '^%s$'",
+		       device_name);
+	if (ret <= 0 || ret >= UBCTL_CMD_LEN_MAX) {
+		utool_err_msg("Failed to format check cmd, ret = %d.\n", ret);
+		return UTOOL_ERR;
+	}
+
+	fp = popen(cmd, "r");
+	if (fp == NULL) {
+		utool_err_msg("Failed to execute check cmd for %s, error: %s.\n", device_name, strerror(errno));
+		return UTOOL_ERR_INVALID_CMD;
+	}
+
+	if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+		pclose(fp);
+		return UTOOL_OK;
+	} else {
+		utool_err_msg("Failed to get bus number from %s.\n", device_name);
+		pclose(fp);
+		return UTOOL_ERR;
+	}
+}
+
 static int utool_get_bus_num_by_device_name(char *device_name, char *bus_num)
 {
 	char search_file[UBCTL_PATH_LEN_MAX];
@@ -121,6 +155,11 @@ static int utool_get_bus_num_by_device_name(char *device_name, char *bus_num)
 
 	if (!device_name || !bus_num) {
 		return UTOOL_ERR_INVALID_PARAM;
+	}
+
+	ret = utool_check_udma_name(device_name);
+	if (ret != UTOOL_OK) {
+		return ret;
 	}
 
 	ret = utool_get_bus_num_from_udma_device(device_name, bus_num);
