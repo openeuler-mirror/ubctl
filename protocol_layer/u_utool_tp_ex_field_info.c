@@ -662,6 +662,16 @@ struct utool_field_info g_utool_tp_tx_route_field_info[] = {
 	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_ALL, "reserved" },
 };
 
+struct utool_field_info g_utool_tp_rrp_err_field_info[] = {
+	// opcode 0xA03D
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
+	{ false, true, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V23, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V23, "tp_rrp_err_flg_0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_V23, "tp_rrp_err_flg_1" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_2, "tp_rrp_err_flg_0(pipe1)" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_2, "tp_rrp_err_flg_1(pipe1)" },
+};
+
 static int utool_tp_check_field_info_len(void)
 {
 	if (UTOOL_ARRAY_SIZE(g_utool_tp_rx_bank_field_info) > FIELD_INFO_MAX_LEN ||
@@ -687,6 +697,8 @@ struct utool_field_info_dp *utool_tp_get_ex_field_info_by_name(const char *field
 		  g_utool_tp_abn_stats_field_info },
 		{ TP_TX_ROUTE_FIELD_INFO, UTOOL_ARRAY_SIZE(g_utool_tp_tx_route_field_info),
 		  g_utool_tp_tx_route_field_info },
+		{ TP_RRP_ERR_FIELD_INFO, UTOOL_ARRAY_SIZE(g_utool_tp_rrp_err_field_info),
+		  g_utool_tp_rrp_err_field_info },
 	};
 	uint32_t i;
 

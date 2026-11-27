@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <inttypes.h>
 #include <errno.h>
+#include <time.h>
 
 #include "./common/u_utool_error.h"
 #include "./common/u_utool_fwctl.h"

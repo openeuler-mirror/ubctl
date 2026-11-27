@@ -17,6 +17,7 @@
 #define TP_RX_BANK_FIELD_INFO_BANK2 "utool_tp_rx_bank_field_info_bank2"
 #define TP_ABN_STATS_FIELD_INFO "utool_tp_abn_stats_field_info"
 #define TP_TX_ROUTE_FIELD_INFO "utool_tp_tx_route_field_info"
+#define TP_RRP_ERR_FIELD_INFO "utool_tp_rrp_err_field_info"
 
 struct utool_field_info_dp {
 	char field_name[UTOOL_REG_NAME_MAX_LEN];

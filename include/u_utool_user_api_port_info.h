@@ -14,6 +14,7 @@
 #include "../common/u_utool_common.h"
 
 #define UTOOL_LINK_PROC_ERR_STATE_SIZE 15
+#define UTOOL_BIT(shift) (1U << (shift))
 
 enum {
 	UTOOL_MODULE_TYPE_NOT_SET = 0,

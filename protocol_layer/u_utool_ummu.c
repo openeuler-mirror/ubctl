@@ -752,7 +752,7 @@ static struct utool_field_info g_utool_ummu_field_info[] = {
 static struct utool_field_info *g_utool_ummu_k1_field_info;
 static uint32_t g_utool_ummu_k1_field_count;
 
-static void utool_ummu_insert_additional_fields(void)
+static int utool_ummu_insert_additional_fields(uint32_t *insertted_fields_cnt)
 {
 	const struct utool_insert_positions *insert_positions = utool_ummu_get_insert_positions();
 	const struct utool_field_info *k1_only_fields = utool_ummu_get_k1_only_field_info();
@@ -770,30 +770,39 @@ static void utool_ummu_insert_additional_fields(void)
 		if (src_index < insert_pos && src_index < original_count) {
 			copy_count = (insert_pos < original_count) ? (insert_pos - src_index) :
 								     (original_count - src_index);
-			if (dest_index + copy_count <= g_utool_ummu_k1_field_count) {
-				memcpy(&g_utool_ummu_k1_field_info[dest_index], &g_utool_ummu_field_info[src_index],
-				       sizeof(struct utool_field_info) * copy_count);
-				dest_index += copy_count;
-				src_index += copy_count;
+			if (dest_index + copy_count > g_utool_ummu_k1_field_count) {
+				utool_err_msg("Field insertion overflow at step 1.\n");
+				return UTOOL_ERR;
 			}
+			memcpy(&g_utool_ummu_k1_field_info[dest_index], &g_utool_ummu_field_info[src_index],
+			       sizeof(struct utool_field_info) * copy_count);
+			dest_index += copy_count;
+			src_index += copy_count;
 		}
 
 		for (j = 0; j < field_count && k1_only_index < k1_only_count; j++) {
-			if (dest_index < g_utool_ummu_k1_field_count) {
-				g_utool_ummu_k1_field_info[dest_index] = k1_only_fields[k1_only_index];
-				dest_index++;
-				k1_only_index++;
+			if (dest_index >= g_utool_ummu_k1_field_count) {
+				utool_err_msg("Field insertion overflow at step 2.\n");
+				return UTOOL_ERR;
 			}
+			g_utool_ummu_k1_field_info[dest_index] = k1_only_fields[k1_only_index];
+			dest_index++;
+			k1_only_index++;
 		}
 	}
 
 	if (src_index < original_count) {
 		copy_count = original_count - src_index;
-		if (dest_index + copy_count <= g_utool_ummu_k1_field_count) {
-			memcpy(&g_utool_ummu_k1_field_info[dest_index], &g_utool_ummu_field_info[src_index],
-			       sizeof(struct utool_field_info) * copy_count);
+		if (dest_index + copy_count > g_utool_ummu_k1_field_count) {
+			utool_err_msg("Field insertion overflow at step 3.\n");
+			return UTOOL_ERR;
 		}
+		memcpy(&g_utool_ummu_k1_field_info[dest_index], &g_utool_ummu_field_info[src_index],
+		       sizeof(struct utool_field_info) * copy_count);
+		dest_index += copy_count;
 	}
+	*insertted_fields_cnt = dest_index;
+	return UTOOL_OK;
 }
 
 static struct utool_field_info *utool_ummu_get_diff_version_field_info(uint32_t reg_version,
@@ -895,6 +904,31 @@ int utool_ummu_parse_rpc_pkt(struct fwctl_rpc_ub_out *ummu_out)
 	return ret;
 }
 
+/**
+ * @brief Calculates the length of the data request in bytes for the UMMU register.
+ *
+ * @param[out] data_len Output parameter storing the calculated data length in bytes.
+ *
+ * @return UTOOL_OK on success.
+ * @return UTOOL_ERR_INVALID_PARAM on failure.
+ *
+ * @note Semantic Convention & Constraints:
+ *       1. **Explicit Request Constraint**:
+ *          - In the **Calculation/Request Phase**, the buffer size MUST be allocated
+ *            based on the **maximum possible length (i.e., K1 version length)**.
+ *          - This is a hard constraint to ensure memory safety and compatibility.
+ *            Do NOT allocate based on the current version's calculated length during
+ *            the request phase.
+ *       2. **Parse Phase Behavior**:
+ *          - In the **Parse Phase**, use the length returned by this function (which
+ *            corresponds to the current environment version) as the valid data boundary.
+ *          - This effectively "trims" the data to the current version's requirements,
+ *            ignoring any extra space allocated during the request phase.
+ *       3. **Summary**:
+ *          - Request Size = Max Length (K1)
+ *          - Parse Size   = Current Version Length (returned by this function)
+ *          - Constraint: Request Size >= Parse Size
+ */
 static int utool_ummu_cal_data_len(uint32_t *data_len)
 {
 	struct utool_field_info *utool_ummu_field_info;
@@ -913,11 +947,17 @@ static int utool_ummu_cal_data_len(uint32_t *data_len)
 	return UTOOL_OK;
 }
 
+static void utool_ummu_cleanup_k1_field_info(void)
+{
+	UTOOL_FREE(g_utool_ummu_k1_field_info);
+	g_utool_ummu_k1_field_count = 0;
+}
+
 static int utool_ummu_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 			  struct utool_func_dispatch *func_table, uint32_t func_cnt)
 {
 	struct utool_pkt_exec func_pkt_exec = { UTOOL_CMD_QUERY_UMMU_ALL, 0, NULL };
-	uint32_t pkt_in_len = 0;
+	uint32_t pkt_in_len = 0, insertted_fields_cnt = 0;
 	void *pkt_in = NULL;
 	int ret = UTOOL_OK;
 
@@ -932,22 +972,29 @@ static int utool_ummu_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 		g_utool_ummu_k1_field_count = 0;
 		return UTOOL_ERR_MALLOC;
 	}
+	memset(g_utool_ummu_k1_field_info, 0, sizeof(struct utool_field_info) * g_utool_ummu_k1_field_count);
 
-	utool_ummu_insert_additional_fields();
+	ret = utool_ummu_insert_additional_fields(&insertted_fields_cnt);
+	if ((ret != UTOOL_OK) || (insertted_fields_cnt != g_utool_ummu_k1_field_count)) {
+		utool_err_msg("Field insertion mismatch: expected %u, got %u.\n",
+			      g_utool_ummu_k1_field_count, insertted_fields_cnt);
+		utool_ummu_cleanup_k1_field_info();
+		return UTOOL_ERR;
+	}
 
 	func_pkt_exec.execute = utool_ummu_parse_rpc_pkt;
 
 	ret = utool_ummu_cal_data_len(&func_pkt_exec.data_len);
 	if (ret != UTOOL_OK) {
 		utool_err_msg("Ummu cmd failed to calculate ummu reg cnt, ret = %d.\n", ret);
-		UTOOL_FREE(g_utool_ummu_k1_field_info);
+		utool_ummu_cleanup_k1_field_info();
 		return ret;
 	}
 
 	pkt_in = utool_ummu_value_create_pkt_in(&pkt_in_len, param);
 	if (pkt_in == NULL) {
 		utool_err_msg("Failed to create pkt in.\n");
-		UTOOL_FREE(g_utool_ummu_k1_field_info);
+		utool_ummu_cleanup_k1_field_info();
 		return UTOOL_ERR_MALLOC;
 	}
 
@@ -956,8 +1003,8 @@ static int utool_ummu_cmd(struct utool_dev *dev, struct utool_cmd_param *param,
 		utool_err_msg("Failed to execute command, ret = %d.\n", ret);
 	}
 	utool_destroy_pkt_in(&pkt_in);
-	UTOOL_FREE(g_utool_ummu_k1_field_info);
 
+	utool_ummu_cleanup_k1_field_info();
 	return ret;
 }
 

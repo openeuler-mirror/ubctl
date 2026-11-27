@@ -47,7 +47,7 @@ B<cmdq>
 For details on related terms and abbreviations, please refer to L<UnifiedBus (UB) Base Specification|https://www.unifiedbus.com/zh/docs/UB-Base-Specification-2.0-preview-zh>
 
 The B<ubctl> command-line tool is part of the UB (Unified Bus) system, designed to query public function configurations, module statuses, statistical data, and firmware information.
-Built on the open-source fwctl framework, it interacts with hardware through the kernel module ub_fwctl to provide read-only query functionality (the current version does not support configuration modifications).
+Built on the open-source fwctl framework, it interacts with hardware through the kernel module ub_fwctl, providing read-only query functions and partial configuration functions (configurations are for subsequent queries).
 As an essential component of the UB system's DFX (Maintenance Information) function, ubctl supports low-level debugging, operation and maintenance, and fault analysis.
 
 B<Function Implementation Scheme:>
@@ -93,7 +93,7 @@ $function: function name, optional parameters, different processing functions ar
 
     nl: pkt_stats, abn_stats, ssu_stats, ssu_sw, ssu_oq, ssu_p2p, ssu_vl_pkt
 
-    tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result
+    tp: pkt_stats, abn_stats, scc_version, scc_log, scc_debug_en, rx_bank, route_result, rrp_err
 
     msgq: que_stats, entry
 
@@ -191,7 +191,9 @@ B<Query TP Layer Information>:
  ubctl -c ${chip_id} -d ${udie_id} -m tp -f scc_debug_en
  ubctl -c ${chip_id} -d ${udie_id} -m tp -f rx_bank
  ubctl -c ${chip_id} -d ${udie_id} -m tp -f route_result
+ ubctl -c ${chip_id} -d ${udie_id} -m tp -f rrp_err
  ubctl -c ${chip_id} -d ${udie_id} -p ${port_id} -m tp -f abn_stats
+ ubctl -c ${chip_id} -d ${udie_id} -i ${index} -e ${value} -m tp -f rrp_err
 
 B<Query TA Layer Information>:
 

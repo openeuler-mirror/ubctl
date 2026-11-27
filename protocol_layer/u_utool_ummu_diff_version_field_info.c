@@ -24,11 +24,11 @@
 #define UMMU_CTRL_INSERT_CNT 4
 #define UMMU_UCMD_INSERT_CNT_1 1
 #define UMMU_UCMD_INSERT_CNT_2 2
-#define UMMU_UBIF_INSERT_CNT 5
-#define UMMU_TBU_INSERT_CNT 132
-#define UMMU_TCU_INSERT_CNT 340
-#define UMMU_CFG_INSERT_CNT 2
-#define UMMU_SKY_INSERT_CNT 576
+#define UMMU_UBIF_INSERT_CNT 20
+#define UMMU_TBU_INSERT_CNT 134
+#define UMMU_TCU_INSERT_CNT 354
+#define UMMU_CFG_INSERT_CNT 25
+#define UMMU_SKY_INSERT_CNT 619
 
 static struct utool_field_info g_utool_ummu_field_info_k1_only[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "\tdfx_swif_kcmd_ns_fsm_status" },
@@ -50,6 +50,27 @@ static struct utool_field_info g_utool_ummu_field_info_k1_only[] = {
 	{ false, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
 	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_3, "\tkv_cache_result_fifo_full_wr" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\tkv_cache_result_fifo_empty_rd" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_3, "\tubif_cmd_sync_mask" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC4, 0, UTOOL_CAP_3, "\tubif_req_rx_ro_force_to_so" },
+	{ false, false, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_3, "\tubif_dvm_sync_mask" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_3, "\tubif_kv_cache_bypass" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_3, "\tubif_req_va_check_en" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\tubif_ubctrl_invld_bypass" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "\tubif_dfx2" },
+
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "\tubif_uat_dfx_sum" },
+
+	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "\tubif_dfx3" },
+
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "\tswif_idle_info" },
+
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_3, "\tummu_stall_iopf_num" },
 
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "\tummu_tbu_iopf_sts0" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "\tummu_tbu_iopf_sts1" },
@@ -184,6 +205,9 @@ static struct utool_field_info g_utool_ummu_field_info_k1_only[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC15, 0, UTOOL_CAP_3, "\ttect_tag0_63" },
 	{ false, false, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_3, "\ttect_tag1_63" },
 
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "\ttbu_iopf_cnt" },
+
 	{ false, true, UTOOL_LOC9, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC8, 0, UTOOL_CAP_3, "\tdfx_pptw_queue_probe_stat1_0" },
 	{ false, true, UTOOL_LOC9, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
@@ -268,6 +292,24 @@ static struct utool_field_info g_utool_ummu_field_info_k1_only[] = {
 	{ false, false, UTOOL_LOC7, UTOOL_LOC11, 0, UTOOL_CAP_3, "\tdfx_tcu_queue_full_stat" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC6, 0, UTOOL_CAP_3, "\tdfx_tcu_idle_stat" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC31, 0, UTOOL_CAP_3, "\tdfx_tcu_itf_stat0" },
+
+	{ false, true, UTOOL_LOC6, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_3, "\ttcu_pptw_blockipacache_invld_mode" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC4, 0, UTOOL_CAP_3, "\ttcu_pptw_rteipacache_invld_mode" },
+	{ false, false, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_3, "\ttcu_pptw_blockcache_invld_mode" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_3, "\ttcu_pptw_walkcache_invld_mode" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_3, "\ttcu_pptw_queue_invld_mode" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\ttcu_cct_cache_invld_mode" },
+
+	{ false, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_3, "\ttcu_cct_fifo_full_write_stat" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\ttcu_cct_fifo_empty_read_stat" },
+
+	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\ttcu_cct_cfgi_mode" },
+
+	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\ttcu_cct_tect_cache_en" },
 
 	{ false, true, UTOOL_LOC24, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC23, 0, UTOOL_CAP_3, "CCT:\n\tcct_que_info0_0" },
@@ -528,6 +570,33 @@ static struct utool_field_info g_utool_ummu_field_info_k1_only[] = {
 
 	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC7, 0, UTOOL_CAP_3, "\tubif_mue_ue_idx_ecc_err_cnt" },
+
+	{ false, true, UTOOL_LOC30, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC24, UTOOL_LOC29, 0, UTOOL_CAP_3, "\tcmdq_bank_id_cfg" },
+	{ false, true, UTOOL_LOC22, UTOOL_LOC23, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC21, 0, UTOOL_CAP_3, "\tcct_bank_id_cfg" },
+	{ false, true, UTOOL_LOC14, UTOOL_LOC15, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC13, 0, UTOOL_CAP_3, "\ttptw_httu_bank_id_cfg" },
+	{ false, true, UTOOL_LOC6, UTOOL_LOC7, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_3, "\ttptw_bank_id_cfg" },
+
+	{ false, true, UTOOL_LOC30, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC24, UTOOL_LOC29, 0, UTOOL_CAP_3, "\tpptw_bank_id_cfg" },
+	{ false, true, UTOOL_LOC22, UTOOL_LOC23, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC21, 0, UTOOL_CAP_3, "\tubif_bank_id_cfg" },
+	{ false, true, UTOOL_LOC14, UTOOL_LOC15, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC13, 0, UTOOL_CAP_3, "\tusi_bank_id_cfg" },
+	{ false, true, UTOOL_LOC6, UTOOL_LOC7, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_3, "\tevent_bank_id_cfg" },
+
+	{ false, true, UTOOL_LOC16, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, true, UTOOL_LOC14, UTOOL_LOC15, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC13, 0, UTOOL_CAP_3, "\tgpc_bank_id_cfg" },
+	{ false, true, UTOOL_LOC6, UTOOL_LOC7, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC5, 0, UTOOL_CAP_3, "\tucmdq_bank_id_cfg" },
+
+	{ false, true, UTOOL_LOC1, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\tummu2master_user_fp_cfg" },
 
 	{ false, true, UTOOL_LOC31, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
 	{ false, false, UTOOL_LOC30, UTOOL_LOC30, 0, UTOOL_CAP_3, "\tdfx_sky_queue_probe_write_sp_0" },
@@ -1105,6 +1174,57 @@ static struct utool_field_info g_utool_ummu_field_info_k1_only[] = {
 	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_3, "\tdfx_sky_queue_probe_memattr_sp_62" },
 	{ false, true, UTOOL_LOC4, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
 	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_3, "\tdfx_sky_queue_probe_memattr_sp_63" },
+
+	{ false, true, UTOOL_LOC4, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_3, "\tubimmu_chi_link_ctrl" },
+
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC17, 0, UTOOL_CAP_3, "\treg_swif_usi_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC14, UTOOL_LOC15, 0, UTOOL_CAP_3, "\treg_swif_event_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC13, 0, UTOOL_CAP_3, "\treg_swif_ucmd_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_3, "\treg_swif_kcmd_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC9, 0, UTOOL_CAP_3, "\treg_ubif_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC6, UTOOL_LOC7, 0, UTOOL_CAP_3, "\treg_tcu_gpc_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC5, 0, UTOOL_CAP_3, "\treg_tcu_pptw_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC3, 0, UTOOL_CAP_3, "\treg_tcu_tptw_alloc_hint_cfg" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC1, 0, UTOOL_CAP_3, "\treg_tcu_cct_alloc_hint_cfg" },
+
+	{ false, true, UTOOL_LOC18, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC16, UTOOL_LOC17, 0, UTOOL_CAP_3, "\treg_swif_usi_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC14, UTOOL_LOC15, 0, UTOOL_CAP_3, "\treg_swif_event_vicitm_hint_cfg" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC13, 0, UTOOL_CAP_3, "\treg_swif_ucmd_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC10, UTOOL_LOC11, 0, UTOOL_CAP_3, "\treg_swif_kcmd_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC9, 0, UTOOL_CAP_3, "\treg_ubif_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC6, UTOOL_LOC7, 0, UTOOL_CAP_3, "\treg_tcu_gpc_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC5, 0, UTOOL_CAP_3, "\treg_tcu_pptw_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC3, 0, UTOOL_CAP_3, "\treg_tcu_tptw_victim_hint_cfg" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC1, 0, UTOOL_CAP_3, "\treg_tcu_cct_victim_hint_cfg" },
+
+	{ false, true, UTOOL_LOC4, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC3, 0, UTOOL_CAP_3, "\tubimmu_chi_link_idle" },
+
+	{ false, true, UTOOL_LOC8, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC7, UTOOL_LOC7, 0, UTOOL_CAP_3, "\tdfx_tsrspretlcrdv_ubimmu" },
+	{ false, false, UTOOL_LOC6, UTOOL_LOC6, 0, UTOOL_CAP_3, "\tdfx_rsrspretlcrdv_ubimmu" },
+	{ false, false, UTOOL_LOC5, UTOOL_LOC5, 0, UTOOL_CAP_3, "\tdfx_txlinkactiveack_ubimmu" },
+	{ false, false, UTOOL_LOC4, UTOOL_LOC4, 0, UTOOL_CAP_3, "\tdfx_txlinkactivereq_ubimmu" },
+	{ false, false, UTOOL_LOC3, UTOOL_LOC3, 0, UTOOL_CAP_3, "\tdfx_rxlinkactiveack_ubimmu" },
+	{ false, false, UTOOL_LOC2, UTOOL_LOC2, 0, UTOOL_CAP_3, "\tdfx_rxlinkactivereq_ubimmu" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_3, "\tdfx_rxsactive_ubimmu" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\tdfx_txsactive_ubimmu" },
+
+	{ false, true, UTOOL_LOC22, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC12, UTOOL_LOC21, 0, UTOOL_CAP_3, "\tdfx_ummu_axi_intf_vld_rdy" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC11, 0, UTOOL_CAP_3, "\tdfx_ummu_sky_intf_vld_rdy" },
+
+	{ false, true, UTOOL_LOC13, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC8, UTOOL_LOC12, 0, UTOOL_CAP_3, "\treg_sky_lat_th1" },
+	{ false, true, UTOOL_LOC5, UTOOL_LOC7, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC4, 0, UTOOL_CAP_3, "\treg_sky_lat_th0" },
+
+	{ false, true, UTOOL_LOC2, UTOOL_LOC31, 0, UTOOL_CAP_3, "reserved" },
+	{ false, false, UTOOL_LOC1, UTOOL_LOC1, 0, UTOOL_CAP_3, "\tsky_lat_large_than_th0" },
+	{ false, false, UTOOL_LOC0, UTOOL_LOC0, 0, UTOOL_CAP_3, "\tsky_lat_large_than_th1" },
 };
 
 static struct utool_insert_positions g_utool_ummu_insert_positions[] = {

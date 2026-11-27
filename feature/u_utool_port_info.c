@@ -548,7 +548,7 @@ static int utool_port_info_get_module_type(struct fwctl_rpc_ub_out *port_info_ou
 	uint16_t module_type;
 
 	if (user_data_size < port_info_out->data_size) {
-		utool_err_msg("User data is invalid, user data size = %u bytes, current need = %u bytes.\n",
+		utool_err_msg("User data of port_info API is invalid, user data size = %u bytes, need = %u bytes.\n",
 			      user_data_size, port_info_out->data_size);
 		return UTOOL_ERR_PARSE;
 	}
